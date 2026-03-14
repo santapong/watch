@@ -1,0 +1,64 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
+
+## [0.4.0] - 2026-03-14
+
+### Added
+- **Active learning pipeline** (`src/training/active_learner.py`): Uncertainty sampling
+  to identify low-confidence detections and export them for human labeling
+- **Data augmentation** (`src/training/augmentation.py`): Geometric and photometric
+  augmentations including cutout, mosaic, and YOLO-format dataset export
+- **Edge deployment** (`src/deployment/exporter.py`): Export YOLO models to ONNX,
+  TensorRT, OpenVINO, and other formats with benchmarking
+- **Temporal event detection** (`src/analytics/temporal.py`): Detect time-based events
+  like loitering, abandoned objects, crowd formation, and speed anomalies
+- Scripts: `run_active_learning.py`, `export_model.py`, `benchmark.py`
+
+## [0.3.0] - 2026-03-14
+
+### Added
+- **Anomaly detection** (`src/analytics/anomaly_detector.py`): Learn normal scene
+  patterns using Isolation Forest, flag deviations automatically
+- **Action recognition** (`src/models/pose_detector.py`): YOLOv8-pose skeleton
+  extraction with rule-based action classification (standing, sitting, walking,
+  running, falling, raising hand)
+- **Multi-camera fusion** (`src/multicam/manager.py`): Manage multiple VideoStream
+  instances with grid display and cross-camera detection matching
+- **Scene understanding** (`src/analytics/scene_understanding.py`): Spatial relationship
+  detection, scene type classification, and natural language scene descriptions
+- Scripts: `run_anomaly.py`, `run_action.py`, `run_multicam.py`
+- New drawing utilities: `draw_skeleton()`, `draw_action_label()`,
+  `draw_anomaly_alert()`, `draw_scene_info()`, `draw_event_log()`
+
+## [0.2.0] - 2026-03-14
+
+### Added
+- **Zone counting** (`src/analytics/zone_counter.py`): Polygon zone counting and
+  line-crossing counters using the supervision library
+- **Enhanced tracking** (`src/tracking/tracker.py`): Trajectory history, re-identification
+  using color histogram embeddings, track statistics
+- **Open-vocabulary detection** (`src/models/open_vocab_detector.py`): Zero-shot
+  text-prompted object detection using HuggingFace OWLv2
+- Scripts: `run_zone_counter.py`, `run_open_vocab.py`
+- New drawing utilities: `draw_tracks()`, `draw_zones()`
+- New dependencies: `scikit-learn`, `transformers`
+- Extended configuration with zones, tracking, anomaly, multicam, temporal, and
+  active learning sections
+
+## [0.1.0] - 2026-03-14
+
+### Added
+- Initial project scaffold with YOLO object detection
+- `VideoStream` class for webcam, IP camera (MJPEG), RTSP, and video file sources
+- `YOLODetector` wrapper for Ultralytics YOLO models
+- `BaseDetector` abstract class and `Detection` dataclass
+- Real-time detection with FPS counter and model info display
+- Keyboard controls: quit, screenshot, tracking toggle, confidence toggle, pause
+- YAML-based configuration system
+- Drawing utilities for bounding boxes, FPS, and model info
+- Scripts: `run_webcam.py`, `run_stream.py`
+- System architecture documentation with mobile camera setup guide
+- Innovation ideas and research directions in `idea.md`

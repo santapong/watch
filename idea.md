@@ -115,8 +115,57 @@ layer on more advanced capabilities to discover novel applications.
 
 ---
 
+## Tier 4: Future Enhancements
+
+### 12. Heatmap Generation
+- Generate density heatmaps from detection and tracking data over time
+- Visualize hot spots where objects/people concentrate most frequently
+- **Innovation angle**: Real-time occupancy heatmaps for retail analytics, traffic flow analysis
+- Tools: OpenCV weighted accumulation, matplotlib for export
+
+### 13. Streamlit Dashboard
+- Web-based real-time monitoring UI with live camera feeds
+- Dashboard widgets: FPS, object counts, zone analytics, alert history
+- **Innovation angle**: No-code monitoring setup — connect cameras via browser
+- Tools: `streamlit`, `streamlit-webrtc`
+
+### 14. Alert & Notification System
+- Trigger alerts on specific events (anomaly detected, zone capacity exceeded, loitering)
+- Notification channels: email (SMTP), webhooks, Slack, Telegram
+- **Innovation angle**: Configurable rule engine for custom alert conditions
+- Tools: `smtplib`, `requests` for webhook integration
+
+### 15. Model Ensemble
+- Combine multiple detectors (YOLO, OWLv2, specialized models) for better accuracy
+- Weighted voting or NMS fusion across model outputs
+- **Innovation angle**: Adaptive ensemble that uses fast model normally, adds slow model for uncertain regions
+- Research question: Does ensembling heterogeneous architectures outperform a single larger model?
+
+### 16. Privacy Mode
+- Automatic face and person blurring for privacy compliance (GDPR, CCPA)
+- Configurable: blur faces only, blur entire persons, or pixelate
+- **Innovation angle**: Privacy-preserving analytics — count and track without storing identifiable features
+- Tools: YOLOv8-face or MediaPipe for face detection, Gaussian blur
+
+### 17. GroundingDINO Integration
+- Upgrade from OWLv2 to GroundingDINO for more powerful open-vocabulary detection
+- Better accuracy on complex text prompts and small objects
+- **Innovation angle**: Combine with SAM2 for text-prompted instance segmentation
+- Requires: `groundingdino` library, larger GPU memory
+
+### 18. SAM2 Segmentation
+- Segment Anything Model v2 for zero-shot instance segmentation
+- Combine with any detector output for pixel-precise masks
+- **Innovation angle**: Interactive segmentation — click to segment, text to segment
+- Tools: `segment-anything-2`, HuggingFace transformers
+
+---
+
 ## Next Steps
-- Start with Phase 1 (webcam + YOLO) to build the foundation
-- Pick 1-2 Tier 1 ideas to implement in Phase 4
+- Phase 1 (webcam + YOLO) — COMPLETE
+- Phase 2 (Tier 1: zone analytics, tracking, open-vocab) — COMPLETE
+- Phase 3 (Tier 2: anomaly, action, multi-cam, scene) — COMPLETE
+- Phase 4 (Tier 3: active learning, augmentation, edge, temporal) — COMPLETE
+- Pick Tier 4 ideas to implement next
 - Document all experiments in `docs/research_log.md`
 - Each experiment should have: hypothesis, method, results, conclusion

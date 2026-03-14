@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Data and models (large files)
+data/raw/
+data/processed/
+models/*.pt
+models/*.onnx
+models/*.engine
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+
+# Experiment tracking
+mlruns/
+wandb/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Screenshots/recordings
+screenshots/
+recordings/

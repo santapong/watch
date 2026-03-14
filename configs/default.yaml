@@ -1,0 +1,31 @@
+# Default configuration for object detection
+
+# Model settings
+model:
+  name: "yolov8n.pt"          # Model file: yolov8n/s/m/l/x.pt, yolo11n.pt, etc.
+  confidence: 0.25             # Minimum confidence threshold
+  iou_threshold: 0.45          # NMS IoU threshold
+  device: ""                   # Auto-detect: "", "cpu", "cuda:0", "mps"
+  classes: null                # Filter classes (null = all, [0] = person only, [0, 2] = person + car)
+
+# Video source
+source:
+  type: "webcam"               # "webcam", "url", "file"
+  webcam_index: 0              # Camera index for webcam
+  url: ""                      # URL for IP camera (e.g., "http://192.168.1.10:8080/video")
+  file_path: ""                # Path to video file
+  resolution: null             # null = default, or [1280, 720]
+
+# Display settings
+display:
+  show_confidence: true
+  show_track_id: true
+  show_fps: true
+  show_model_info: true
+  window_name: "Object Detection"
+  bbox_thickness: 2
+  font_scale: 0.6
+
+# Tracking
+tracking:
+  enabled: false               # Set to true to enable object tracking

@@ -29,3 +29,56 @@ display:
 # Tracking
 tracking:
   enabled: false               # Set to true to enable object tracking
+  max_history: 50              # Max trajectory trail points per track
+  reid_threshold: 0.7          # Re-ID cosine similarity threshold
+
+# Zone counting
+zones:
+  enabled: false
+  polygons: []                 # List of {name, points, color} zone definitions
+  # Example:
+  # polygons:
+  #   - name: "Entrance"
+  #     points: [[100, 100], [400, 100], [400, 500], [100, 500]]
+  #     color: [0, 255, 0]
+
+# Open-vocabulary detection
+open_vocab:
+  model: "google/owlv2-base-patch16-ensemble"
+  queries: ["person", "car", "dog"]
+  confidence: 0.1
+
+# Anomaly detection
+anomaly:
+  enabled: false
+  learning_frames: 500         # Frames to learn normal patterns
+  contamination: 0.05          # Expected anomaly proportion
+
+# Action recognition
+action:
+  model: "yolov8n-pose.pt"
+  sequence_length: 15          # Frames for temporal action analysis
+
+# Multi-camera
+multicam:
+  cell_size: [640, 480]        # Grid cell size (width, height)
+  cameras: []                  # List of {name, source} camera definitions
+  # Example:
+  # cameras:
+  #   - name: "Webcam"
+  #     source: 0
+  #   - name: "Phone"
+  #     source: "http://192.168.1.105:8080/video"
+
+# Temporal event detection
+temporal:
+  enabled: false
+  loiter_seconds: 30           # Seconds before flagging loitering
+  abandoned_seconds: 60        # Seconds before flagging abandoned object
+  crowd_threshold: 10          # Person count for crowd alert
+
+# Active learning
+active_learning:
+  max_samples: 500
+  sampling_interval: 30        # Min frames between samples
+  confidence_range: [0.2, 0.6] # Uncertainty range

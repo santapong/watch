@@ -82,3 +82,34 @@ active_learning:
   max_samples: 500
   sampling_interval: 30        # Min frames between samples
   confidence_range: [0.2, 0.6] # Uncertainty range
+
+# Heatmap generation
+heatmap:
+  enabled: false
+  decay: 0.995                 # Exponential decay per frame (0-1)
+  radius: 40                   # Gaussian blob radius in pixels
+  alpha: 0.5                   # Overlay transparency
+  class_filter: null            # null = all classes, or ["person", "car"]
+  save_interval: 0             # Auto-save every N frames (0 = disabled)
+
+# Privacy mode
+privacy:
+  enabled: false
+  mode: "blur"                 # "blur", "pixelate", "blackout"
+  target: "person"             # "person", "face", "all"
+  blur_strength: 51            # Gaussian blur kernel size (odd number)
+  pixel_size: 15               # Mosaic block size for pixelation
+
+# Alert system
+alerts:
+  enabled: false
+  log_path: "alerts.json"      # Local alert log file
+  webhook_url: ""              # Slack/Discord/custom webhook URL
+  email:
+    enabled: false
+    smtp_host: ""
+    smtp_port: 587
+    sender: ""
+    recipients: []
+    username: ""
+    password: ""

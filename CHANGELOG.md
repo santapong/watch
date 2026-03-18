@@ -4,6 +4,25 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.5.0] - 2026-03-16
+
+### Added
+- **Heatmap generation** (`src/analytics/heatmap.py`): Density heatmaps from detection
+  data with exponential decay, Gaussian blobs, colormap overlay, and snapshot export
+- **Privacy mode** (`src/privacy.py`): GDPR/CCPA-compliant automatic blurring,
+  pixelation, or blackout of detected persons/faces
+- **Alert & notification system** (`src/alerts.py`): Configurable rule engine with
+  cooldown, webhook (Slack/Discord), email (SMTP), and JSON log notifiers
+- **Streamlit dashboard** (`src/dashboard.py`): Web-based monitoring UI scaffold with
+  live feed, detection stats, heatmap overlay, and alert history panels
+- Scripts: `run_heatmap.py`, `run_privacy.py`
+- Configuration sections for heatmap, privacy, and alerts in `default.yaml`
+
+### Improved
+- **Test coverage**: Expanded from 6 to 114 unit tests covering detection, tracking,
+  analytics (anomaly, scene, temporal), drawing utilities, heatmap, privacy, and alerts
+- Added `tests/conftest.py` for clean dependency stubbing in test environment
+
 ## [0.4.0] - 2026-03-14
 
 ### Added

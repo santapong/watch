@@ -166,6 +166,7 @@ layer on more advanced capabilities to discover novel applications.
 - Phase 2 (Tier 1: zone analytics, tracking, open-vocab) — COMPLETE
 - Phase 3 (Tier 2: anomaly, action, multi-cam, scene) — COMPLETE
 - Phase 4 (Tier 3: active learning, augmentation, edge, temporal) — COMPLETE
-- Pick Tier 4 ideas to implement next
+- Phase 5 (Tier 4 partial: heatmap, privacy, alerts, dashboard) — COMPLETE
+- Remaining Tier 4: model ensemble, GroundingDINO, SAM2
 - Document all experiments in `docs/research_log.md`
 - Each experiment should have: hypothesis, method, results, conclusion

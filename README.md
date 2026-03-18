@@ -20,6 +20,10 @@ using OpenCV and deep learning.
 | 4 | Data augmentation pipeline | Library (`src/training/augmentation.py`) |
 | 4 | Model export (ONNX, TensorRT) | `export_model.py` |
 | 4 | Temporal event detection | Library (`src/analytics/temporal.py`) |
+| 5 | Density heatmap generation | `run_heatmap.py` |
+| 5 | Privacy mode (blur/pixelate/blackout) | `run_privacy.py` |
+| 5 | Alert & notification system | Library (`src/alerts.py`) |
+| 5 | Streamlit monitoring dashboard | `streamlit run src/dashboard.py` |
 
 ## Quick Start
 
@@ -89,6 +93,15 @@ python scripts/run_active_learning.py --session my_data
 # Model export & benchmarking
 python scripts/export_model.py --format onnx torchscript --benchmark
 python scripts/benchmark.py --models yolov8n.pt yolov8n.onnx
+
+# Heatmap overlay (shows where objects concentrate)
+python scripts/run_heatmap.py --decay 0.99 --classes person
+
+# Privacy mode (blur/pixelate detected persons)
+python scripts/run_privacy.py --mode blur --target person
+
+# Streamlit dashboard
+streamlit run src/dashboard.py
 ```
 
 ## Controls
@@ -136,7 +149,8 @@ src/
 │   ├── zone_counter.py           # Zone counting + line crossing
 │   ├── anomaly_detector.py       # Scene anomaly detection
 │   ├── scene_understanding.py    # Spatial relations + scene classification
-│   └── temporal.py               # Time-based event detection
+│   ├── temporal.py               # Time-based event detection
+│   └── heatmap.py                # Density heatmap generation
 ├── tracking/
 │   └── tracker.py                # Enhanced tracking with re-ID
 ├── multicam/
@@ -146,6 +160,9 @@ src/
 │   └── augmentation.py           # Data augmentation pipeline
 ├── deployment/
 │   └── exporter.py               # Model export + benchmarking
+├── privacy.py                    # Privacy mode (blur/pixelate/blackout)
+├── alerts.py                     # Alert & notification system
+├── dashboard.py                  # Streamlit monitoring dashboard
 └── utils/
     ├── drawing.py                # Visualization helpers
     └── fps.py                    # FPS counter

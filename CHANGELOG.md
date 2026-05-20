@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased]
+
+### Added
+- **Workstation activity monitoring — Phase A** (`src/workstation/`): data model,
+  SQLite-backed `ActivityStore`, and `ActivityLedger` with hysteresis debounce
+  and auto-idle on observation silence. Taxonomy v1: polishing, filing,
+  tool_change, idle, unknown. Includes `StaticAssignment` resolver for
+  station→employee mapping (face/badge re-ID arrives in Phase B).
+- `scripts/run_workstation.py` runner with `--demo` mode for offline pipeline
+  validation; new `workstation:` section in `configs/default.yaml`.
+- 40 new tests covering data classes, store round-trip + range queries, and
+  ledger hysteresis / idle-timeout / transition accounting.
+
 ## [0.5.0] - 2026-03-16
 
 ### Added

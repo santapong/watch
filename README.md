@@ -24,6 +24,7 @@ using OpenCV and deep learning.
 | 5 | Privacy mode (blur/pixelate/blackout) | `run_privacy.py` |
 | 5 | Alert & notification system | Library (`src/alerts.py`) |
 | 5 | Streamlit monitoring dashboard | `streamlit run src/dashboard.py` |
+| 6 | Workstation activity ledger (Phase A) | `run_workstation.py` |
 
 ## Quick Start
 

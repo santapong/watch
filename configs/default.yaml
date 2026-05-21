@@ -113,3 +113,21 @@ alerts:
     recipients: []
     username: ""
     password: ""
+
+# Workstation activity monitoring (Phase A scaffold)
+workstation:
+  enabled: false
+  db_path: "data/activity.db"  # SQLite store for stations/employees/shifts/events
+  hysteresis_seconds: 2.0      # Debounce window before committing a state change
+  idle_timeout_seconds: 10.0   # No observation for this long -> auto IDLE
+  stations:
+    # - name: "Station 1"
+    #   camera_index: 0
+    #   location: "Workshop floor"
+  employees:
+    # - name: "Employee 1"
+    #   badge_id: "EMP001"
+    #   consent: false
+  assignments:
+    # station_name -> employee badge_id
+    # "Station 1": "EMP001"

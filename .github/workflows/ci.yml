@@ -22,7 +22,7 @@ jobs:
       # skips them (~2 GB) and stays fast. Import-safe wrappers + tests/conftest.py
       # keep `src` importable without them.
       - name: Install slim test dependencies
-        run: pip install pytest numpy pyyaml pillow opencv-python-headless scikit-learn
+        run: pip install pytest numpy pyyaml pillow requests opencv-python-headless scikit-learn
 
       - name: Run tests
         run: python -m pytest -q

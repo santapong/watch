@@ -16,6 +16,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   validation; new `workstation:` section in `configs/default.yaml`.
 - 40 new tests covering data classes, store round-trip + range queries, and
   ledger hysteresis / idle-timeout / transition accounting.
+- **Pluggable detector backbones** (`src/models/registry.py`): a config-driven
+  `build_detector` factory selecting YOLOv8/v10/v11/YOLO26 (one `YOLO` loader) or
+  RT-DETR (`src/models/rtdetr_wrapper.py`) via `model.backend`. All run-scripts and
+  the dashboard build detectors through the factory; `yolov8n.pt` stays the default.
+- **INT8 quantization export** (`src/deployment/exporter.py`): `int8`/`data`
+  calibration args on `ModelExporter.export` (ONNX/OpenVINO/TensorRT) with a
+  half/int8 mutual-exclusion guard; `--int8`/`--data` flags on `export_model.py`.
+- **Benchmark matrix** (`scripts/benchmark_matrix.py`): a model × precision × runtime
+  latency/FPS/size (+optional mAP) sweep that probes-and-skips absent runtimes and
+  writes `docs/research/data/benchmark_matrix.{json,md}` to pick a deployment default.
+- **Continuous integration** (`.github/workflows/ci.yml`): runs the pytest suite on
+  push/PR with a slim, ML-free dependency install.
+- Import-safe detector wrappers (lazy `ultralytics` import) plus 19 new tests
+  (registry factory, INT8 arg plumbing, result→`Detection` conversion).
 
 ## [0.5.0] - 2026-03-16
 

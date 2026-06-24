@@ -14,7 +14,7 @@ import numpy as np
 import streamlit as st
 
 from src.analytics.heatmap import HeatmapGenerator
-from src.models.yolo_wrapper import YOLODetector
+from src.models.registry import build_detector_from_config
 from src.privacy import PrivacyFilter
 from src.stream import VideoStream
 from src.tracking.tracker import EnhancedTracker
@@ -114,9 +114,8 @@ def main():
                     st.session_state.stream = VideoStream(source=source)
 
                 with st.spinner(f"Loading model {model_name}..."):
-                    st.session_state.detector = YOLODetector(
-                        model_name=model_name,
-                        confidence=confidence,
+                    st.session_state.detector = build_detector_from_config(
+                        {}, model_name=model_name, confidence=confidence
                     )
 
                 st.session_state.fps_counter = FPSCounter()

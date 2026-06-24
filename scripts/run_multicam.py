@@ -20,7 +20,7 @@ import cv2
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from src.models.yolo_wrapper import YOLODetector
+from src.models.registry import build_detector_from_config
 from src.multicam.manager import MultiCameraManager
 from src.utils.drawing import draw_detections
 
@@ -36,7 +36,7 @@ def main():
     parser.add_argument("--cell-size", nargs=2, type=int, default=[640, 480])
     args = parser.parse_args()
 
-    detector = YOLODetector(model_name=args.model)
+    detector = build_detector_from_config({}, model_name=args.model)
 
     manager = MultiCameraManager(cell_size=tuple(args.cell_size))
 

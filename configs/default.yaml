@@ -2,7 +2,8 @@
 
 # Model settings
 model:
-  name: "yolov8n.pt"          # Model file: yolov8n/s/m/l/x.pt, yolo11n.pt, etc.
+  backend: ""                  # "" = infer from name; or "yolo" (v8/v10/v11/26) | "rtdetr"
+  name: "yolov8n.pt"          # Model file: yolov8n/s/m/l/x.pt, yolo11n.pt, rtdetr-l.pt, etc.
   confidence: 0.25             # Minimum confidence threshold
   iou_threshold: 0.45          # NMS IoU threshold
   device: ""                   # Auto-detect: "", "cpu", "cuda:0", "mps"

@@ -29,7 +29,7 @@ import yaml
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from src.models.yolo_wrapper import YOLODetector
+from src.models.registry import build_detector_from_config
 from src.stream import VideoStream
 from src.utils.drawing import draw_detections, draw_fps, draw_info
 from src.utils.fps import FPSCounter
@@ -84,12 +84,8 @@ def main():
     confidence = args.confidence or model_cfg.get("confidence", 0.25)
 
     print(f"Loading model: {model_name}")
-    detector = YOLODetector(
-        model_name=model_name,
-        confidence=confidence,
-        iou_threshold=model_cfg.get("iou_threshold", 0.45),
-        classes=model_cfg.get("classes"),
-        device=model_cfg.get("device", ""),
+    detector = build_detector_from_config(
+        config, model_name=model_name, confidence=confidence
     )
 
     # Initialize video source

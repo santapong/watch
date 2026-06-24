@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  test:
+    name: Unit tests (Python 3.11)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      # Slim install: the unit suite mocks/stubs the heavy ML deps (torch,
+      # ultralytics, supervision, transformers, streamlit), so CI deliberately
+      # skips them (~2 GB) and stays fast. Import-safe wrappers + tests/conftest.py
+      # keep `src` importable without them.
+      - name: Install slim test dependencies
+        run: pip install pytest numpy pyyaml pillow opencv-python-headless scikit-learn
+
+      - name: Run tests
+        run: python -m pytest -q

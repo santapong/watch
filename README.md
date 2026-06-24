@@ -178,6 +178,14 @@ docs/system_architecture.md       # Architecture + mobile camera guide
 See [idea.md](idea.md) for innovation ideas and research questions across 4 tiers,
 from zone analytics to generative data augmentation.
 
+For a deep, web-grounded survey of the state of the art (2026) across 20 computer-vision
+domains — with a prioritized, module-by-module roadmap — see
+[docs/research/opencv_webcam_cv_research_2026.md](docs/research/opencv_webcam_cv_research_2026.md)
+(99 papers, headline citations independently fact-checked; raw findings in
+[docs/research/data/findings.json](docs/research/data/findings.json)). It was produced by the
+reusable multi-agent workflow at
+[`.claude/workflows/opencv-webcam-cv-research.js`](.claude/workflows/opencv-webcam-cv-research.js).
+
 ## Changelog
 
 See [CHANGELOG.md](CHANGELOG.md) for version history.

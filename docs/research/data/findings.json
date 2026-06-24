@@ -1,0 +1,1833 @@
+{
+  "generatedBy": "opencv-webcam-cv-research workflow (~58 opus agents)",
+  "generatedDate": "2026-06-24",
+  "stats": {
+    "domains": 24,
+    "domainsCompleted": 20,
+    "deepReads": 20,
+    "verifiers": 4,
+    "papersChecked": 20,
+    "uniqueReferences": 99,
+    "sections": 4,
+    "agentsApprox": 58
+  },
+  "verificationSummary": {
+    "totalChecked": 20,
+    "confirmed": 17,
+    "refuted": 2,
+    "uncertain": 1,
+    "flagged": [
+      {
+        "title": "AnyCalib: On-Manifold Learning for Model-Agnostic Single-View Camera Calibration",
+        "domain": "calibration",
+        "verdict": "uncertain",
+        "evidence": "Citation fully confirmed: arXiv:2503.12701, authors Javier Tirado-Garin & Javier Civera (I3A, University of Zaragoza), ICCV 2025 (also IEEE Xplore + ICCV virtual poster page). Directional claim confirmed: independent sources state AnyCalib reaches new SOTA on angular/reprojection error and outperforms GeoCalib and 3D foundation models. The GeoCalib baseline figures in the claim are independently corroborated: GeoCalib vFoV median error ~3.21 deg and vFoV AUC@1=17.4 on Stanford2D3D (claim says 3.23 deg / 17.4 -- 3.23 vs 3.21 is a ~0.02 deg rounding/version difference). However, the specific AnyCalib (pinhole) numbers (1.13 deg angular, 2.55 deg vFoV, vFoV AUC@1/5/10 = 21.2/46.8/64.6) could NOT be independently confirmed: all primary tables (arXiv PDF/HTML, IEEE Xplore PDF, semanticscholar, project page) were blocked by the egress proxy (403) and search snippets did not echo those exact values. Marking uncertain because the headline AnyCalib numbers are unverified, though metadata and the comparative claim hold.",
+        "correction": "Could not verify the exact AnyCalib row (1.13/2.55/21.2/46.8/64.6) against the primary source; GeoCalib vFoV error appears to be 3.21 deg (claim states 3.23 deg). Recommend checking Stanford2D3D table in arXiv:2503.12701 directly."
+      },
+      {
+        "title": "Pose-Based Fall Detection System: Efficient Monitoring on Standard CPUs",
+        "domain": "fall-safety",
+        "verdict": "refuted",
+        "evidence": "The paper exists with correct metadata: Vinayak Mali & Saurabh Jaiswal, Dept. of AI, IIT Kharagpur, arXiv:2503.19501 (Mar 2025); pose backbone is MediaPipe (the truncated 'Med...' = MediaPipe, correct); it does run in real time on standard CPUs with no GPU (correct). HOWEVER the key empirical claim is wrong. The actual paper is evaluated on the GMDCSA-24 dataset (~130 video clips), NOT on URFD (University of Rzeszow) or MCFD (Multiple Cameras Fall Dataset). Its reported metrics are accuracy 86.86%, precision 85.23%, recall 93.75%, F1 93.17% (overall accuracy 91.54%) -- not the cited precision 88.8% / recall 94.1% / F1 91.4% / specificity 95.6%. Those exact URFD+MCFD figures (88.8/94.1/91.4/95.6) actually belong to a DIFFERENT paper (the 'PIFR' pose-angle method using YOLOv11 + SVM, 17 keypoints). Sources: arxiv.org/abs/2503.19501 and arxiv.org/html/2503.19501v1; GMDCSA-24 dataset paper (PMC11416611); PIFR paper (PMC12173392).",
+        "correction": "Mali & Jaiswal (arXiv:2503.19501) evaluate on the GMDCSA-24 dataset, not URFD/MCFD, and report accuracy 86.86%, precision 85.23%, recall 93.75%, F1 93.17%. The cited URFD+MCFD figures (precision 88.8%, recall 94.1%, F1 91.4%, specificity 95.6%) are from a different paper (PIFR, YOLOv11+SVM) and have been misattributed."
+      },
+      {
+        "title": "YOLO26: Key Architectural Enhancements and Performance Benchmarking for Real-Time Object Detection",
+        "domain": "edge-deploy",
+        "verdict": "refuted",
+        "evidence": "Title and arXiv id (2509.25164, 2025) are correct, and the numeric benchmarks check out: across five scales YOLO26 reaches 40.9-57.5 mAP(50-95) on COCO at 1.7-11.8 ms T4 TensorRT FP16; YOLO26n 40.9 mAP / 2.4M params / 5.4 GFLOPs / 1.7 ms T4 and YOLO26x 57.5 mAP / 55.7M params / 193.9 GFLOPs (consistent with Ultralytics docs and arxiv.org/abs/2509.25164). HOWEVER the authorship is wrong: the citation says 'Khan et al.' but the paper is authored by Ranjan Sapkota, Rahul Harsha Cheppally, Ajay Sharda, Manoj Karkee (Cornell University / Kansas State University), per ADS (2025arXiv250925164S), Semantic Scholar, and HuggingFace papers/2509.25164. No author named Khan is on this paper.",
+        "correction": "Authors are Ranjan Sapkota, Rahul Harsha Cheppally, Ajay Sharda, and Manoj Karkee (Cornell Univ. / Kansas State Univ.), NOT 'Khan et al.' The title, arXiv id, year, and all cited performance numbers are otherwise accurate."
+      }
+    ]
+  },
+  "domainDigest": [
+    {
+      "domain": "Real-time object detection",
+      "cluster": "A",
+      "topMethod": "YOLOv10: Real-Time End-to-End Object Detection",
+      "headline": "COCO val, 640x640, T4 GPU TensorRT FP16 (official repo table): YOLOv10-N 38.5% AP / 2.3M params / 6.7G FLOPs / 1.84 ms; -S 46.3% / 7.2M / 21.6G / 2.49 ms; -M 51.1% / 15.4M / 59.1G / 4.74 ms; -B 52.5% / 19.1M / 92.0G / 5.74 ms; -L 53.2% / 24.4M / 120.3G / 7.28 ms; -X 54.4% / 29.5M / 160.4G / 10.70 ms. Headline comparisons from the abstract: YOLOv10-S is 1.8x faster than RT-DETR-R18 at similar AP with 2.8x fewer params and FLOPs; YOLOv10-B has 46% less latency and 25% fewer parameters than YOLOv9-C at the same performance; YOLOv10-L/X outperform/match RT-DETR-R101 (54.3% AP, 259G FLOPs) with far fewer FLOPs (YOLOv10-X ~1.3x faster).",
+      "integration": "In src/models/yolo_wrapper.py, add YOLOv10 as a selectable backbone: the constructor already does YOLO(model_name), so passing \"yolov10n.pt\"/\"yolov10s.pt\" works through Ultralytics with no architectural change. Add an end_to_end flag that, when a yolov10* model is detected, sets the predict call to bypass NMS (pass the model's end-to-end/no-NMS path) and skips applying self._iou_threshold, since the one-to-one head emits one box per object. Surface a --model yolov10n.pt option (and document the NMS-free mode) in scripts/run_webcam.py and scripts/run_stream.py, and add yolov10n/s/m to the export + latency sweep in scripts/benchmark.py and scripts/export_model.py so its ONNX/TensorRT numbers are compared head-to-head against the current yolov8n/yolo11n defaults. This gives a near-constant-latency, post-processing-free option on edge hardware with a one-line model swap.",
+      "module": "src/models/yolo_wrapper.py, scripts/run_webcam.py"
+    },
+    {
+      "domain": "Multi-object tracking",
+      "cluster": "A",
+      "topMethod": "Observation-Centric SORT: Rethinking SORT for Robust Multi-Object Tracking",
+      "headline": "Official repo tables (private detections): MOT17-test HOTA 63.2 / MOTA 78.0 / IDF1 77.5; MOT20-test HOTA 62.4 / MOTA 75.9 / IDF1 76.4; DanceTrack-test HOTA 55.1 / MOTA 89.4 / IDF1 54.2 (AssA 38.0); KITTI-cars HOTA 76.5 / MOTA 90.3. The paper abstract reports a stronger DanceTrack HOTA of 62.1. Speed: OC-SORT association runs at ~700 FPS on a single i9 3.0GHz CPU when fed off-the-shelf detections (association cost only; end-to-end speed is dominated by the detector). The tracker is appearance-free, so it adds essentially zero extra model weights/memory on top of the detector.",
+      "integration": "In src/tracking/tracker.py the EnhancedTracker currently wraps Ultralytics BoT-SORT/ByteTrack and bolts on a hand-rolled color-histogram re-ID. Switch the underlying tracker to OC-SORT, which recent Ultralytics ships natively: pass tracker=\"ocsort.yaml\" (or \"deepocsort.yaml\") to model.track(...) wherever the detector is driven, and expose a tracker_type config option ('botsort'|'bytetrack'|'ocsort'|'deepocsort'). For an Ultralytics-independent, detector-agnostic path, add a thin backend using BoxMOT: `from boxmot import OCSORT; tracker = OCSORT(); tracks = tracker.update(dets, frame)` where dets is Nx6 (x1,y1,x2,y2,conf,cls). OC-SORT's built-in ORU virtual-trajectory recovery largely supersedes the brittle color-histogram match_reid()/lost-track logic in this file, so that custom re-ID code can be retired or kept only as an optional overlay; keep TrackHistory for trajectory visualization and stats.",
+      "module": "src/tracking/tracker.py"
+    },
+    {
+      "domain": "Person re-identification",
+      "cluster": "A",
+      "topMethod": "Omni-Scale Feature Learning for Person Re-Identification",
+      "headline": "OSNet (osnet_x1_0) ~2.2M parameters, ~978M mult-adds -- roughly 1/10th of ResNet-50 (~25M params). Paper-reported single-query, no re-ranking: Market-1501 84.9% mAP / 94.8% rank-1; DukeMTMC-reID 73.5% mAP; MSMT17 52.9% mAP; CUHK03 also evaluated (six datasets total). Scaled-down osnet_x0_25 has only ~0.2M params yet ~77.8% mAP / 92.2% rank-1 on Market-1501. Note: official torchreid model-zoo softmax-only checkpoint reports a slightly lower 82.6% mAP / 94.2% rank-1 on Market-1501 (the deployable weights). Outputs a compact embedding (512-d in torchreid's feature_extractor).",
+      "integration": "In src/tracking/tracker.py, EnhancedTracker._extract_embedding currently builds only a 96-d color histogram (cv2.calcHist over 3 channels x 32 bins) -- a weak, illumination-sensitive descriptor. Replace it with an OSNet appearance embedding: add a deep-person-reid (torchreid) FeatureExtractor loading osnet_x1_0 (or osnet_x0_25 for edge), resize each person crop to 256x128, and return the L2-normalized ~512-d vector instead of the histogram. The existing match_reid cosine-similarity logic and _embeddings dict need no structural change (just bump reid_threshold for the new feature space). Gate it to class_name == 'person', batch crops per frame, and fall back to the histogram if torch/torchreid is unavailable. This upgrades the re-entry re-ID and the BoT-SORT/ByteTrack appearance matching the module wraps, and slots naturally into the repo's ONNX/TensorRT export + benchmarking path.",
+      "module": "src/tracking/tracker.py (re-ID features)"
+    },
+    {
+      "domain": "Multi-camera / cross-camera tracking & fusion",
+      "cluster": "A",
+      "topMethod": "MCBLT: Multi-Camera Multi-Object 3D Tracking in Long Videos (originally 'BEV-SUSHI: Multi-Target Multi-Camera 3D Detection and Tracking in Bird's-Eye View')",
+      "headline": "AI City'24 MTMC: 81.22 HOTA, state-of-the-art, with +9.28 HOTA, +2.91 DetA, +4.38 AssA, +1.85 LocA over the prior best. WILDTRACK: 95.6 IDF1, 92.6 MOTA, 93.7 MOTP, beating EarlyBird by +3.3 IDF1 and +3.1 MOTA using the same MVDet/ResNet-18 detections. Detector backbone ResNet-101. Speed: about 1.5 FPS end-to-end on a single NVIDIA A100 with 10 cameras, before any optimization. Scales to full-sequence association (up to roughly 4k frames) vs SUSHI's 512.",
+      "integration": "Upgrade src/multicam/manager.py: the current find_cross_camera_matches only compares class_id and confidence (no geometry), so it cannot establish true cross-camera identity. Add a BEV fusion path. (1) Add per-camera homography config (4+ image<->ground-plane point pairs) loaded in MultiCameraManager / CameraFeed; compute H with cv2.findHomography once at setup. (2) New method project_to_bev(detections) that maps each detection's foot-point (bbox bottom-center) to common ground-plane (x,y) via cv2.perspectiveTransform. (3) Replace find_cross_camera_matches with a fuse_bev step doing Hungarian matching (scipy.optimize.linear_sum_assignment) on BEV Euclidean distance, optionally gated by ReID embeddings already used in src/tracking, to assign one global ID per physical object. (4) Render a top-down BEV map alongside the grid in create_grid, and expose --bev / --calib flags plus a calibration helper in scripts/run_multicam.py. This gives geometry-grounded cross-camera IDs at real-time speed without MCBLT's heavy 3D detector.",
+      "module": "src/multicam/manager.py, scripts/run_multicam.py"
+    },
+    {
+      "domain": "Small / long-range object detection",
+      "cluster": "A",
+      "topMethod": "Slicing Aided Hyper Inference and Fine-tuning for Small Object Detection",
+      "headline": "Inference-only (no retraining) AP gains on VisDrone+xView: +6.8% FCOS, +5.1% VFNet, +5.3% TOOD. Adding slicing-aided fine-tuning gives cumulative gains of +12.7% (FCOS), +13.4% (VFNet), +14.5% (TOOD) AP. Cost scales with slice count: each patch is a separate forward pass, so a fixed grid is roughly Nx slower than a single full-frame pass (community measurements report ~10x end-to-end slowdown for dense grids, e.g. 12-15 slices, vs single-pass).",
+      "integration": "Add a sliced-inference path to src/models/yolo_wrapper.py: add a `sahi: bool = False` (plus `slice_wh=(512,512)`, `overlap=0.2`) flag to YOLODetector.__init__, and in detect() branch to a `_detect_sliced()` that uses SAHI's get_sliced_prediction over the Ultralytics model (`AutoDetectionModel.from_pretrained(model_type='ultralytics', ...)`). Map the returned object-prediction list back into the existing Detection dataclass (bbox/confidence/class_id/class_name) so all downstream consumers — zone counting, line crossing, tracking/ReID, density heatmaps in src/analytics, and the Streamlit dashboard — work unchanged. Add `sahi` to requirements.txt, expose a 'Tiled / small-object mode' toggle plus a frame-stride control in src/dashboard.py, and keep it off by default in src/stream.py to preserve real-time FPS on full-frame mode.",
+      "module": "src/models/yolo_wrapper.py (SAHI tiling)"
+    },
+    {
+      "domain": "Promptable segmentation",
+      "cluster": "B",
+      "topMethod": "SAM 2: Segment Anything in Images and Videos",
+      "headline": "~44 FPS real-time video (A100). Variants (SAM 2.1, A100, torch 2.5.1): hiera_tiny 38.9M/91.2 FPS, small 46M/84.8, base_plus 80.8M/64.1, large 224.4M/39.5. Video J&F: SA-V test 76.5-79.5, MOSE val 71.8-74.6, LVOS v2 77.3-80.6. ~3x fewer interactions than prior video methods. Images: 6x faster AND more accurate than SAM (58.9 vs 58.1 mIoU 1-click; up to ~61.4 avg over 23 datasets; 5-click mIoU 81.7 over 37 datasets).",
+      "integration": "Add src/models/sam2_segmenter.py (a Sam2Segmenter subclassing src/models/base.py) wrapping ultralytics SAM2 (sam2.1_t.pt). Auto-prompt with boxes from src/models/yolo_wrapper.py or text-driven boxes from src/models/open_vocab_detector.py (OWLv2), then stream masks frame-to-frame via SAM 2 memory so masks persist with track IDs from src/tracking. Upgrades zone counting/line crossing and privacy blurring (src/privacy.py) from boxes to pixel-accurate masks, and density heatmaps to mask-area. Surface it in src/dashboard.py as a 'Segment and track' mode; default GPU + sam2.1_t/s, fall back to click-to-segment-only on CPU.",
+      "module": "src/models/ (new SAM2 segmenter)"
+    },
+    {
+      "domain": "Monocular depth estimation",
+      "cluster": "B",
+      "topMethod": "Depth Anything V2",
+      "headline": "Model sizes: Small 24.8M, Base 97.5M, Large 335.3M, Giant 1.3B params. Training data: 595K synthetic labeled images (BlendedMVS, Hypersim, IRS, TartanAir, vKITTI2) + 62M pseudo-labeled real images (ImageNet, LSUN, BDD100K, OpenImages, SA-1B, etc.). Speed/accuracy: \"over 10x faster\" and more accurate than SD-based Marigold/GeoWizard. On the DA-2K relative-depth benchmark, ViT-S reaches 95.3% accuracy vs 86.8% for Marigold. Reported inference: small model under ~10 ms/image on A100 (PyTorch), and ~98.6 ms TensorRT for batch-4 480x300 on Jetson Orin NX (~50 ms on Orin AGX). Metric fine-tunes: max depth 20 m indoor (Hypersim), 80 m outdoor (Virtual KITTI 2).",
+      "integration": "Add a depth subsystem mirroring the existing detector pattern. Create src/models/depth_estimator.py with a DepthEstimator class subclassing a new BaseDepthEstimator ABC (parallel to BaseDetector in src/models/base.py), wrapping Depth Anything V2-Small via ONNX Runtime (CUDA/OpenVINO EP) with a depth(frame)->np.ndarray method returning a normalized inverse-depth map. Add scripts/run_depth.py as a webcam demo mirroring the existing run_webcam.py, showing side-by-side RGB + INFERNO colormap. Then wire per-detection depth sampling: for each YOLO Detection, sample masked-median depth over a 20%-shrunk bbox with MAD outlier rejection, storing it on the Detection dataclass (extend src/models/base.py with an optional depth field). This unlocks depth-aware zone counting (3D prisms), too-close anomaly alerts, and a depth cost term in the BoT-SORT/ByteTrack association. Update docs/webcam_depth_research.md (already scaffolded) with the V2 benchmark numbers, the ONNX/OpenVINO INT8 recipe, and the metric-calibration plan; log experiments per its Section 8 milestones.",
+      "module": "new src/models depth estimator + docs/webcam_depth_research.md"
+    },
+    {
+      "domain": "Scene-graph generation",
+      "cluster": "B",
+      "topMethod": "REACT: Real-time Efficiency and Accuracy Compromise for Tradeoffs in Scene Graph Generation",
+      "headline": "REACT achieves the highest inference speed among existing SGG models: 2.7x faster than SOTA while improving object-detection accuracy by 58%. Reported latency is 32.5ms (YOLOv8m configuration), with a real-time configuration reaching ~23ms; Dynamic Candidate Selection (DCS) reduces latency a further 66.5% on average without performance loss. Swapping Faster-RCNN for YOLOv8 gives an 84.99% latency improvement (~2.75x) and +19.4% F1@K. mean Recall is ~mR@K 18.0 (vs 20.7 for the follow-up REACT++). By contrast the prior one-stage transformer RelTR runs at 16.6 FPS with 63.7M params (R@50 27.5, mR@50 10.8). The follow-up REACT++ reaches 35.8M params and 13.4ms (~55 FPS) via ONNX export.",
+      "integration": "Add a RelationGraphGenerator to src/analytics/scene_understanding.py that upgrades the current heuristic geometric relations (near/above/inside, computed in _find_relations) into a learned scene graph. Reuse the project's existing ultralytics YOLO detections as REACT's detection stage, then attach REACT's lightweight predicate head (load the MIT-licensed maelic/SGG-Benchmark PSG/VG150 ONNX weights via onnxruntime, matching the repo's existing ONNX export path) to classify semantic predicates (holding, riding, sitting-on) over the top-K filtered detection pairs. Populate the existing ObjectRelation.relation field with the predicted predicate (keep geometric relations as a fast fallback when no GPU/weights), feed the resulting triplets into the Streamlit dashboard and the alert system (e.g. trigger on person-holding-knife), and gate it behind a config flag so the CPU heuristic path stays the default.",
+      "module": "src/analytics/scene_understanding.py"
+    },
+    {
+      "domain": "Camera calibration & geometry",
+      "cluster": "B",
+      "topMethod": "AnyCalib: On-Manifold Learning for Model-Agnostic Single-View Camera Calibration",
+      "headline": "On Stanford2D3D, AnyCalib (pinhole) reaches 1.13 deg angular error, 2.55 deg vertical-FoV error and vFoV AUC@1/5/10 = 21.2/46.8/64.6, beating GeoCalib (1.45 deg angle, 3.23 deg vFoV, vFoV AUC@1=17.4) and 3D foundation models (DUSt3R, MoGe). The general variant anycalib_gen stays close at 1.30 deg / 2.95 deg vFoV while also handling distorted/fisheye inputs. Authors report consistently outperforming GeoCalib, WildCamera and DroidCalib across Stanford2D3D, MegaDepth, TartanAir and LaMAR despite training on orders of magnitude less data. Compute ~187.8 GMACs; backbone DINOv2 ViT-L/14 (~300M params). No FPS/latency table is published; calibration is a one-shot per-camera step, not per-frame.",
+      "integration": "Add src/utils/calibration.py wrapping AnyCalib: a CameraCalibrator.calibrate(frame, cam_model='pinhole'|'radial:2'|'kb:4') returning intrinsics K + distortion coeffs, cached to a per-source JSON sidecar. Wire it into src/multicam/manager.py: add optional intrinsics fields to CameraFeed, run a lazy one-shot calibrate() per camera in MultiCameraManager.start() (GPU once), and apply cv2.initUndistortRectifyMap once + cv2.remap in read_all() so all downstream consumers get undistorted frames. Biggest payoff: replace the heuristic class/confidence matching in find_cross_camera_matches() with geometry-aware association by back-projecting detection centers through each camera's calibrated rays onto a common ground plane (homography), turning guesswork fusion into metric cross-camera matching. Calibrated intrinsics also upgrade src/analytics density heatmaps and zone/line counting to real-world units.",
+      "module": "src/multicam/manager.py + new src/utils calibration"
+    },
+    {
+      "domain": "Skeleton-based action recognition",
+      "cluster": "C",
+      "topMethod": "Channel-wise Topology Refinement Graph Convolution for Skeleton-Based Action Recognition",
+      "headline": "4-stream ensemble accuracy: NTU RGB+D 60 = 92.4% (X-Sub) / 96.8% (X-View); NTU RGB+D 120 = 88.9% (X-Sub) / 90.6% (X-Set); state-of-the-art on NW-UCLA. Single CTR-GC model is very small: ~1.46M parameters and ~1.97 GFLOPs (vs ST-GC 1.22M/~1.65G), and in the ablation a single joint stream reaches 84.9% on NTU120 X-Sub. A third-party latency comparison reports CTR-GCN ~22.84 ms per inference (single sample), i.e. ~40+ FPS on a modern GPU.",
+      "integration": "Replace the brittle rule-based heuristics in src/models/pose_detector.py (the ActionClassifier class, lines ~187-327) with a learned CTR-GCN head. Concretely: (1) add src/models/ctrgcn.py wrapping a single-stream CTR-GC network (port the official Uason-Chen/CTR-GCN model or use the PYSKL/MMAction2 implementation, exported to ONNX for opencv/onnxruntime inference consistent with src/deployment/exporter.py). (2) In src/analytics/temporal.py, add a per-track keypoint ring buffer (reuse TemporalBuffer/track_id plumbing) that accumulates ~64 frames of normalized COCO-17 keypoints from PoseResult.keypoints. (3) When a window fills, feed it to the GCN and write the predicted action + confidence back into PoseResult.action/action_confidence, so scripts/run_action.py's existing draw/label/summary loop works unchanged. (4) Extend scripts/run_action.py with a --classifier {rules,ctrgcn} flag and a --window-size arg; keep the rules path as fallback. Map the model's NTU label set down to the repo's action vocabulary (or expose full NTU classes). This upgrades the platform from geometric guesses to a real SOTA temporal action model while staying within its YOLO-pose + ONNX/TensorRT stack.",
+      "module": "src/models/pose_detector.py + src/analytics/temporal.py, scripts/run_action.py"
+    },
+    {
+      "domain": "Video anomaly detection",
+      "cluster": "C",
+      "topMethod": "Learning Memory-Guided Normality for Anomaly Detection",
+      "headline": "Frame-level AUC, prediction variant: UCSD Ped2 97.0%, CUHK Avenue 88.5%, ShanghaiTech 70.5%. Reconstruction variant: Ped2 90.2%, Avenue 82.8%, ShanghaiTech 69.8%. The memory module adds roughly +2.7% to +4.0% AUC over the no-memory baseline. Speed: ~67 fps (real-time), faster than optical-flow-based competitors. Trained on a single Nvidia GTX TITAN Xp (~1 h / 15 h / 36 h for Ped2 / Avenue / ShanghaiTech). Built on a compact CNN encoder-decoder plus a small memory bank (a fraction of typical autoencoder size); exact parameter/memory footprint not stated in sources fetched.",
+      "integration": "Add a second, pixel-level anomaly backend alongside the existing detection-metadata IsolationForest. Create src/analytics/mnad_anomaly.py implementing an MNADAnomalyDetector with the same update()/fit()/check() interface as src/analytics/anomaly_detector.py (so the rest of the app and the Streamlit dashboard are unchanged), wrapping the MNAD prediction encoder-decoder + memory module in torch. Add scripts/train_mnad.py to learn normal patterns from a short clip per source and save weights + memory items, and extend scripts/run_anomaly.py with a --backend {isoforest,mnad} flag plus --mnad-weights. Reuse src/deployment for ONNX/TensorRT export and src/alerts.py to fire on a smoothed PSNR-plus-memory-distance score above a per-camera threshold. This upgrades anomaly detection from \"unusual object statistics\" to true unsupervised motion/appearance anomalies, while keeping IsolationForest as the zero-training default.",
+      "module": "src/analytics/anomaly_detector.py, scripts/run_anomaly.py"
+    },
+    {
+      "domain": "Temporal video understanding",
+      "cluster": "C",
+      "topMethod": "MiniROAD: Minimal RNN Framework for Online Action Detection",
+      "headline": "THUMOS'14: 71.8% mAP (Kinetics two-stream I3D features), matching or beating the best transformer OAD methods; TVSeries: 89.6% mcAP; FineAction: 37.1% mAP (numbers from the official jbistanbul/MiniROAD repo). Efficiency: ~10.5M parameters and ~1.08 GFLOPs vs a comparable transformer baseline at ~12.9M params / ~1.96G (roughly half the compute). The GRU itself runs about 200x faster than prior OAD methods (per-frame model latency) on a single RTX 3090; with optical-flow + I3D feature extraction included, end-to-end \"Overall FPS\" is much lower and is the real bottleneck.",
+      "integration": "Add a learned streaming action head to src/analytics/temporal.py. Today that file is purely heuristic/geometric (loitering, abandoned-object, crowd, speed via pixel displacement and durations) with no learned temporal model. Implement a MiniRoadHead class wrapping a single-layer GRU (hidden 1024) that persists its hidden state across frames, mirroring the existing per-frame TemporalBuffer.add() / EventDetector.check() loop. Per frame, extract a lightweight RGB clip embedding (reuse the existing torch backbone or a small X3D/MobileNet), GRU-step it, and emit current-action logits; surface high-confidence transitions as a new EventType.ACTION_RECOGNIZED TemporalEvent so they flow into the existing alert system and Streamlit dashboard. Ship a small trainer in src/training/ that applies MiniROAD's non-uniform per-timestep loss weighting, keeping flow optional/off by default for real-time webcam use.",
+      "module": "src/analytics/temporal.py"
+    },
+    {
+      "domain": "Crowd counting & density estimation",
+      "cluster": "C",
+      "topMethod": "Rethinking Counting and Localization in Crowds: A Purely Point-Based Framework",
+      "headline": "ShanghaiTech Part A MAE ~52.7 / MSE ~85.1; Part B MAE ~6.25 / MSE ~9.9 (best at publication, ~4.8% MAE and ~12.9% MSE reduction vs prior best ADSCNet). UCF-QNRF MAE ~85.3; also strong on UCF-CC-50 and NWPU-Crowd. Backbone VGG16-bn, ~21.8M parameters. Reported real-time on GPU: ~94.5 FPS (~21.8 ms/frame) in third-party efficiency comparisons, far above VGG-density methods (~23-28 FPS) and HRNet-based STEERER (~17 FPS). Localization measured with the new nAP metric (per-dataset nAP roughly 50-65% depending on threshold).",
+      "integration": "Add a crowd-counting model that emits point predictions and reuse the existing analytics seam. Create src/models/p2pnet_wrapper.py wrapping the official VGG16-bn P2PNet weights and returning the repo's Detection objects with zero-area boxes centered on each head point plus a 'crowd' class and confidence. Add scripts/run_crowd_counter.py mirroring scripts/run_heatmap.py: stream frames, run P2PNet, overlay the live head count, and feed the point Detections straight into the existing HeatmapGenerator (src/analytics/heatmap.py — it already accumulates detection centers) so dense-crowd heatmaps stop undercounting where YOLO fails. The same point Detections also drop into src/analytics/zone_counter.py for true per-zone occupancy in congested areas, and into the alert system (src/alerts.py) for crowd-density thresholds. Wire an ONNX/TensorRT export path via scripts/export_model.py + scripts/benchmark.py for edge throughput.",
+      "module": "src/analytics/heatmap.py, scripts/run_heatmap.py"
+    },
+    {
+      "domain": "Classical OpenCV pipelines",
+      "cluster": "C",
+      "topMethod": "XFeat: Accelerated Features for Lightweight Image Matching",
+      "headline": "Speed (Intel i5-1135G7 laptop CPU, VGA/640x480): sparse XFeat 27.1 FPS, semi-dense XFeat* 19.2 FPS, vs SuperPoint 3.0 FPS and DISK 1.2 FPS — about 9x faster than SuperPoint, and comparable accuracy to DISK at ~16x its speed; up to ~5x faster than competing deep local features overall. GPU: ~1,400 FPS sparse VGA on an RTX 4090, and easily >150 FPS single-batch VGA. Accuracy (relative pose, MegaDepth-1500): AUC@5/10/20 ≈ 42.6 / 56.4 / 67.7, comparable to SuperPoint while much cheaper; it also generalizes to indoor ScanNet-1500 without being trained on it. Compact 64-D descriptors; small enough for embedded deployment.",
+      "integration": "Add src/utils/features.py wrapping XFeat (load via torch.hub 'verlab/accelerated_features'; detectAndCompute -> keypoints + 64-D descriptors; match() doing mutual-NN + cv2.findHomography RANSAC) as an OpenCV-style alternative to ORB/SIFT. Wire it into two existing weak spots: (1) src/multicam/manager.py find_cross_camera_matches — replace the class-id + confidence-difference heuristic with real geometric correspondence (estimate an inter-camera homography/fundamental matrix from XFeat matches to confirm two detections are the same physical object across overlapping views); (2) src/tracking/tracker.py _extract_embedding — augment the color-histogram re-ID with XFeat keypoint matching between a track's stored crop and re-entry candidates for far more robust re-identification. It also enables a new src/utils/stabilize.py computing the homography between consecutive src/stream.py frames for camera-motion compensation, stabilizing density heatmaps and cutting false anomaly/line-crossing triggers on shaky feeds.",
+      "module": "src/utils + src/stream.py"
+    },
+    {
+      "domain": "Fall detection & workplace safety",
+      "cluster": "C",
+      "topMethod": "Pose-Based Fall Detection System: Efficient Monitoring on Standard CPUs",
+      "headline": "On the University of Rzeszow Fall Detection (URFD) dataset and the Multiple Cameras Fall Dataset (MCFD): precision 88.8%, recall 94.1%, F1-score 91.4%, specificity 95.6%. Runs in real time on standard CPUs (no GPU); the pose backbone is MediaPipe Pose / BlazePose (lightweight, few-MB on-device model). The paper emphasizes CPU real-time operation but does not publish an explicit FPS/latency figure or a measured parameter/memory count.",
+      "integration": "The repo's src/models/pose_detector.py ActionClassifier already mirrors this paper but in a weaker form: it uses a single crude torso-angle<30 degrees threshold over a 15-frame deque to flag \"falling\". Upgrade it to the paper's multi-feature + voting scheme: in ActionClassifier add a FallDetector that, per track_id, computes the paper's six features (height/aspect ratio, torso-leg angle, knee-ankle position, head-floor distance from frame-bottom, upper-body alignment, hip movement speed), thresholds each, and accumulates votes over a 20-frame buffer (raise sequence_length 15->20) before emitting a high-confidence \"fall\" only when the vote count persists. Wire the confirmed fall into src/alerts.py (emit a fall alert with track_id, bbox, and feature snapshot) so it flows into the existing alert system / Streamlit dashboard. This adds debounced, multi-cue fall detection with near-zero added compute on the current pose pipeline.",
+      "module": "src/models/pose_detector.py + src/alerts.py"
+    },
+    {
+      "domain": "Edge deployment & model optimization",
+      "cluster": "D",
+      "topMethod": "YOLO26: Key Architectural Enhancements and Performance Benchmarking for Real-Time Object Detection",
+      "headline": "Across five detection scales YOLO26 reaches 40.9-57.5 mAP(50-95) on COCO at 1.7-11.8 ms T4 TensorRT(FP16) latency. YOLO26n: ~40.9 mAP, 2.4M params, 5.4B FLOPs, 38.9 ms CPU ONNX, 1.7 ms T4; YOLO26x: 57.5 mAP, 55.7M params, 193.9B FLOPs, ~525.8 ms CPU ONNX, 11.8 ms T4. Mid/large scales: YOLO26m above ~53% and YOLO26l above ~55% mAP at lower latency than transformer detectors. Reports up to 43% faster CPU ONNX inference for YOLO26n vs YOLO11n on an Intel Xeon CPU @ 2.00 GHz. Critically for edge: YOLO26 stays stable under INT8 quantization, whereas RT-DETRv3 shows sharp INT8 accuracy drops.",
+      "integration": "Adopt YOLO26 as a first-class backbone in the existing export/benchmark pipeline. (1) In src/deployment/exporter.py, change the default model from \"yolov8n.pt\" to \"yolo26n.pt\" (or add a model-family arg) — the ModelExporter.export() path already calls ultralytics YOLO(...).export(format=...), so NMS-free/DFL-free YOLO26 exports cleanly to onnx/engine/openvino/coreml/tflite/ncnn with no code change. (2) Add an INT8 quantization path: extend ModelExporter.export() with an int8: bool flag passing int8=True (with a calibration data arg) for openvino/tflite/engine, and have scripts/export_model.py expose --int8 — this directly exploits YOLO26's quantization stability. (3) In scripts/benchmark.py / BenchmarkRunner.compare(), add a head-to-head matrix (YOLO26n FP32 vs FP16 vs INT8 vs YOLO11n/YOLOv8n) on CPU(ONNX) and GPU(TensorRT) so the repo can empirically confirm the \"~43% faster CPU\" and INT8-stability claims on the target hardware before swapping the default detector used by scripts/run_webcam.py.",
+      "module": "src/deployment/exporter.py, scripts/export_model.py, scripts/benchmark.py"
+    },
+    {
+      "domain": "Active learning for detection",
+      "cluster": "D",
+      "topMethod": "Plug and Play Active Learning for Object Detection",
+      "headline": "Benchmarked on MS-COCO and Pascal VOC with RetinaNet and Faster R-CNN. In the early active-learning rounds (rounds <=3) PPAL outperforms the previous SOTA MI-AOD/MIAL by 3.4 AP on MS-COCO and 2.8 mAP on Pascal VOC, and outperforms prior work by a large margin overall. Setup: COCO initial labeled set = 2% of images, Pascal VOC initial set = 5%. (Context for the regime: on Pascal VOC, MI-AOD reaches ~72.27% mAP using only 20% of labels, ~93% of the 100%-data performance; PPAL pushes this curve higher.) No FPS/latency/params reported -- it is a data-selection algorithm, not a new detector, so it inherits the speed of whatever detector you plug in.",
+      "integration": "The repo's src/training/active_learner.py currently does pure heuristic uncertainty (UncertaintySampler._compute_uncertainty, lines 98-155: confidence-band + class-conflict + frame-edge scores) with NO diversity step and NO class-difficulty calibration -- so it queues redundant near-duplicate frames. Concretely: (1) Add difficulty calibration to _compute_uncertainty -- track a per-class running difficulty coefficient (e.g. from rolling mean confidence + box-stability/IoU jitter across frames via the existing tracker) and multiply each instance's uncertainty by it, so rare/hard classes survive ranking. (2) Add a new diversity pass, e.g. a select_diverse_batch() method (or a src/training/diversity_sampler.py) that, at export_for_labeling() time, embeds each queued frame (mean of detection crop features, or a lightweight backbone) and runs scikit-learn KMeans++ (sklearn.cluster.kmeans_plusplus -- already a project dep) to pick one representative per cluster -- a practical CCMS stand-in. (3) Surface a scripts/run_active_learning.py flag like --strategy ppal --query-size 100 to run uncertainty-shortlist then diversity-select, replacing the current \"top-N by score\" behavior, and report the chosen frames to the Streamlit dashboard.",
+      "module": "src/training/active_learner.py, scripts/run_active_learning.py"
+    },
+    {
+      "domain": "Generative / synthetic data augmentation",
+      "cluster": "D",
+      "topMethod": "ODGEN: Domain-specific Object Detection Data Generation with Diffusion Models",
+      "headline": "Adding ODGEN synthetic data improves up to +25.3% mAP@.50:.95 on YOLOv5/YOLOv7 across 7 domain-specific Roboflow-100 subsets, the largest gain among compared generative methods (GLIGEN, ControlNet, etc.). On COCO-2014 (general domain) it leads prior methods by up to +5.6% mAP@.50:.95. Protocol: baselines use 200 real images; augmented runs add 5,000 synthetic images (a from-scratch variant trains YOLO on 10k synthetic, validates on 31k real). Built on Stable Diffusion with a fine-tuned UNet. No real-time/FPS numbers are reported (it is an offline data generator, not an inference model); the follow-up FLORA paper notes ODGEN's pipeline assumes enterprise GPUs (e.g., NVIDIA V100) and generation of thousands of samples.",
+      "integration": "src/training/augmentation.py is misnamed today: its SyntheticGenerator only does classical geometric/photometric/mosaic/cutout transforms. Add a real diffusion backend, e.g. a DiffusionSyntheticGenerator class (or src/training/diffusion_augment.py) wrapping HuggingFace diffusers Stable Diffusion plus a bbox/ControlNet-style spatial condition, implementing ODGEN's two ideas: (1) fine-tune the UNet on cropped foreground crops + full frames captured from the user's own footage, (2) generate images conditioned on synthesized box layouts with per-box class text, then run a foreground/background discriminator filter before writing labels. Reuse the existing export_dataset() YOLO/dataset.yaml writer so output drops straight into the ultralytics training path. Wire the trigger to src/training/active_learner.py: classes/scenes it surfaces as low-confidence become the prompts/boxes ODGEN generates for, closing an offline rare-class data-flywheel that feeds the real-time detector.",
+      "module": "src/training/augmentation.py"
+    },
+    {
+      "domain": "Privacy-preserving vision",
+      "cluster": "D",
+      "topMethod": "DeepPrivacy2: Towards Realistic Full-Body Anonymization",
+      "headline": "FID 0.56 on FDF (128x128), improving on DeepPrivacy1 (FID 0.68). Datasets introduced: FDF256 (242,031 train / 6,533 val images, 256x256, from YFCC100M) and FDH (Flickr Diverse Humans, ~1.5M full-body images). Speed: ~11.6 FPS for the CSE-guided full-body generator and ~7.9 FPS for the face generator on a single NVIDIA GTX 1080 (8GB); a comparison SG-GAN generator ran ~7.3 FPS. Reported to give the lowest pose-estimation endpoint error (EPE) among anonymization baselines and better body/face pose retention than blurring (though noted as unsuitable for fine hand-pose work).",
+      "integration": "Add a RealisticAnonymizer class to src/privacy.py alongside the existing PrivacyFilter, wrapping DeepPrivacy2 (pip install of the hukkelas/deep_privacy2 toolbox) behind the same apply(frame, detections) interface so it is a drop-in upgrade from reversible blur to GAN replacement. Drive it from a new mode (e.g. mode=\"synthesize\") and feed it the person/face bboxes the YOLO detector already produces. Crucially, gate GAN calls through the existing multi-object tracker + re-ID so each identity is synthesized once and cached per track rather than every frame, recovering most of the FPS. Expose it in scripts/run_privacy.py via a --mode synthesize flag and a --device cuda guard that warns/falls back to blur when no GPU is present, and add a DeepPrivacy2 row to scripts/benchmark.py to measure on-device FPS before enabling it live.",
+      "module": "src/privacy.py, scripts/run_privacy.py"
+    },
+    {
+      "domain": "Vision foundation models / self-supervised",
+      "cluster": "D",
+      "topMethod": "DINOv3",
+      "headline": "ViT-7B frozen backbone (no fine-tuning): ImageNet-1k linear-probe ~88.4% top-1; ADE20K semantic seg 55.9 mIoU (~+6 over DINOv2); NYUv2 depth RMSE 0.309 (best reported); COCO detection 66.1 mAP (frozen backbone + Plain-DETR, SOTA). Pretrained on LVD-1689M (~1.689B images). Distilled: ViT-S 21M, ViT-S+ 29M, ViT-B 86M, ViT-L 300M, ViT-H+ 840M; ConvNeXt-T/S/B/L 29M-198M. Proxy latency: DINOv2 ViT-B ~10-12 ms/img @224 in TensorRT FP16 (~80-100 FPS).",
+      "integration": "src/models/base.py today only defines BaseDetector (detect / detect_and_track). Add a sibling FeatureExtractor ABC there (embed(frame)->np.ndarray global vector; embed_dense(frame)->grid of patch features), then implement DINOv3Backbone (e.g. src/models/dinov3_backbone.py) loading facebook/dinov3-vits16 via transformers with a frozen forward. Wire its embeddings into the existing re-identification (more robust tracking), scene anomaly detection (k-NN/Mahalanobis on frozen features), density heatmaps and scene understanding (dense patch features), and the active-learning sampler. Export the small variant through the repo's existing ONNX/TensorRT path for edge.",
+      "module": "src/models/base.py (backbone/embeddings)"
+    }
+  ],
+  "paperCards": [
+    {
+      "domain": "Real-time object detection",
+      "module": "src/models/yolo_wrapper.py, scripts/run_webcam.py",
+      "paper": {
+        "title": "YOLOv10: Real-Time End-to-End Object Detection",
+        "authors": "Wang, Chen, Liu et al. (Ao Wang, Hui Chen, Lihao Liu, Kai Chen, Zijia Lin, Jungong Han, Guiguang Ding)",
+        "venue": "NeurIPS 2024",
+        "year": 2024,
+        "arxivId": "2405.14458",
+        "url": "https://arxiv.org/abs/2405.14458"
+      },
+      "method": "YOLOv10 has two pillars. (1) Consistent dual assignments for NMS-free training: the model keeps a one-to-many head (rich supervision, high recall) alongside a one-to-one head, with a consistent matching metric so both heads rank predictions identically. At inference only the one-to-one head runs, producing a single box per object with no NMS, removing post-processing latency and the IoU-threshold hyperparameter. (2) Holistic efficiency-accuracy driven model design: efficiency-oriented changes (lightweight classification head, spatial-channel decoupled downsampling, rank-guided block allocation) cut redundant compute, while accuracy-oriented changes (large-kernel convolutions, partial self-attention/PSA) add capability cheaply. Together these reshape the accuracy-latency Pareto front. Built on the Ultralytics framework, models ship as N/S/M/B/L/X scales.",
+      "headlineResults": "COCO val, 640x640, T4 GPU TensorRT FP16 (official repo table): YOLOv10-N 38.5% AP / 2.3M params / 6.7G FLOPs / 1.84 ms; -S 46.3% / 7.2M / 21.6G / 2.49 ms; -M 51.1% / 15.4M / 59.1G / 4.74 ms; -B 52.5% / 19.1M / 92.0G / 5.74 ms; -L 53.2% / 24.4M / 120.3G / 7.28 ms; -X 54.4% / 29.5M / 160.4G / 10.70 ms. Headline comparisons from the abstract: YOLOv10-S is 1.8x faster than RT-DETR-R18 at similar AP with 2.8x fewer params and FLOPs; YOLOv10-B has 46% less latency and 25% fewer parameters than YOLOv9-C at the same performance; YOLOv10-L/X outperform/match RT-DETR-R101 (54.3% AP, 259G FLOPs) with far fewer FLOPs (YOLOv10-X ~1.3x faster).",
+      "realtimeWebcamApplicability": "Strong fit. YOLOv10-N (2.3M params, 6.7G FLOPs) and -S (7.2M, 21.6G) are tiny and run end-to-end with no NMS, so per-frame post-processing is removed entirely. On a modern consumer GPU (RTX-class), N/S easily exceed real-time at 640px (the T4 reference is 1.84/2.49 ms, i.e. ~400-500 FPS with TensorRT; PyTorch FP16 is slower but still well above 30 FPS). On CPU, expect roughly 10-30+ FPS for the N model at 640px depending on cores and ONNX/OpenVINO backend; drop input to 416-480px or use INT8 to hit 30 FPS on weaker edge boxes. For a live webcam stream: load yolov10n.pt via Ultralytics, run streaming inference, and rely on the one-to-one head (no IoU threshold tuning). The NMS-free path is the key edge win because it makes latency near-constant regardless of crowd density.",
+      "integrationIdea": "In src/models/yolo_wrapper.py, add YOLOv10 as a selectable backbone: the constructor already does YOLO(model_name), so passing \"yolov10n.pt\"/\"yolov10s.pt\" works through Ultralytics with no architectural change. Add an end_to_end flag that, when a yolov10* model is detected, sets the predict call to bypass NMS (pass the model's end-to-end/no-NMS path) and skips applying self._iou_threshold, since the one-to-one head emits one box per object. Surface a --model yolov10n.pt option (and document the NMS-free mode) in scripts/run_webcam.py and scripts/run_stream.py, and add yolov10n/s/m to the export + latency sweep in scripts/benchmark.py and scripts/export_model.py so its ONNX/TensorRT numbers are compared head-to-head against the current yolov8n/yolo11n defaults. This gives a near-constant-latency, post-processing-free option on edge hardware with a one-line model swap.",
+      "limitations": "The reported speeds are measured on an NVIDIA T4 with TensorRT FP16, not raw PyTorch or CPU, so they overstate throughput on consumer hardware. The NMS-free one-to-one head can incur a small AP drop versus an NMS one-to-many head at equal compute (partly offset by consistent dual-assignment training). PSA/large-kernel modules add some architectural complexity. Pretrained weights are COCO-80-class only (no open-vocabulary). The original THU-MIG repo and Ultralytics distribution are AGPL-3.0, constraining closed-source commercial use.",
+      "confidence": "high"
+    },
+    {
+      "domain": "Multi-object tracking",
+      "module": "src/tracking/tracker.py",
+      "paper": {
+        "title": "Observation-Centric SORT: Rethinking SORT for Robust Multi-Object Tracking",
+        "authors": "Cao, Pang, Weng, Khirodkar, Kitani (CMU)",
+        "venue": "CVPR 2023",
+        "year": 2023,
+        "arxivId": "2203.14360",
+        "url": "https://arxiv.org/abs/2203.14360"
+      },
+      "method": "OC-SORT keeps the SORT pipeline (detect, Kalman-predict, IoU-match) but makes association observation-centric via three training-free additions. ORU (Observation-centric Re-Update): when a lost track is re-associated, it builds a virtual trajectory by interpolating between the last and current real observations and re-runs the Kalman filter back along that path, cleaning the noise accumulated during the occlusion gap. OCM (Observation-Centric Momentum): adds a velocity-direction-consistency term to the cost matrix, computing motion direction from actual observations over a window rather than the noisy filter velocity, so matching respects real motion. OCR (Observation-Centric Recovery): a second association stage that matches still-unmatched tracks to detections using the last observed position, recovering objects after short disappearances. All three are detector-agnostic, add negligible compute, and need no appearance/ReID network.",
+      "headlineResults": "Official repo tables (private detections): MOT17-test HOTA 63.2 / MOTA 78.0 / IDF1 77.5; MOT20-test HOTA 62.4 / MOTA 75.9 / IDF1 76.4; DanceTrack-test HOTA 55.1 / MOTA 89.4 / IDF1 54.2 (AssA 38.0); KITTI-cars HOTA 76.5 / MOTA 90.3. The paper abstract reports a stronger DanceTrack HOTA of 62.1. Speed: OC-SORT association runs at ~700 FPS on a single i9 3.0GHz CPU when fed off-the-shelf detections (association cost only; end-to-end speed is dominated by the detector). The tracker is appearance-free, so it adds essentially zero extra model weights/memory on top of the detector.",
+      "realtimeWebcamApplicability": "Excellent fit for consumer webcams and edge devices. OC-SORT is a lightweight, appearance-free (no ReID CNN) post-processor: its association runs at hundreds of FPS even on a CPU, so on a live webcam stream the only real cost is the YOLO detector. With a small detector (e.g. yolo*n/yolo*s) on a consumer GPU or even a modern CPU/edge accelerator, the pipeline stays comfortably real-time (30+ FPS) and tracking adds <1-2 ms per frame. Because it needs no embedding model, it has a tiny memory/compute footprint versus Deep OC-SORT, StrongSORT, or SAM2MOT (the latter is explicitly not yet real-time). It is the natural drop-in to make this repo's tracking robust to occlusion and non-linear motion without spending FPS.",
+      "integrationIdea": "In src/tracking/tracker.py the EnhancedTracker currently wraps Ultralytics BoT-SORT/ByteTrack and bolts on a hand-rolled color-histogram re-ID. Switch the underlying tracker to OC-SORT, which recent Ultralytics ships natively: pass tracker=\"ocsort.yaml\" (or \"deepocsort.yaml\") to model.track(...) wherever the detector is driven, and expose a tracker_type config option ('botsort'|'bytetrack'|'ocsort'|'deepocsort'). For an Ultralytics-independent, detector-agnostic path, add a thin backend using BoxMOT: `from boxmot import OCSORT; tracker = OCSORT(); tracks = tracker.update(dets, frame)` where dets is Nx6 (x1,y1,x2,y2,conf,cls). OC-SORT's built-in ORU virtual-trajectory recovery largely supersedes the brittle color-histogram match_reid()/lost-track logic in this file, so that custom re-ID code can be retired or kept only as an optional overlay; keep TrackHistory for trajectory visualization and stats.",
+      "limitations": "Reported numbers reuse other methods' detections and shared hyper-parameters; the authors note per-dataset tuning can do better, so out-of-the-box numbers are conservative. Pure motion association with no appearance cue means it can still swap IDs under long occlusions or among visually similar, densely crowded targets (lower AssA on DanceTrack vs appearance-based Deep OC-SORT). OCM's velocity-direction cue assumes a roughly stable frame; strong camera motion is not compensated (unlike BoT-SORT's GMC). The 700 FPS figure is association-only, not full detection+tracking.",
+      "confidence": "high"
+    },
+    {
+      "domain": "Person re-identification",
+      "module": "src/tracking/tracker.py (re-ID features)",
+      "paper": {
+        "title": "Omni-Scale Feature Learning for Person Re-Identification",
+        "authors": "Zhou, Yang, Cavallaro, Xiang",
+        "venue": "ICCV 2019",
+        "year": 2019,
+        "arxivId": "1905.00953",
+        "url": "https://arxiv.org/abs/1905.00953"
+      },
+      "method": "OSNet (Omni-Scale Network) is a lightweight CNN built from a residual block that contains multiple parallel convolutional streams, each with a different receptive-field size (achieved by stacking Lite 3x3 layers) so each stream detects features at one scale. A novel unified aggregation gate (AG) -- a small subnetwork producing input-dependent, channel-wise weights shared across streams -- dynamically fuses these multi-scale feature maps into omni-scale features (dynamic combinations spanning small to large scales). To stay tiny and avoid overfitting on modest ReID datasets, every convolution is factorized into a pointwise (1x1) plus depthwise (3x3) \"Lite\" convolution. Blocks are stacked layer-by-layer; the network is trained from scratch on ReID benchmarks with softmax/cross-entropy (label smoothing). Inference yields a compact appearance embedding compared by cosine/Euclidean distance.",
+      "headlineResults": "OSNet (osnet_x1_0) ~2.2M parameters, ~978M mult-adds -- roughly 1/10th of ResNet-50 (~25M params). Paper-reported single-query, no re-ranking: Market-1501 84.9% mAP / 94.8% rank-1; DukeMTMC-reID 73.5% mAP; MSMT17 52.9% mAP; CUHK03 also evaluated (six datasets total). Scaled-down osnet_x0_25 has only ~0.2M params yet ~77.8% mAP / 92.2% rank-1 on Market-1501. Note: official torchreid model-zoo softmax-only checkpoint reports a slightly lower 82.6% mAP / 94.2% rank-1 on Market-1501 (the deployable weights). Outputs a compact embedding (512-d in torchreid's feature_extractor).",
+      "realtimeWebcamApplicability": "Strong fit for consumer webcams/edge. At ~2.2M params (or ~0.2M for x0.25) it is one to two orders smaller than ViT-based TransReID/CLIP-ReID (~86M+), runs on both CPU and GPU, and exports to ONNX/OpenVINO/TFLite. Reported real-world YOLO11+OSNet pipelines hit ~20 FPS on resource-constrained edge devices; on a consumer GPU it is effectively free relative to the YOLO detector. Per-crop input is 256x128, embeddings (e.g. 512-d) are compared by cosine similarity. For a live webcam: crop each tracked person box, batch the crops through OSNet once per frame (or every N frames), and cache embeddings -- this keeps the added latency to a few ms on GPU and keeps the pipeline interactive. The x0.25/x0.5 variants are the lever for CPU-only or Jetson-class hardware.",
+      "integrationIdea": "In src/tracking/tracker.py, EnhancedTracker._extract_embedding currently builds only a 96-d color histogram (cv2.calcHist over 3 channels x 32 bins) -- a weak, illumination-sensitive descriptor. Replace it with an OSNet appearance embedding: add a deep-person-reid (torchreid) FeatureExtractor loading osnet_x1_0 (or osnet_x0_25 for edge), resize each person crop to 256x128, and return the L2-normalized ~512-d vector instead of the histogram. The existing match_reid cosine-similarity logic and _embeddings dict need no structural change (just bump reid_threshold for the new feature space). Gate it to class_name == 'person', batch crops per frame, and fall back to the histogram if torch/torchreid is unavailable. This upgrades the re-entry re-ID and the BoT-SORT/ByteTrack appearance matching the module wraps, and slots naturally into the repo's ONNX/TensorRT export + benchmarking path.",
+      "limitations": "Trained per-domain with supervision; cross-domain/generalization is weaker (the IBN/AIN variants, e.g. osnet_ain, were added later specifically to improve domain generalization). It is a feature extractor only -- it provides no detector, tracker, or temporal association, so it must be paired with YOLO detection + a tracker. Accuracy degrades on heavily occluded or partial bodies (occluded ReID is a separate sub-problem the transformer-based TransReID targets) and on very low-resolution crops. Embeddings are appearance-based, so similarly-dressed people (uniforms) confuse it. Standard benchmark numbers assume reasonably clean person crops.",
+      "confidence": "high"
+    },
+    {
+      "domain": "Multi-camera / cross-camera tracking & fusion",
+      "module": "src/multicam/manager.py, scripts/run_multicam.py",
+      "paper": {
+        "title": "MCBLT: Multi-Camera Multi-Object 3D Tracking in Long Videos (originally 'BEV-SUSHI: Multi-Target Multi-Camera 3D Detection and Tracking in Bird's-Eye View')",
+        "authors": "Wang, Meinhardt, Cetintas, Yang, Pusegaonkar, Missaoui, Biswas, Tang, Leal-Taixe (NVIDIA / TU Munich / Univ. of Washington)",
+        "venue": "ICCV 2025 Workshops (AI City Challenge)",
+        "year": 2025,
+        "arxivId": "2412.00692",
+        "url": "https://openaccess.thecvf.com/content/ICCV2025W/AICity/papers/Wang_MCBLT_Multi-Camera_Multi-Object_3D_Tracking_in_Long_Videos_ICCVW_2025_paper.pdf"
+      },
+      "method": "Two stages. (1) 3D detection in BEV: each synchronized camera image goes through an image backbone (ResNet-101); a spatial encoder lifts and aggregates the multi-view features using camera intrinsics/extrinsics into one unified BEV feature map; a temporal encoder fuses BEV features over a short window; a DETR-style decoder regresses 3D boxes directly in BEV. (2) Tracking-by-detection in 3D: it adapts SUSHI (Cetintas et al., CVPR 2023), a hierarchical graph neural network that builds graphs over detections and learns associations over progressively longer time spans, to run on 3D/BEV detections, the first 3D hierarchical-GNN tracker. A new near-online global merging block replaces SUSHI's heuristic sliding-window stitching, associating tracks across the full sequence (vs SUSHI's ~512-frame limit) to bridge long occlusion gaps and partial camera coverage.",
+      "headlineResults": "AI City'24 MTMC: 81.22 HOTA, state-of-the-art, with +9.28 HOTA, +2.91 DetA, +4.38 AssA, +1.85 LocA over the prior best. WILDTRACK: 95.6 IDF1, 92.6 MOTA, 93.7 MOTP, beating EarlyBird by +3.3 IDF1 and +3.1 MOTA using the same MVDet/ResNet-18 detections. Detector backbone ResNet-101. Speed: about 1.5 FPS end-to-end on a single NVIDIA A100 with 10 cameras, before any optimization. Scales to full-sequence association (up to roughly 4k frames) vs SUSHI's 512.",
+      "realtimeWebcamApplicability": "Not directly runnable on a consumer webcam in real time as-is. The reported ~1.5 FPS is on a datacenter A100 with 10 cameras and ResNet-101 backbones plus a BEV spatio-temporal transformer and a GNN tracker, before optimization; a 2-4 camera consumer-GPU (or CPU) setup would be sub-1 FPS. It also fundamentally needs calibrated, synchronized, overlapping cameras, which a typical webcam rig lacks. The transferable, real-time-friendly idea is the architecture, not the weights: fuse per-camera 2D detections into a shared ground plane (BEV) via homography from a one-time calibration, then associate in that metric space. For interactive FPS, keep the existing YOLO 2D detector per stream, project detection foot-points to BEV with cv2.findHomography / perspectiveTransform, and do greedy or Hungarian association by BEV distance plus appearance, optionally a lightweight GNN only at low rate. That preserves real-time on edge while borrowing MCBLT's BEV-fusion principle.",
+      "integrationIdea": "Upgrade src/multicam/manager.py: the current find_cross_camera_matches only compares class_id and confidence (no geometry), so it cannot establish true cross-camera identity. Add a BEV fusion path. (1) Add per-camera homography config (4+ image<->ground-plane point pairs) loaded in MultiCameraManager / CameraFeed; compute H with cv2.findHomography once at setup. (2) New method project_to_bev(detections) that maps each detection's foot-point (bbox bottom-center) to common ground-plane (x,y) via cv2.perspectiveTransform. (3) Replace find_cross_camera_matches with a fuse_bev step doing Hungarian matching (scipy.optimize.linear_sum_assignment) on BEV Euclidean distance, optionally gated by ReID embeddings already used in src/tracking, to assign one global ID per physical object. (4) Render a top-down BEV map alongside the grid in create_grid, and expose --bev / --calib flags plus a calibration helper in scripts/run_multicam.py. This gives geometry-grounded cross-camera IDs at real-time speed without MCBLT's heavy 3D detector.",
+      "limitations": "Requires calibrated cameras (known intrinsics/extrinsics) and time-synchronized, overlapping multi-view coverage; not applicable to a single uncalibrated webcam or non-overlapping cameras. Far from real-time: ~1.5 FPS on an A100 with 10 cameras pre-optimization, so heavy compute (multi-view ResNet-101 backbones + BEV transformer + GNN). Near-online/offline rather than strictly causal online. Long occlusion gaps without full environment coverage remain hard. Evaluated mainly on indoor, largely synthetic AI City scenes plus small WILDTRACK; generalization to outdoor/dynamic rigs less tested. Depends on detection quality (WILDTRACK numbers reuse EarlyBird detections).",
+      "confidence": "high"
+    },
+    {
+      "domain": "Small / long-range object detection",
+      "module": "src/models/yolo_wrapper.py (SAHI tiling)",
+      "paper": {
+        "title": "Slicing Aided Hyper Inference and Fine-tuning for Small Object Detection",
+        "authors": "Akyon, Altinuc, Temizel",
+        "venue": "IEEE ICIP 2022 (Bordeaux; pp. 966-970)",
+        "year": 2022,
+        "arxivId": "2202.06934",
+        "url": "https://arxiv.org/abs/2202.06934"
+      },
+      "method": "SAHI has two parts. (1) Slicing Aided Hyper Inference, a model-agnostic, training-free wrapper: the image is cut into a grid of overlapping patches (e.g. 512x512 with ~0.2 overlap), each patch is upscaled and passed through the existing detector so small objects appear larger relative to the receptive field; optionally a full-image pass is added to retain large objects. Per-slice boxes are mapped back to original coordinates and merged via NMS/Greedy-NMM to remove duplicates at slice seams. (2) Slicing Aided Fine-tuning: the detector is additionally fine-tuned on sliced patches (augmented dataset) so its weights adapt to the magnified small-object distribution, compounding the inference-time gain. It plugs onto any detector (Detectron2, MMDetection, YOLOv5/Ultralytics) with no architecture change.",
+      "headlineResults": "Inference-only (no retraining) AP gains on VisDrone+xView: +6.8% FCOS, +5.1% VFNet, +5.3% TOOD. Adding slicing-aided fine-tuning gives cumulative gains of +12.7% (FCOS), +13.4% (VFNet), +14.5% (TOOD) AP. Cost scales with slice count: each patch is a separate forward pass, so a fixed grid is roughly Nx slower than a single full-frame pass (community measurements report ~10x end-to-end slowdown for dense grids, e.g. 12-15 slices, vs single-pass).",
+      "realtimeWebcamApplicability": "Model-agnostic and adds zero params (it wraps the existing YOLO weights this repo already loads), so memory is unchanged — only throughput drops. The catch is the per-slice forward passes: a 1080p frame at 512px/0.2-overlap is ~12-15 slices, i.e. ~10x the per-frame cost. On a consumer GPU (e.g. RTX 3060/T4) a YOLOv8n/YOLO11n that runs >100 FPS full-frame typically drops to roughly 5-15 FPS with a dense grid; on CPU it is sub-1 FPS and not interactive. To run live: make it an opt-in mode (off by default), use a small model (yolo*n), use a coarse 2x2 or 2x3 grid with overlap ~0.2 rather than a fine grid, optionally batch the slices in one model call, and/or trigger slicing only on a region-of-interest or every Nth frame. Single-frame still images are fully real-time-irrelevant. Net: interactive on consumer GPU with a coarse grid; not interactive on CPU.",
+      "integrationIdea": "Add a sliced-inference path to src/models/yolo_wrapper.py: add a `sahi: bool = False` (plus `slice_wh=(512,512)`, `overlap=0.2`) flag to YOLODetector.__init__, and in detect() branch to a `_detect_sliced()` that uses SAHI's get_sliced_prediction over the Ultralytics model (`AutoDetectionModel.from_pretrained(model_type='ultralytics', ...)`). Map the returned object-prediction list back into the existing Detection dataclass (bbox/confidence/class_id/class_name) so all downstream consumers — zone counting, line crossing, tracking/ReID, density heatmaps in src/analytics, and the Streamlit dashboard — work unchanged. Add `sahi` to requirements.txt, expose a 'Tiled / small-object mode' toggle plus a frame-stride control in src/dashboard.py, and keep it off by default in src/stream.py to preserve real-time FPS on full-frame mode.",
+      "limitations": "Inference cost scales linearly with the number of slices (one forward pass per patch), so dense grids are far slower than single-pass detection. Slicing removes global context, hurting large objects that exceed one slice (mitigated by adding a full-image pass). Magnifying patches can induce small-object hallucinations / false positives on background. Fixed slice size wastes compute on empty regions when objects are sparse. The big fine-tuning gains require retraining on sliced data, not just inference.",
+      "confidence": "high"
+    },
+    {
+      "domain": "Promptable segmentation",
+      "module": "src/models/ (new SAM2 segmenter)",
+      "paper": {
+        "title": "SAM 2: Segment Anything in Images and Videos",
+        "authors": "Ravi, Gabeur, Hu et al. (Meta AI / FAIR)",
+        "venue": "ICLR 2025 (arXiv)",
+        "year": 2024,
+        "arxivId": "2408.00714",
+        "url": "https://arxiv.org/abs/2408.00714"
+      },
+      "method": "SAM 2 generalizes SAM to a Promptable Visual Segmentation (PVS) task over video via a streaming transformer. A hierarchical MAE-pretrained Hiera image encoder runs once per frame; a prompt encoder (points/boxes/masks) and a SAM-style two-way mask decoder produce the per-frame mask. New parts: a memory encoder compressing each predicted mask+frame into a compact memory, a FIFO memory bank of recent and prompted frames, and a memory-attention module conditioning the current frame on those memories. Frames are processed one at a time conditioned only on past memory, so it streams over live video; prompts on any frame propagate forward/backward. Trained jointly on images and the new SA-V dataset via a model-in-the-loop data engine.",
+      "headlineResults": "~44 FPS real-time video (A100). Variants (SAM 2.1, A100, torch 2.5.1): hiera_tiny 38.9M/91.2 FPS, small 46M/84.8, base_plus 80.8M/64.1, large 224.4M/39.5. Video J&F: SA-V test 76.5-79.5, MOSE val 71.8-74.6, LVOS v2 77.3-80.6. ~3x fewer interactions than prior video methods. Images: 6x faster AND more accurate than SAM (58.9 vs 58.1 mIoU 1-click; up to ~61.4 avg over 23 datasets; 5-click mIoU 81.7 over 37 datasets).",
+      "realtimeWebcamApplicability": "Strong on a consumer GPU, weak on CPU. The tiny/small Hiera variants (38.9M/46M params) reach ~85-91 FPS on A100, so a mid-range RTX (3060/4060) should exceed 30 FPS at 1024px for single-object streaming; base_plus is a good accuracy/speed middle. Pure-CPU webcam use is not real-time. For on-device edge, use distilled siblings (EdgeTAM ~16 FPS iPhone 15 Pro Max, ~22x faster than SAM 2; EfficientViT-SAM) or export the encoder to ONNX/TensorRT. Recipe: GPU + sam2.1_t/s, prompt once (click or YOLO box), propagate via streaming memory; downscale input and cap memory length to bound latency.",
+      "integrationIdea": "Add src/models/sam2_segmenter.py (a Sam2Segmenter subclassing src/models/base.py) wrapping ultralytics SAM2 (sam2.1_t.pt). Auto-prompt with boxes from src/models/yolo_wrapper.py or text-driven boxes from src/models/open_vocab_detector.py (OWLv2), then stream masks frame-to-frame via SAM 2 memory so masks persist with track IDs from src/tracking. Upgrades zone counting/line crossing and privacy blurring (src/privacy.py) from boxes to pixel-accurate masks, and density heatmaps to mask-area. Surface it in src/dashboard.py as a 'Segment and track' mode; default GPU + sam2.1_t/s, fall back to click-to-segment-only on CPU.",
+      "limitations": "Real-time only on a strong GPU; standard SAM 2 on CPU/mobile is impractical for live use (multi-second/frame in some configs even on RTX 3090). Can lose objects across shot changes, long occlusions, or crowded similar-object scenes; struggles with thin/fine structures and fast motion; tracks one object per memory state (multi-object = multiple passes); memory bank growth adds latency on long streams.",
+      "confidence": "high"
+    },
+    {
+      "domain": "Monocular depth estimation",
+      "module": "new src/models depth estimator + docs/webcam_depth_research.md",
+      "paper": {
+        "title": "Depth Anything V2",
+        "authors": "Yang, Kang, Zhao, Xu, Feng, Zhao (HKU + TikTok/ByteDance)",
+        "venue": "NeurIPS 2024",
+        "year": 2024,
+        "arxivId": "2406.09414",
+        "url": "https://arxiv.org/abs/2406.09414"
+      },
+      "method": "A teacher-student pipeline built on a DINOv2 ViT encoder with a DPT regression head (relative inverse depth). Three key practices: (1) train the largest teacher (ViT-G) ONLY on synthetic images, which have pixel-perfect, sharp depth (no real-label noise); (2) scale up teacher capacity to absorb the synthetic-to-real domain gap; (3) bridge that gap by having the teacher pseudo-label 62M+ unlabeled real images, then train smaller student models (ViT-S/B/L) purely on these pseudo-labels rather than on noisy real ground truth. This combines synthetic sharpness with real-world generalization. Models are released at four scales (24.8M / 97.5M / 335.3M / 1.3B). Separate metric-depth variants are obtained by fine-tuning the relative-depth backbone on Hypersim (indoor) and Virtual KITTI 2 (outdoor). A new DA-2K benchmark of high-resolution, sparse relative-depth annotations on hard/ambiguous regions is introduced for evaluation.",
+      "headlineResults": "Model sizes: Small 24.8M, Base 97.5M, Large 335.3M, Giant 1.3B params. Training data: 595K synthetic labeled images (BlendedMVS, Hypersim, IRS, TartanAir, vKITTI2) + 62M pseudo-labeled real images (ImageNet, LSUN, BDD100K, OpenImages, SA-1B, etc.). Speed/accuracy: \"over 10x faster\" and more accurate than SD-based Marigold/GeoWizard. On the DA-2K relative-depth benchmark, ViT-S reaches 95.3% accuracy vs 86.8% for Marigold. Reported inference: small model under ~10 ms/image on A100 (PyTorch), and ~98.6 ms TensorRT for batch-4 480x300 on Jetson Orin NX (~50 ms on Orin AGX). Metric fine-tunes: max depth 20 m indoor (Hypersim), 80 m outdoor (Virtual KITTI 2).",
+      "realtimeWebcamApplicability": "Strong fit, and the reason this is the right pick over the metric contenders. The ViT-Small variant is only 24.8M params (Apache-2.0 licensed), the lightest of any candidate. On a consumer/desktop GPU the small model runs comfortably real-time (community TensorRT builds report ~25-72 FPS depending on resolution/precision; sub-10 ms/image on A100). On edge (Jetson Orin NX) TensorRT gives ~98 ms for batch-4 480x300, i.e. roughly real-time per single stream. On a pure laptop CPU the original PyTorch is ~1-3 FPS, but ONNX Runtime + OpenVINO INT8 at 256-384 input pushes the small model to ~6-20 FPS — interactive. For a live webcam: export ViT-S to ONNX (fabio-sim/Depth-Anything-ONNX), letterbox to 384/256, normalize ImageNet stats, run via onnxruntime (OpenVINO/CUDA EP) or TensorRT, upsample the inverse-depth map back to frame size; run depth every Nth frame if pairing with YOLO to protect loop FPS. Output is relative (ordinal) depth; use the Hypersim/vKITTI2 metric checkpoints or single-anchor calibration if meters are required.",
+      "integrationIdea": "Add a depth subsystem mirroring the existing detector pattern. Create src/models/depth_estimator.py with a DepthEstimator class subclassing a new BaseDepthEstimator ABC (parallel to BaseDetector in src/models/base.py), wrapping Depth Anything V2-Small via ONNX Runtime (CUDA/OpenVINO EP) with a depth(frame)->np.ndarray method returning a normalized inverse-depth map. Add scripts/run_depth.py as a webcam demo mirroring the existing run_webcam.py, showing side-by-side RGB + INFERNO colormap. Then wire per-detection depth sampling: for each YOLO Detection, sample masked-median depth over a 20%-shrunk bbox with MAD outlier rejection, storing it on the Detection dataclass (extend src/models/base.py with an optional depth field). This unlocks depth-aware zone counting (3D prisms), too-close anomaly alerts, and a depth cost term in the BoT-SORT/ByteTrack association. Update docs/webcam_depth_research.md (already scaffolded) with the V2 benchmark numbers, the ONNX/OpenVINO INT8 recipe, and the metric-calibration plan; log experiments per its Section 8 milestones.",
+      "limitations": "Default outputs are RELATIVE inverse depth (scale/shift-ambiguous), not metric meters — cross-frame absolute thresholds are unreliable without per-frame normalization or calibration; the separate metric checkpoints are domain-specific (indoor Hypersim ≤20 m, outdoor vKITTI2 ≤80 m) and generalize worse than purpose-built metric models like UniDepth/Metric3Dv2. No temporal modeling, so video shows flicker/scale drift (addressed later by Video Depth Anything). Quality scales with model size; the real-time ViT-S trades sharpness for speed. The high-quality Base/Large/Giant weights are CC-BY-NC-4.0 (non-commercial) — only the Small model is Apache-2.0. Synthetic-heavy teacher training can leave residual domain bias on unusual webcam exposure/white-balance; thin/transparent/reflective surfaces remain hard. No camera-intrinsics awareness in the relative model.",
+      "confidence": "high"
+    },
+    {
+      "domain": "Scene-graph generation",
+      "module": "src/analytics/scene_understanding.py",
+      "paper": {
+        "title": "REACT: Real-time Efficiency and Accuracy Compromise for Tradeoffs in Scene Graph Generation",
+        "authors": "Neau, Santos, Bosser, Buche, Sugimoto",
+        "venue": "BMVC 2025",
+        "year": 2025,
+        "arxivId": "2405.16116",
+        "url": "https://arxiv.org/abs/2405.16116"
+      },
+      "method": "REACT is a one-stage, real-time SGG architecture built on the authors' MIT-licensed SGG-Benchmark. Its central design choice is replacing the standard two-stage Faster-RCNN detector with a single-stage YOLOv8 backbone (later YOLO11/YOLO12, plus open-vocabulary YOLO-World), which alone cuts detection latency ~85% (about 2.75x faster) and raises detection accuracy. A lightweight relation head (a PE-NET-style predicate classifier) then predicts relationships over detected entities. Crucially, REACT filters the number of box proposals before relation classification, drastically cutting the quadratic number of candidate object pairs that must be scored. The paper further introduces Dynamic Candidate Selection (DCS), an inference-time method that adaptively prunes candidate pairs to reduce latency by an average 66.5% without hurting accuracy. The result balances detection accuracy, relation accuracy, and speed in one model.",
+      "headlineResults": "REACT achieves the highest inference speed among existing SGG models: 2.7x faster than SOTA while improving object-detection accuracy by 58%. Reported latency is 32.5ms (YOLOv8m configuration), with a real-time configuration reaching ~23ms; Dynamic Candidate Selection (DCS) reduces latency a further 66.5% on average without performance loss. Swapping Faster-RCNN for YOLOv8 gives an 84.99% latency improvement (~2.75x) and +19.4% F1@K. mean Recall is ~mR@K 18.0 (vs 20.7 for the follow-up REACT++). By contrast the prior one-stage transformer RelTR runs at 16.6 FPS with 63.7M params (R@50 27.5, mR@50 10.8). The follow-up REACT++ reaches 35.8M params and 13.4ms (~55 FPS) via ONNX export.",
+      "realtimeWebcamApplicability": "Strong fit. REACT is the only candidate explicitly engineered for real-time SGG, and it is built on a YOLOv8 backbone this repo already runs via ultralytics. On a consumer GPU it reports ~23-32.5ms per frame (roughly 30-43 FPS), and the follow-up REACT++ reaches 13.4ms (~55 FPS) with ONNX export, so an interactive 20-30+ FPS webcam stream is realistic on a mid-range GPU. The relation head adds only modest overhead on top of YOLO (REACT++ total ~35.8M params). For a live stream you would run YOLO detection per frame, filter proposals (or use DCS), then score relations on the kept pairs; on CPU expect to drop below interactive rates, so ONNX/TensorRT export and a small YOLO size (n/s) plus aggressive candidate pruning would be needed at the edge.",
+      "integrationIdea": "Add a RelationGraphGenerator to src/analytics/scene_understanding.py that upgrades the current heuristic geometric relations (near/above/inside, computed in _find_relations) into a learned scene graph. Reuse the project's existing ultralytics YOLO detections as REACT's detection stage, then attach REACT's lightweight predicate head (load the MIT-licensed maelic/SGG-Benchmark PSG/VG150 ONNX weights via onnxruntime, matching the repo's existing ONNX export path) to classify semantic predicates (holding, riding, sitting-on) over the top-K filtered detection pairs. Populate the existing ObjectRelation.relation field with the predicted predicate (keep geometric relations as a fast fallback when no GPU/weights), feed the resulting triplets into the Streamlit dashboard and the alert system (e.g. trigger on person-holding-knife), and gate it behind a config flag so the CPU heuristic path stays the default.",
+      "limitations": "Accuracy still trails the strongest (slower) two-stage methods on absolute mean-Recall; the follow-up REACT++ notes REACT is not competitive with PE-NET/SQUAT on accuracy. Predicate vocabulary is closed-set and fixed to the training dataset (VG150/IndoorVG/PSG label spaces), unless paired with the open-vocab YOLO-World detector. Reported latencies are GPU figures; CPU-only real-time throughput is not the focus. Like all VG-trained SGG, it inherits long-tailed predicate bias and noisy annotations, and SGG quality is heavily bottlenecked by detector proposal quality. The 23ms vs 32.5ms figures reflect different configurations and should be checked against the exact GPU and YOLO size.",
+      "confidence": "high"
+    },
+    {
+      "domain": "Camera calibration & geometry",
+      "module": "src/multicam/manager.py + new src/utils calibration",
+      "paper": {
+        "title": "AnyCalib: On-Manifold Learning for Model-Agnostic Single-View Camera Calibration",
+        "authors": "Tirado-Garin & Civera (University of Zaragoza, I3A)",
+        "venue": "ICCV 2025",
+        "year": 2025,
+        "arxivId": "2503.12701",
+        "url": "https://arxiv.org/abs/2503.12701"
+      },
+      "method": "AnyCalib reframes calibration as dense per-pixel ray regression rather than directly regressing a fixed parameter vector. A DINOv2 ViT-L/14 encoder feeds a lightweight DPT-style decoder that predicts a per-pixel field of viewing directions (a FoV field, an intermediate shown by ablation to beat regressing rays directly). Each ray is treated as a point on the sphere manifold and learned in local Euclidean tangent coordinates via log/exp maps (on-manifold), giving stable model-free targets. From the predicted dense rays, intrinsics for a chosen camera model are recovered in closed form by least-squares fitting, so one trained network serves pinhole, Brown-Conrady radial, Kannala-Brandt fisheye, UCM/EUCM and division models, and even handles cropped/stretched (edited) images. The lightweight decoder trims about 20 percent compute (~187.8 GMACs total) versus a standard DPT head.",
+      "headlineResults": "On Stanford2D3D, AnyCalib (pinhole) reaches 1.13 deg angular error, 2.55 deg vertical-FoV error and vFoV AUC@1/5/10 = 21.2/46.8/64.6, beating GeoCalib (1.45 deg angle, 3.23 deg vFoV, vFoV AUC@1=17.4) and 3D foundation models (DUSt3R, MoGe). The general variant anycalib_gen stays close at 1.30 deg / 2.95 deg vFoV while also handling distorted/fisheye inputs. Authors report consistently outperforming GeoCalib, WildCamera and DroidCalib across Stanford2D3D, MegaDepth, TartanAir and LaMAR despite training on orders of magnitude less data. Compute ~187.8 GMACs; backbone DINOv2 ViT-L/14 (~300M params). No FPS/latency table is published; calibration is a one-shot per-camera step, not per-frame.",
+      "realtimeWebcamApplicability": "Not a per-frame model and does not need to be. The DINOv2 ViT-L/14 backbone (~187.8 GMACs, ~300M params, ~320px input) runs on the order of tens of ms on a consumer GPU (comparable ViT-L DINOv2 forwards are ~40-50 ms on an RTX-class card; far slower on CPU), so it cannot sustain 30 FPS live. But intrinsics are static for a fixed lens, so the right pattern is one-shot calibration: grab one (or a few averaged) frames at startup, run AnyCalib once on GPU, cache the resulting K and distortion coeffs, then reuse them every frame for cheap cv2.undistort / cv2.initUndistortRectifyMap remapping in the hot loop. PyTorch-only dependency (Python >=3.10, optional xformers) fits the existing torch stack. For CPU-only edge boxes, run the one-shot calibration offline or export the encoder via the repo's src/deployment ONNX/TensorRT path; per-frame undistortion is pure OpenCV and trivially real-time.",
+      "integrationIdea": "Add src/utils/calibration.py wrapping AnyCalib: a CameraCalibrator.calibrate(frame, cam_model='pinhole'|'radial:2'|'kb:4') returning intrinsics K + distortion coeffs, cached to a per-source JSON sidecar. Wire it into src/multicam/manager.py: add optional intrinsics fields to CameraFeed, run a lazy one-shot calibrate() per camera in MultiCameraManager.start() (GPU once), and apply cv2.initUndistortRectifyMap once + cv2.remap in read_all() so all downstream consumers get undistorted frames. Biggest payoff: replace the heuristic class/confidence matching in find_cross_camera_matches() with geometry-aware association by back-projecting detection centers through each camera's calibrated rays onto a common ground plane (homography), turning guesswork fusion into metric cross-camera matching. Calibrated intrinsics also upgrade src/analytics density heatmaps and zone/line counting to real-world units.",
+      "limitations": "Heavy DINOv2 ViT-L/14 backbone (~187.8 GMACs, ~300M params) means inference is GPU-class and not real-time on CPU; unsuitable per-frame on a webcam stream. Trained on panorama-derived crops (~42k images), so very unusual real lenses or extreme distortion may still need a verification pass. Closed-form intrinsics fit requires choosing the camera-model family up front (separate checkpoints for pinhole vs distorted vs edited). Scope is intrinsics + per-pixel rays only, not scene/extrinsic calibration; no official quantitative latency benchmark is published. Estimates are per single image, so noisy frames are best averaged.",
+      "confidence": "high"
+    },
+    {
+      "domain": "Skeleton-based action recognition",
+      "module": "src/models/pose_detector.py + src/analytics/temporal.py, scripts/run_action.py",
+      "paper": {
+        "title": "Channel-wise Topology Refinement Graph Convolution for Skeleton-Based Action Recognition",
+        "authors": "Yuxin Chen et al. (Chen, Zhang, Yuan, Li, Deng, Hu)",
+        "venue": "ICCV 2021",
+        "year": 2021,
+        "arxivId": "2107.12213",
+        "url": "https://arxiv.org/abs/2107.12213"
+      },
+      "method": "CTR-GCN introduces Channel-wise Topology Refinement Graph Convolution (CTR-GC). Instead of one adjacency for all channels, it learns a SHARED topology as a generic prior plus a small CHANNEL-SPECIFIC refinement. Each block: (1) linearly transforms joint features; (2) computes pairwise joint correlations (a distance/correlation function on the transformed features) to produce channel-specific topology offsets; (3) adds these offsets to a shared learnable adjacency, giving every channel its own refined, sample-dependent (dynamic) topology; (4) aggregates joint features under these per-channel topologies. This adds very few parameters over a shared-topology GConv. CTR-GC blocks stack with temporal convolutions into the network; final reported numbers fuse a 4-stream ensemble (joint, bone, joint-motion, bone-motion).",
+      "headlineResults": "4-stream ensemble accuracy: NTU RGB+D 60 = 92.4% (X-Sub) / 96.8% (X-View); NTU RGB+D 120 = 88.9% (X-Sub) / 90.6% (X-Set); state-of-the-art on NW-UCLA. Single CTR-GC model is very small: ~1.46M parameters and ~1.97 GFLOPs (vs ST-GC 1.22M/~1.65G), and in the ablation a single joint stream reaches 84.9% on NTU120 X-Sub. A third-party latency comparison reports CTR-GCN ~22.84 ms per inference (single sample), i.e. ~40+ FPS on a modern GPU.",
+      "realtimeWebcamApplicability": "Strong fit for real-time webcam/edge. The model is tiny (~1.46M params, ~1.97 GFLOPs per stream) and consumes joint coordinates directly — exactly the COCO-17 keypoints YOLOv8-pose already outputs — so no heavy heatmap-volume construction (unlike PoseConv3D's 3D-CNN). On a consumer GPU a single stream runs comfortably at interactive FPS (third-party timing ~23 ms/clip => ~40+ FPS); related GCNs at this scale hit 140-190 FPS at batch 1 on an RTX 4080. A live webcam pipeline needs: a per-track sliding window of ~64 normalized keypoint frames feeding the GCN every N frames, run as a single joint-stream (skip the 4-stream ensemble) for latency, optionally ONNX/TensorRT-exported. CPU/edge real time is plausible for the single stream at reduced channels but is not benchmarked in the paper; ONNX-INT8 or a lighter \"fast baseline\" variant would help on pure-CPU webcams.",
+      "integrationIdea": "Replace the brittle rule-based heuristics in src/models/pose_detector.py (the ActionClassifier class, lines ~187-327) with a learned CTR-GCN head. Concretely: (1) add src/models/ctrgcn.py wrapping a single-stream CTR-GC network (port the official Uason-Chen/CTR-GCN model or use the PYSKL/MMAction2 implementation, exported to ONNX for opencv/onnxruntime inference consistent with src/deployment/exporter.py). (2) In src/analytics/temporal.py, add a per-track keypoint ring buffer (reuse TemporalBuffer/track_id plumbing) that accumulates ~64 frames of normalized COCO-17 keypoints from PoseResult.keypoints. (3) When a window fills, feed it to the GCN and write the predicted action + confidence back into PoseResult.action/action_confidence, so scripts/run_action.py's existing draw/label/summary loop works unchanged. (4) Extend scripts/run_action.py with a --classifier {rules,ctrgcn} flag and a --window-size arg; keep the rules path as fallback. Map the model's NTU label set down to the repo's action vocabulary (or expose full NTU classes). This upgrades the platform from geometric guesses to a real SOTA temporal action model while staying within its YOLO-pose + ONNX/TensorRT stack.",
+      "limitations": "Headline accuracy needs a 4-stream ensemble (joint/bone/motion), multiplying inference cost ~4x; a single stream is faster but a few points lower. Designed for trimmed, pre-segmented clips and a fixed temporal window, not native online/streaming detection of action onset/offset. Trained/evaluated on 3D skeletons (NTU) or curated 2D (NW-UCLA); accuracy depends heavily on upstream pose quality and is sensitive to noisy/occluded 2D keypoints (a weakness PoseConv3D explicitly targets). Multi-person interaction modeling is limited; per-sample dynamic correlation adds compute vs a purely static graph. Latency, while ~23 ms on GPU, is higher than later \"fast baseline\" GCNs and is not benchmarked on CPU/edge in the paper.",
+      "confidence": "high"
+    },
+    {
+      "domain": "Video anomaly detection",
+      "module": "src/analytics/anomaly_detector.py, scripts/run_anomaly.py",
+      "paper": {
+        "title": "Learning Memory-Guided Normality for Anomaly Detection",
+        "authors": "Park et al. (Park, Noh, Ham)",
+        "venue": "CVPR 2020",
+        "year": 2020,
+        "arxivId": "2003.13228",
+        "url": "https://arxiv.org/abs/2003.13228"
+      },
+      "method": "MNAD wraps a U-Net-style encoder-decoder with a learnable memory module holding a small set of prototype items that record diverse normal patterns. Encoder features query the memory via attention; read-out items are concatenated with the query and decoded, so the decoder leans on memorized normal prototypes rather than raw CNN capacity. A memory update scheme refreshes items using normal queries, and two new losses (feature compactness, pulling a query toward its nearest item; feature separateness, pushing apart the two nearest items) make features and prototypes discriminative. Two proxy tasks are supported: future-frame prediction or frame reconstruction. The anomaly score combines prediction/reconstruction error (PSNR) with the distance from a query to its nearest memory item; abnormal frames map poorly to normal prototypes, widening the score gap. No optical flow is used.",
+      "headlineResults": "Frame-level AUC, prediction variant: UCSD Ped2 97.0%, CUHK Avenue 88.5%, ShanghaiTech 70.5%. Reconstruction variant: Ped2 90.2%, Avenue 82.8%, ShanghaiTech 69.8%. The memory module adds roughly +2.7% to +4.0% AUC over the no-memory baseline. Speed: ~67 fps (real-time), faster than optical-flow-based competitors. Trained on a single Nvidia GTX TITAN Xp (~1 h / 15 h / 36 h for Ped2 / Avenue / ShanghaiTech). Built on a compact CNN encoder-decoder plus a small memory bank (a fraction of typical autoencoder size); exact parameter/memory footprint not stated in sources fetched.",
+      "realtimeWebcamApplicability": "Strong fit for this platform. The reported ~67 fps was on a 2017-class GPU (GTX TITAN Xp); a small CNN encoder-decoder with a tiny memory bank and no optical flow should comfortably exceed 30 fps on a modern consumer GPU, and the team already exports/benchmarks via ONNX/TensorRT so it can be accelerated further. CPU-only real-time is unlikely at full resolution (a few fps at most); on CPU-only edge boxes, run it at low resolution, on grayscale, or every Nth frame. The catch is not inference cost but the per-scene assumption: you must train (or fine-tune) on a short clip of the specific camera's normal footage before live use. Practically: capture ~1-30 min of normal video per webcam, train the prediction model once, ship the .pth plus memory items, and score live frames in a rolling buffer (it needs the preceding frames for future-frame prediction).",
+      "integrationIdea": "Add a second, pixel-level anomaly backend alongside the existing detection-metadata IsolationForest. Create src/analytics/mnad_anomaly.py implementing an MNADAnomalyDetector with the same update()/fit()/check() interface as src/analytics/anomaly_detector.py (so the rest of the app and the Streamlit dashboard are unchanged), wrapping the MNAD prediction encoder-decoder + memory module in torch. Add scripts/train_mnad.py to learn normal patterns from a short clip per source and save weights + memory items, and extend scripts/run_anomaly.py with a --backend {isoforest,mnad} flag plus --mnad-weights. Reuse src/deployment for ONNX/TensorRT export and src/alerts.py to fire on a smoothed PSNR-plus-memory-distance score above a per-camera threshold. This upgrades anomaly detection from \"unusual object statistics\" to true unsupervised motion/appearance anomalies, while keeping IsolationForest as the zero-training default.",
+      "limitations": "Trained per-scene / per-camera on normal-only footage, so it does not transfer to a new camera or layout without retraining or re-fitting the memory; the baseline number assumes a roughly fixed viewpoint (good for a stationary webcam, poor for a moving one). ShanghaiTech AUC (70.5%) is far below Ped2 (97.0%), showing it weakens on multi-scene / crowded data. The anomaly score is uncalibrated PSNR-plus-memory-distance, needing a per-deployment threshold. It detects appearance/motion deviations, not semantic events, and offers no localization beyond per-pixel error maps. Sources fetched did not state exact parameter count, input resolution, or number of memory items.",
+      "confidence": "high"
+    },
+    {
+      "domain": "Temporal video understanding",
+      "module": "src/analytics/temporal.py",
+      "paper": {
+        "title": "MiniROAD: Minimal RNN Framework for Online Action Detection",
+        "authors": "An, Kang, Han, Yang, Kim (Yonsei University, UC Merced, Google Research)",
+        "venue": "ICCV 2023",
+        "year": 2023,
+        "arxivId": "",
+        "url": "https://openaccess.thecvf.com/content/ICCV2023/html/An_MiniROAD_Minimal_RNN_Framework_for_Online_Action_Detection_ICCV_2023_paper.html"
+      },
+      "method": "MiniROAD diagnoses the RNN accuracy gap as a train/inference mismatch: training supervises every timestep equally, but at inference only the latest timestep's prediction is used, so early timesteps (with little accumulated context) inject noisy gradients. The fix is a non-uniform loss weighting that down-weights early timesteps and emphasizes later ones, aligning optimization with how the model is actually queried. The model is deliberately minimal: a single-layer GRU (hidden size 1024) that consumes one precomputed clip feature per frame and emits a per-frame class distribution, carrying all history in its hidden state at constant per-frame cost. Inputs are standard two-stream I3D features (RGB + optical flow), Kinetics-pretrained, matching prior OAD work. No transformer, no long-term memory bank, no sliding window.",
+      "headlineResults": "THUMOS'14: 71.8% mAP (Kinetics two-stream I3D features), matching or beating the best transformer OAD methods; TVSeries: 89.6% mcAP; FineAction: 37.1% mAP (numbers from the official jbistanbul/MiniROAD repo). Efficiency: ~10.5M parameters and ~1.08 GFLOPs vs a comparable transformer baseline at ~12.9M params / ~1.96G (roughly half the compute). The GRU itself runs about 200x faster than prior OAD methods (per-frame model latency) on a single RTX 3090; with optical-flow + I3D feature extraction included, end-to-end \"Overall FPS\" is much lower and is the real bottleneck.",
+      "realtimeWebcamApplicability": "Excellent fit in principle for a streaming webcam loop: the GRU is single-layer (hidden 1024), ~10.5M params / ~1.08 GFLOPs, ingests one feature vector per frame, keeps O(1) state, and needs no future frames or sliding window, so the temporal head is effectively free even on CPU. The catch is the feature extractor: the paper uses two-stream I3D + optical flow, which is too slow for live CPU/consumer-GPU webcam use. To run on a webcam in real time you would drop optical flow and replace I3D with a lightweight RGB clip encoder (e.g. MobileNetV3/X3D-XS or even reusing per-frame CNN features the YOLO stack already computes), feed those into the GRU, and retrain the GRU head with MiniROAD's non-uniform loss. The GRU + lite backbone is plausibly 30+ FPS on a modern consumer GPU and interactive on CPU; expect some accuracy drop from dropping flow.",
+      "integrationIdea": "Add a learned streaming action head to src/analytics/temporal.py. Today that file is purely heuristic/geometric (loitering, abandoned-object, crowd, speed via pixel displacement and durations) with no learned temporal model. Implement a MiniRoadHead class wrapping a single-layer GRU (hidden 1024) that persists its hidden state across frames, mirroring the existing per-frame TemporalBuffer.add() / EventDetector.check() loop. Per frame, extract a lightweight RGB clip embedding (reuse the existing torch backbone or a small X3D/MobileNet), GRU-step it, and emit current-action logits; surface high-confidence transitions as a new EventType.ACTION_RECOGNIZED TemporalEvent so they flow into the existing alert system and Streamlit dashboard. Ship a small trainer in src/training/ that applies MiniROAD's non-uniform per-timestep loss weighting, keeping flow optional/off by default for real-time webcam use.",
+      "limitations": "Per-frame model cost is tiny, but the published pipeline still depends on heavy precomputed two-stream I3D features and optical flow, so the real-time bottleneck is upstream feature extraction, not the GRU; the headline FPS isolates the RNN. Accuracy is reported only with Kinetics-pretrained I3D features (not raw RGB end-to-end), so swapping to a lighter RGB-only backbone would change accuracy. It is frame-level action detection (what action is happening now), not temporal localization with precise start/end boundaries. Trained/evaluated on fixed action vocabularies (THUMOS 20 classes, etc.).",
+      "confidence": "medium"
+    },
+    {
+      "domain": "Crowd counting & density estimation",
+      "module": "src/analytics/heatmap.py, scripts/run_heatmap.py",
+      "paper": {
+        "title": "Rethinking Counting and Localization in Crowds: A Purely Point-Based Framework",
+        "authors": "Song et al. (Tencent Youtu)",
+        "venue": "ICCV (Oral) 2021",
+        "year": 2021,
+        "arxivId": "2107.12746",
+        "url": "https://arxiv.org/abs/2107.12746"
+      },
+      "method": "P2PNet (Point-to-Point Network) directly predicts a set of point proposals representing head locations, matching the raw dot annotations used for training. A VGG16-bn backbone with an upsampling/feature-fusion neck produces dense anchor points; two parallel branches regress per-point coordinate offsets and a confidence score. During training, predicted points are matched one-to-one to ground-truth points via the Hungarian algorithm using a cost combining pixel distance and confidence; matched points are positives (pulled toward GT, high confidence) and the rest are pushed to low confidence. At inference, points above a confidence threshold are kept — their count is the crowd size and their coordinates are the localizations. The paper also introduces density-Normalized Average Precision (nAP), which normalizes the match-distance tolerance by local crowd density so evaluation is fair across sparse and dense regions.",
+      "headlineResults": "ShanghaiTech Part A MAE ~52.7 / MSE ~85.1; Part B MAE ~6.25 / MSE ~9.9 (best at publication, ~4.8% MAE and ~12.9% MSE reduction vs prior best ADSCNet). UCF-QNRF MAE ~85.3; also strong on UCF-CC-50 and NWPU-Crowd. Backbone VGG16-bn, ~21.8M parameters. Reported real-time on GPU: ~94.5 FPS (~21.8 ms/frame) in third-party efficiency comparisons, far above VGG-density methods (~23-28 FPS) and HRNet-based STEERER (~17 FPS). Localization measured with the new nAP metric (per-dataset nAP roughly 50-65% depending on threshold).",
+      "realtimeWebcamApplicability": "Strong fit. The model is compact (~21.8M params, VGG16-bn) and runs ~94 FPS on a desktop GPU and comfortably 30+ FPS real-time on consumer GPUs (e.g. RTX-class) at typical 720p-1080p webcam frames. On CPU alone expect only a few FPS at full resolution; for a live stream on edge/CPU you would downscale the frame, run inference every Nth frame, and export to ONNX/TensorRT (the repo already has scripts/export_model.py + benchmark.py). Unlike YOLO person detection, P2PNet keeps working in dense scenes (dozens-to-hundreds of heads), so it complements the existing detector rather than replacing it. Practical recipe for the webcam platform: GPU path for live density/count, INT8 TensorRT for edge boxes (Jetson), and frame-skipping + tracker smoothing to stabilize the flickering points.",
+      "integrationIdea": "Add a crowd-counting model that emits point predictions and reuse the existing analytics seam. Create src/models/p2pnet_wrapper.py wrapping the official VGG16-bn P2PNet weights and returning the repo's Detection objects with zero-area boxes centered on each head point plus a 'crowd' class and confidence. Add scripts/run_crowd_counter.py mirroring scripts/run_heatmap.py: stream frames, run P2PNet, overlay the live head count, and feed the point Detections straight into the existing HeatmapGenerator (src/analytics/heatmap.py — it already accumulates detection centers) so dense-crowd heatmaps stop undercounting where YOLO fails. The same point Detections also drop into src/analytics/zone_counter.py for true per-zone occupancy in congested areas, and into the alert system (src/alerts.py) for crowd-density thresholds. Wire an ONNX/TensorRT export path via scripts/export_model.py + scripts/benchmark.py for edge throughput.",
+      "limitations": "Trained/evaluated on still images of heads, not video; no temporal consistency, so per-frame points flicker and IDs are not maintained (needs an external tracker for trajectories). Confidence threshold for keeping points must be tuned per scene/density and trades precision vs recall. Performance degrades on very small/blurred far-field heads and under heavy occlusion; the one-to-one Hungarian matching can be sensitive to dense overlapping annotations. Reported FPS is on a server GPU; the paper itself does not provide CPU or edge-device latency, and accuracy is reported on benchmark crops, not arbitrary webcam resolutions/viewpoints.",
+      "confidence": "medium"
+    },
+    {
+      "domain": "Classical OpenCV pipelines",
+      "module": "src/utils + src/stream.py",
+      "paper": {
+        "title": "XFeat: Accelerated Features for Lightweight Image Matching",
+        "authors": "Potje, Cadar, Araujo, Martins, Nascimento (VeRLab / Google)",
+        "venue": "CVPR 2024",
+        "year": 2024,
+        "arxivId": "2404.19174",
+        "url": "https://arxiv.org/abs/2404.19174"
+      },
+      "method": "XFeat is a compact CNN that, from a single forward pass, predicts three maps at 1/8 resolution: a keypoint heatmap (a parallel branch over 8x8 cells), a dense 64-D descriptor map, and a reliability heatmap. The featherweight backbone keeps spatial resolution high while strictly limiting channels, using aggressive early downsampling and shallow convolutions early, then deeper convolutions (channels roughly tripled as resolution drops) to gain a large receptive field and robustness. Sparse mode matches the compact 64-D descriptors at detected keypoints via mutual nearest neighbors. XFeat* adds an efficient semi-dense mode: it matches coarse 1/8 descriptors, then a lightweight match-refinement module offsets each coarse correspondence toward pixel accuracy without an expensive transformer. It is trained on MegaDepth plus synthetic homographic warps of COCO, yielding less landmark-biased, more generalizable descriptors.",
+      "headlineResults": "Speed (Intel i5-1135G7 laptop CPU, VGA/640x480): sparse XFeat 27.1 FPS, semi-dense XFeat* 19.2 FPS, vs SuperPoint 3.0 FPS and DISK 1.2 FPS — about 9x faster than SuperPoint, and comparable accuracy to DISK at ~16x its speed; up to ~5x faster than competing deep local features overall. GPU: ~1,400 FPS sparse VGA on an RTX 4090, and easily >150 FPS single-batch VGA. Accuracy (relative pose, MegaDepth-1500): AUC@5/10/20 ≈ 42.6 / 56.4 / 67.7, comparable to SuperPoint while much cheaper; it also generalizes to indoor ScanNet-1500 without being trained on it. Compact 64-D descriptors; small enough for embedded deployment.",
+      "realtimeWebcamApplicability": "Strong fit for this project's consumer-webcam + edge, no-GPU-required goal. XFeat is the rare learned detector+descriptor that hits real time on a plain laptop CPU: 27.1 FPS sparse / 19.2 FPS semi-dense at VGA on an i5-1135G7 with vanilla PyTorch, and ~1,400 FPS on a desktop GPU, so it keeps up with a 640x480 webcam in real time even CPU-only. Depends only on torch (OpenCV for I/O), Apache-2.0, with community ONNX/TensorRT exports for Jetson/OAK-style edge cameras. To run live: load the pretrained model once, downscale frames to ~VGA, extract features per frame, match to a reference/previous frame with mutual-NN + cv2.findHomography/RANSAC, and budget for CPU NMS/post-processing (thread or batch it). Heavier than ORB but far more robust; on weak edge CPUs, extract every Nth frame and interpolate.",
+      "integrationIdea": "Add src/utils/features.py wrapping XFeat (load via torch.hub 'verlab/accelerated_features'; detectAndCompute -> keypoints + 64-D descriptors; match() doing mutual-NN + cv2.findHomography RANSAC) as an OpenCV-style alternative to ORB/SIFT. Wire it into two existing weak spots: (1) src/multicam/manager.py find_cross_camera_matches — replace the class-id + confidence-difference heuristic with real geometric correspondence (estimate an inter-camera homography/fundamental matrix from XFeat matches to confirm two detections are the same physical object across overlapping views); (2) src/tracking/tracker.py _extract_embedding — augment the color-histogram re-ID with XFeat keypoint matching between a track's stored crop and re-entry candidates for far more robust re-identification. It also enables a new src/utils/stabilize.py computing the homography between consecutive src/stream.py frames for camera-motion compensation, stabilizing density heatmaps and cutting false anomaly/line-crossing triggers on shaky feeds.",
+      "limitations": "Accuracy still trails the best heavy semi-dense/dense matchers (LoFTR, ASpanFormer, DISK+LightGlue) at the high-accuracy end; raw mutual-nearest-neighbor matching of the 64-D descriptors needs RANSAC/geometric verification and benefits from a learned matcher (the authors pair it with a \"LighterGlue\" variant) for best pose results. The headline 27 FPS is measured at VGA with the official PyTorch model on a fairly modern i5; higher resolutions, very low-texture/repetitive scenes, and large illumination extremes still degrade matching, and Python keypoint post-processing/NMS can bottleneck CPU throughput.",
+      "confidence": "high"
+    },
+    {
+      "domain": "Fall detection & workplace safety",
+      "module": "src/models/pose_detector.py + src/alerts.py",
+      "paper": {
+        "title": "Pose-Based Fall Detection System: Efficient Monitoring on Standard CPUs",
+        "authors": "Mali & Jaiswal (Vinayak Mali, Saurabh Jaiswal; IIT Kharagpur)",
+        "venue": "arXiv",
+        "year": 2025,
+        "arxivId": "2503.19501",
+        "url": "https://arxiv.org/abs/2503.19501"
+      },
+      "method": "MediaPipe Pose landmarks + 6 geometric features + threshold voting over a 20-frame buffer; CPU real-time, sensor-free.",
+      "headlineResults": "On the University of Rzeszow Fall Detection (URFD) dataset and the Multiple Cameras Fall Dataset (MCFD): precision 88.8%, recall 94.1%, F1-score 91.4%, specificity 95.6%. Runs in real time on standard CPUs (no GPU); the pose backbone is MediaPipe Pose / BlazePose (lightweight, few-MB on-device model). The paper emphasizes CPU real-time operation but does not publish an explicit FPS/latency figure or a measured parameter/memory count.",
+      "realtimeWebcamApplicability": "Strongly applicable. The whole pipeline is built to run real-time on a standard CPU with no GPU or sensors: MediaPipe Pose / BlazePose is a small on-device model (single-digit MB) that comfortably hits interactive rates (~20-30 FPS) on consumer laptop CPUs, and the fall logic is just per-frame geometry + a 20-frame ring buffer (negligible cost). On a live webcam stream you would run pose per frame, push 6 features into a deque, and trigger after the voting threshold persists. On the target repo's existing YOLOv8n-pose path (already used in pose_detector.py), this runs even faster on a consumer GPU and is fine on CPU; the only edge concern is single-person assumption and occlusion. This is one of the lightest credible fall detectors for webcam/edge deployment.",
+      "integrationIdea": "The repo's src/models/pose_detector.py ActionClassifier already mirrors this paper but in a weaker form: it uses a single crude torso-angle<30 degrees threshold over a 15-frame deque to flag \"falling\". Upgrade it to the paper's multi-feature + voting scheme: in ActionClassifier add a FallDetector that, per track_id, computes the paper's six features (height/aspect ratio, torso-leg angle, knee-ankle position, head-floor distance from frame-bottom, upper-body alignment, hip movement speed), thresholds each, and accumulates votes over a 20-frame buffer (raise sequence_length 15->20) before emitting a high-confidence \"fall\" only when the vote count persists. Wire the confirmed fall into src/alerts.py (emit a fall alert with track_id, bbox, and feature snapshot) so it flows into the existing alert system / Streamlit dashboard. This adds debounced, multi-cue fall detection with near-zero added compute on the current pose pipeline.",
+      "limitations": "Threshold + voting parameters were chosen by trial-and-error and may not generalize across camera angles, mounting heights, occlusion, or lighting; the approach is single-person/monocular-geometry oriented and degrades when landmarks are occluded or the subject is far/partially out of frame. Hand-crafted thresholds are less robust than learned classifiers (cf. GCN methods reporting 99%+ accuracy). No explicit FPS, parameter count, or end-to-end latency benchmark is reported, and only two lab/staged datasets are used, so in-the-wild robustness is unproven.",
+      "confidence": "high"
+    },
+    {
+      "domain": "Edge deployment & model optimization",
+      "module": "src/deployment/exporter.py, scripts/export_model.py, scripts/benchmark.py",
+      "paper": {
+        "title": "YOLO26: Key Architectural Enhancements and Performance Benchmarking for Real-Time Object Detection",
+        "authors": "Khan et al. (Ultralytics-focused survey/analysis)",
+        "venue": "arXiv",
+        "year": 2025,
+        "arxivId": "2509.25164",
+        "url": "https://arxiv.org/abs/2509.25164"
+      },
+      "method": "YOLO26 (released Sep 25, 2025; Ultralytics) reworks the detection head to emit a compact, non-redundant prediction set, giving true end-to-end NMS-free inference, and removes Distribution Focal Loss in favor of a lighter, hardware-friendly direct box parameterization. Removing both NMS and DFL lets exported graphs map cleanly to ONNX, TensorRT, CoreML, and TFLite with fewer custom kernels. Training adds ProgLoss (progressive loss balancing) and STAL (Small-Target-Aware Label assignment) to improve small/occluded-object detection and convergence, plus a new MuSGD optimizer (a hybrid of SGD and the Muon optimizer, inspired by LLM training like Kimi K2) for stable convergence. It is a unified multi-task family (detect, segment, pose, OBB, classify) across five scales (n/s/m/l/x), benchmarked on CPU (ONNX) and NVIDIA T4 (TensorRT FP16) and on Jetson edge devices.",
+      "headlineResults": "Across five detection scales YOLO26 reaches 40.9-57.5 mAP(50-95) on COCO at 1.7-11.8 ms T4 TensorRT(FP16) latency. YOLO26n: ~40.9 mAP, 2.4M params, 5.4B FLOPs, 38.9 ms CPU ONNX, 1.7 ms T4; YOLO26x: 57.5 mAP, 55.7M params, 193.9B FLOPs, ~525.8 ms CPU ONNX, 11.8 ms T4. Mid/large scales: YOLO26m above ~53% and YOLO26l above ~55% mAP at lower latency than transformer detectors. Reports up to 43% faster CPU ONNX inference for YOLO26n vs YOLO11n on an Intel Xeon CPU @ 2.00 GHz. Critically for edge: YOLO26 stays stable under INT8 quantization, whereas RT-DETRv3 shows sharp INT8 accuracy drops.",
+      "realtimeWebcamApplicability": "Strong fit. YOLO26n is 2.4M params / 5.4B FLOPs at ~40.9 mAP — small enough for a live webcam stream. On a consumer GPU it is trivially real-time (1.7 ms on T4 ≈ hundreds of FPS); on CPU, ~38.9 ms ONNX on an Intel Xeon @ 2.00 GHz implies roughly 25 FPS single-thread for the nano model, i.e. interactive 640px webcam inference on a modern laptop CPU via ONNXRuntime, and faster with OpenVINO/INT8 on Intel. NMS-free decoding removes a variable post-process cost (steadier per-frame latency for streaming) and the DFL/NMS removal makes INT8 export robust, unlike RT-DETR. To run on a live webcam: export YOLO26n to ONNX (CPU/OpenVINO) or TensorRT-FP16/INT8 (Jetson/discrete GPU) and feed it the existing OpenCV capture loop; n/s scales for real-time, m/l only with GPU or NPU acceleration.",
+      "integrationIdea": "Adopt YOLO26 as a first-class backbone in the existing export/benchmark pipeline. (1) In src/deployment/exporter.py, change the default model from \"yolov8n.pt\" to \"yolo26n.pt\" (or add a model-family arg) — the ModelExporter.export() path already calls ultralytics YOLO(...).export(format=...), so NMS-free/DFL-free YOLO26 exports cleanly to onnx/engine/openvino/coreml/tflite/ncnn with no code change. (2) Add an INT8 quantization path: extend ModelExporter.export() with an int8: bool flag passing int8=True (with a calibration data arg) for openvino/tflite/engine, and have scripts/export_model.py expose --int8 — this directly exploits YOLO26's quantization stability. (3) In scripts/benchmark.py / BenchmarkRunner.compare(), add a head-to-head matrix (YOLO26n FP32 vs FP16 vs INT8 vs YOLO11n/YOLOv8n) on CPU(ONNX) and GPU(TensorRT) so the repo can empirically confirm the \"~43% faster CPU\" and INT8-stability claims on the target hardware before swapping the default detector used by scripts/run_webcam.py.",
+      "limitations": "Most headline numbers are vendor/Ultralytics-reported benchmarks rather than independent third-party reproductions; the paper is largely an architectural overview + benchmarking report, not a from-scratch peer-reviewed method paper, so ablations isolating each component (ProgLoss/STAL/MuSGD) are limited. Exact per-variant CPU ONNX latencies vary with hardware and ONNXRuntime build. NMS-free end-to-end mode can trade a small amount of recall on dense/overlapping scenes versus tuned-NMS pipelines. CPU absolute latencies for larger scales (m/l/x) remain far from real-time without GPU/NPU acceleration.",
+      "confidence": "high"
+    },
+    {
+      "domain": "Active learning for detection",
+      "module": "src/training/active_learner.py, scripts/run_active_learning.py",
+      "paper": {
+        "title": "Plug and Play Active Learning for Object Detection",
+        "authors": "Yang, Huang & Crowley (Chenhongyi Yang, Lichao Huang, Elliot J. Crowley)",
+        "venue": "CVPR 2024",
+        "year": 2024,
+        "arxivId": "2211.11612",
+        "url": "https://arxiv.org/abs/2211.11612"
+      },
+      "method": "PPAL is a two-stage, detector-agnostic query strategy that touches neither the model architecture nor the training pipeline (hence \"plug and play\"). Stage 1, Difficulty Calibrated Uncertainty Sampling (DCUS): it computes per-instance uncertainty from the detector's own outputs, but re-weights it by a category-wise difficulty coefficient that fuses classification difficulty and localization difficulty, so hard/rare classes are not drowned out by easy ones; it then shortlists a candidate pool of the most uncertain images. Stage 2, Category Conditioned Matching Similarity (CCMS): it measures image-to-image similarity as an ensemble of matched instance similarities conditioned on category, then runs k-Means++ over the candidate pool to pick a diverse final query batch. The result combines uncertainty (stage 1) and diversity (stage 2) using only off-the-shelf detector predictions. Implemented on MMDetection.",
+      "headlineResults": "Benchmarked on MS-COCO and Pascal VOC with RetinaNet and Faster R-CNN. In the early active-learning rounds (rounds <=3) PPAL outperforms the previous SOTA MI-AOD/MIAL by 3.4 AP on MS-COCO and 2.8 mAP on Pascal VOC, and outperforms prior work by a large margin overall. Setup: COCO initial labeled set = 2% of images, Pascal VOC initial set = 5%. (Context for the regime: on Pascal VOC, MI-AOD reaches ~72.27% mAP using only 20% of labels, ~93% of the 100%-data performance; PPAL pushes this curve higher.) No FPS/latency/params reported -- it is a data-selection algorithm, not a new detector, so it inherits the speed of whatever detector you plug in.",
+      "realtimeWebcamApplicability": "PPAL is not a real-time inference model and does not change webcam-time speed -- whatever detector you run stays at its native FPS; PPAL only decides WHICH already-captured frames a human should label between training rounds. That fits this repo's edge story: it makes a small on-device YOLO catch up to a much bigger model on YOUR scenes (your office, your camera angle) using a fraction of the hand-labeled frames, which matters precisely because edge models are small and domain-sensitive. Cost is trivial vs training: stage 1 reuses detector outputs you already produce per frame; stage 2 is an offline k-Means++ over a few hundred candidate images, seconds-to-minutes on CPU, run occasionally -- never on the live stream. Practically: buffer webcam frames + their YOLO predictions, run PPAL nightly/weekly to pick ~50-200 frames to label, fine-tune. No GPU needed for the selection step.",
+      "integrationIdea": "The repo's src/training/active_learner.py currently does pure heuristic uncertainty (UncertaintySampler._compute_uncertainty, lines 98-155: confidence-band + class-conflict + frame-edge scores) with NO diversity step and NO class-difficulty calibration -- so it queues redundant near-duplicate frames. Concretely: (1) Add difficulty calibration to _compute_uncertainty -- track a per-class running difficulty coefficient (e.g. from rolling mean confidence + box-stability/IoU jitter across frames via the existing tracker) and multiply each instance's uncertainty by it, so rare/hard classes survive ranking. (2) Add a new diversity pass, e.g. a select_diverse_batch() method (or a src/training/diversity_sampler.py) that, at export_for_labeling() time, embeds each queued frame (mean of detection crop features, or a lightweight backbone) and runs scikit-learn KMeans++ (sklearn.cluster.kmeans_plusplus -- already a project dep) to pick one representative per cluster -- a practical CCMS stand-in. (3) Surface a scripts/run_active_learning.py flag like --strategy ppal --query-size 100 to run uncertainty-shortlist then diversity-select, replacing the current \"top-N by score\" behavior, and report the chosen frames to the Streamlit dashboard.",
+      "limitations": "No inference-speed/params/memory numbers (it is a selection method, not a detector). Stage 2 (CCMS + k-Means++ over instance-matched similarities) adds an offline clustering cost that grows with candidate-pool size and instances per image -- it runs between training rounds, not per frame, but is heavier than pure uncertainty ranking. Evaluated only on RetinaNet and Faster R-CNN (two-stage / one-stage anchor detectors); not demonstrated on modern YOLOv8/v11 or DETR-style transformers used here. Difficulty coefficients are category-wise, assuming a fixed known label set, which fits poorly with the repo's open-vocabulary (OWLv2) path. A 2026 follow-up (PAL, arXiv:2601.15688) reports PPAL needing ~20.7% more annotations on average than newer reinforced selection, so it is strong-but-not-final SOTA.",
+      "confidence": "high"
+    },
+    {
+      "domain": "Generative / synthetic data augmentation",
+      "module": "src/training/augmentation.py",
+      "paper": {
+        "title": "ODGEN: Domain-specific Object Detection Data Generation with Diffusion Models",
+        "authors": "Zhu et al. (Jingyuan Zhu, Tsinghua University; co-authors incl. Apple)",
+        "venue": "NeurIPS 2024",
+        "year": 2024,
+        "arxivId": "2405.15199",
+        "url": "https://arxiv.org/abs/2405.15199"
+      },
+      "method": "ODGEN is a box-to-image diffusion pipeline. It first domain-adapts a pretrained Stable Diffusion model by fine-tuning its UNet on BOTH cropped foreground objects and full scene images, so it learns the target domain's appearance and per-class look. For layout control it renders synthesized visual prompts (foreground object patches composited at the desired bounding boxes for spatial constraints) paired with object-wise textual descriptions (per-box class text), so each region is conditioned on the right category. Images are generated conditioned on the bbox layout. A trained foreground/background discriminator then audits each generated box: if no synthetic object is detected in a labeled region, that pseudo-label is filtered, cleaning the synthetic annotations. The image+label pairs are mixed with real data to train detectors. Per-object conditioning and domain fine-tuning are what let it generalize to specialized domains where GLIGEN/ControlNet fail.",
+      "headlineResults": "Adding ODGEN synthetic data improves up to +25.3% mAP@.50:.95 on YOLOv5/YOLOv7 across 7 domain-specific Roboflow-100 subsets, the largest gain among compared generative methods (GLIGEN, ControlNet, etc.). On COCO-2014 (general domain) it leads prior methods by up to +5.6% mAP@.50:.95. Protocol: baselines use 200 real images; augmented runs add 5,000 synthetic images (a from-scratch variant trains YOLO on 10k synthetic, validates on 31k real). Built on Stable Diffusion with a fine-tuned UNet. No real-time/FPS numbers are reported (it is an offline data generator, not an inference model); the follow-up FLORA paper notes ODGEN's pipeline assumes enterprise GPUs (e.g., NVIDIA V100) and generation of thousands of samples.",
+      "realtimeWebcamApplicability": "Not real-time and not an on-device model. ODGEN is a Stable-Diffusion-based offline DATASET FACTORY: each domain needs UNet fine-tuning, then thousands of images are sampled (tens of denoising steps each at ~512px), realistically requiring a V100/A100-class GPU and hours of compute. It cannot run live on a consumer webcam or edge box, and there is no FPS/latency target. The right use for this platform is a one-time/offline data flywheel: generate labeled synthetic images for rare classes the live YOLO model misses (flagged by the existing active-learning module), train/fine-tune a compact YOLO offline, then export to ONNX/TensorRT for the real-time pipeline. The runtime stays the same fast YOLO; only its training data improves. On a consumer GPU (RTX 3090/4090) generation is feasible but slow (minutes for tens of images); CPU-only generation is impractical.",
+      "integrationIdea": "src/training/augmentation.py is misnamed today: its SyntheticGenerator only does classical geometric/photometric/mosaic/cutout transforms. Add a real diffusion backend, e.g. a DiffusionSyntheticGenerator class (or src/training/diffusion_augment.py) wrapping HuggingFace diffusers Stable Diffusion plus a bbox/ControlNet-style spatial condition, implementing ODGEN's two ideas: (1) fine-tune the UNet on cropped foreground crops + full frames captured from the user's own footage, (2) generate images conditioned on synthesized box layouts with per-box class text, then run a foreground/background discriminator filter before writing labels. Reuse the existing export_dataset() YOLO/dataset.yaml writer so output drops straight into the ultralytics training path. Wire the trigger to src/training/active_learner.py: classes/scenes it surfaces as low-confidence become the prompts/boxes ODGEN generates for, closing an offline rare-class data-flywheel that feeds the real-time detector.",
+      "limitations": "ODGEN is a heavy OFFLINE pipeline, not a real-time component: it requires per-domain UNet fine-tuning plus generating thousands of synthetic images, needing enterprise-grade GPUs (e.g., NVIDIA V100) per the FLORA follow-up; not feasible on a webcam/edge device. Generation quality and box-faithfulness still degrade for complex scenes with many classes and dense, occluded objects (authors' own stated limitation). Diffusion sampling is slow (tens of denoising steps per image at SD resolution). Gains are reported only for YOLOv5/YOLOv7 and these specific domains; the efficiency follow-up FLORA reports beating the ODGEN baseline (500 vs 5000 synthetic images, up to +21.3% mAP@.50:.95), indicating ODGEN's sample/compute budget is large.",
+      "confidence": "high"
+    },
+    {
+      "domain": "Privacy-preserving vision",
+      "module": "src/privacy.py, scripts/run_privacy.py",
+      "paper": {
+        "title": "DeepPrivacy2: Towards Realistic Full-Body Anonymization",
+        "authors": "Hukkelås & Lindseth",
+        "venue": "WACV 2023",
+        "year": 2023,
+        "arxivId": "2211.09454",
+        "url": "https://arxiv.org/abs/2211.09454"
+      },
+      "method": "A detect-then-synthesize GAN pipeline. People are first detected; each individual is anonymized recursively, one at a time, so crowded scenes are handled sequentially. Three style-based generators are used: a face generator (256x256) for faces, a CSE-guided full-body generator that conditions on dense-pose (Continuous Surface Embeddings) keypoints to synthesize a plausible body in the correct pose, and an unconditional full-body generator as a fallback when CSE detection fails. The CSE conditioning plus surface-guided sampling keeps the generated person aligned to the original pose/region, so downstream pose and detection signals are largely preserved while identity is replaced. The authors also introduce a new large full-body dataset (FDH) to train the body generator, substantially improving image quality and diversity over DeepPrivacy1.",
+      "headlineResults": "FID 0.56 on FDF (128x128), improving on DeepPrivacy1 (FID 0.68). Datasets introduced: FDF256 (242,031 train / 6,533 val images, 256x256, from YFCC100M) and FDH (Flickr Diverse Humans, ~1.5M full-body images). Speed: ~11.6 FPS for the CSE-guided full-body generator and ~7.9 FPS for the face generator on a single NVIDIA GTX 1080 (8GB); a comparison SG-GAN generator ran ~7.3 FPS. Reported to give the lowest pose-estimation endpoint error (EPE) among anonymization baselines and better body/face pose retention than blurring (though noted as unsuitable for fine hand-pose work).",
+      "realtimeWebcamApplicability": "Not real-time on edge as-is. The published 7.9-11.6 FPS is on a desktop GTX 1080 and is per-generator throughput — and it scales DOWN with crowd size because each person is synthesized one at a time, so a frame with N people costs roughly N forward passes. On a CPU-only or low-power edge device it would fall to well under 1 FPS. Realistic deployment on a live webcam stream means: (1) running detection at full FPS but invoking the GAN only on tracked, deduplicated identities; (2) a CUDA consumer GPU (the 1080 figures suggest an RTX 30/40-series could approach ~25-30 FPS single-person); (3) processing at reduced resolution / cropping to person ROIs; or (4) ONNX/TensorRT export (this repo already has scripts/export_model.py + benchmark.py) to cut latency. For multi-person real time at the edge it is currently impractical; it fits an \"anonymize-and-store\" or low-FPS compliance path better than a live overlay.",
+      "integrationIdea": "Add a RealisticAnonymizer class to src/privacy.py alongside the existing PrivacyFilter, wrapping DeepPrivacy2 (pip install of the hukkelas/deep_privacy2 toolbox) behind the same apply(frame, detections) interface so it is a drop-in upgrade from reversible blur to GAN replacement. Drive it from a new mode (e.g. mode=\"synthesize\") and feed it the person/face bboxes the YOLO detector already produces. Crucially, gate GAN calls through the existing multi-object tracker + re-ID so each identity is synthesized once and cached per track rather than every frame, recovering most of the FPS. Expose it in scripts/run_privacy.py via a --mode synthesize flag and a --device cuda guard that warns/falls back to blur when no GPU is present, and add a DeepPrivacy2 row to scripts/benchmark.py to measure on-device FPS before enabling it live.",
+      "limitations": "Inference is slow for real-time/edge (7.9-11.6 FPS on a 1080) and cost scales with the number of people because anonymization is recursive (one person per forward pass). Quality depends on the detector and on CSE dense-pose detection; when CSE fails it drops to a less faithful unconditional generator. Unsuitable for fine hand-pose / precision tasks. Generated humans can show artifacts in unusual poses, occlusion, or heavy crowding, and identity-replacement does not guarantee defeat of every re-identification attack. GAN models are large and GPU-memory hungry, complicating pure-CPU webcam use. Anonymizes humans only (not text, license plates, screens).",
+      "confidence": "high"
+    },
+    {
+      "domain": "Vision foundation models / self-supervised",
+      "module": "src/models/base.py (backbone/embeddings)",
+      "paper": {
+        "title": "DINOv3",
+        "authors": "Simeoni, Vo, Oquab, Bojanowski, Baldassarre et al. (Meta AI / FAIR)",
+        "venue": "arXiv",
+        "year": 2025,
+        "arxivId": "2508.10104",
+        "url": "https://arxiv.org/abs/2508.10104"
+      },
+      "method": "DINOv3 trains a 6.7B-param ViT (40 layers, 4096-d, 16x16 patches, RoPE, register tokens) purely self-supervised on LVD-1689M (~1.689B images curated from a 17B pool via hierarchical k-means on DINOv2 embeddings), keeping DINO/iBOT self-distillation (image-level + masked patch-level, no labels). Its key idea, Gram Anchoring, periodically regularizes the student's patch-feature Gram matrix (pairwise patch-similarity structure) toward an earlier cleaner reference, restoring sharp locally-consistent dense features over long training without hurting global features. It adds high-resolution adaptation and post-hoc text alignment for zero-shot. The frozen 7B teacher is distilled into ViT (S 21M, S+ 29M, B 86M, L 300M, H+ 840M) and ConvNeXt (T/S/B/L, 29M-198M) students.",
+      "headlineResults": "ViT-7B frozen backbone (no fine-tuning): ImageNet-1k linear-probe ~88.4% top-1; ADE20K semantic seg 55.9 mIoU (~+6 over DINOv2); NYUv2 depth RMSE 0.309 (best reported); COCO detection 66.1 mAP (frozen backbone + Plain-DETR, SOTA). Pretrained on LVD-1689M (~1.689B images). Distilled: ViT-S 21M, ViT-S+ 29M, ViT-B 86M, ViT-L 300M, ViT-H+ 840M; ConvNeXt-T/S/B/L 29M-198M. Proxy latency: DINOv2 ViT-B ~10-12 ms/img @224 in TensorRT FP16 (~80-100 FPS).",
+      "realtimeWebcamApplicability": "Use the distilled small students, not the 7B. ViT-S (21M) and ConvNeXt-Tiny (29M) are webcam-scale frozen feature extractors; patch features already power real-time unsupervised video segmentation on Jetson Orin NX via k-means on patch tokens. On a consumer GPU a ViT-S/16 forward at 224-518px is well within interactive rates (DINOv2 ViT-B ~10-12 ms in TensorRT FP16 as proxy); on CPU it is feasible at low res/FPS but ONNX/TensorRT export (already in this repo) is recommended. The /14->/16 patch change vs DINOv2 yields fewer tokens, helping latency. Practically: load facebook/dinov3-vits16 (or convnext-tiny) via transformers, run frozen, cache embeddings; reserve larger variants for offline/batch.",
+      "integrationIdea": "src/models/base.py today only defines BaseDetector (detect / detect_and_track). Add a sibling FeatureExtractor ABC there (embed(frame)->np.ndarray global vector; embed_dense(frame)->grid of patch features), then implement DINOv3Backbone (e.g. src/models/dinov3_backbone.py) loading facebook/dinov3-vits16 via transformers with a frozen forward. Wire its embeddings into the existing re-identification (more robust tracking), scene anomaly detection (k-NN/Mahalanobis on frozen features), density heatmaps and scene understanding (dense patch features), and the active-learning sampler. Export the small variant through the repo's existing ONNX/TensorRT path for edge.",
+      "limitations": "Custom DINOv3 License (not Apache-2.0 unlike DINOv2); HF weights are gated and derivatives require a 'Built with DINOv3' attribution. The 7B teacher is far too large for edge (SAM3 + DINOv3-ViT-7B exceeds the 16GB envelope of Jetson Orin NX). It is an embedding/representation model, not a detector: outputs features, so detection/segmentation/depth need a task head on top. Pretraining data is largely Instagram-derived web imagery (domain/bias considerations).",
+      "confidence": "high"
+    }
+  ],
+  "references": [
+    {
+      "title": "Performance-guided Reinforced Active Learning for Object Detection (MGRAL)",
+      "authors": "Liang et al.",
+      "venue": "arXiv",
+      "year": 2026,
+      "arxivId": "2601.15688",
+      "url": "https://arxiv.org/abs/2601.15688",
+      "domains": [
+        "Active learning for detection"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "SAM2MOT: A Novel Paradigm of Multi-Object Tracking by Segmentation",
+      "authors": "Jiang, Wang, Zhao, Li, Jiang",
+      "venue": "AAAI 2026",
+      "year": 2026,
+      "arxivId": "2504.04519",
+      "url": "https://arxiv.org/abs/2504.04519",
+      "domains": [
+        "Multi-object tracking"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "A Novel Compression Framework for YOLOv8: Achieving Real-Time Aerial Object Detection on Edge Devices via Structured Pruning and Channel-Wise Distillation",
+      "authors": "Shokouhmand et al.",
+      "venue": "arXiv",
+      "year": 2025,
+      "arxivId": "2509.12918",
+      "url": "https://arxiv.org/abs/2509.12918",
+      "domains": [
+        "Edge deployment & model optimization"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "Advancing construction safety: YOLOv8-CGS helmet detection model",
+      "authors": "YOLOv8-CGS authors",
+      "venue": "PLOS One",
+      "year": 2025,
+      "arxivId": "",
+      "url": "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0321713",
+      "domains": [
+        "Fall detection & workplace safety"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "AnyCalib: On-Manifold Learning for Model-Agnostic Single-View Camera Calibration",
+      "authors": "Tirado-Garín & Civera",
+      "venue": "ICCV 2025",
+      "year": 2025,
+      "arxivId": "2503.12701",
+      "url": "https://arxiv.org/abs/2503.12701",
+      "domains": [
+        "Camera calibration & geometry"
+      ],
+      "verdict": "uncertain"
+    },
+    {
+      "title": "Beyond Inference Intervention: Identity-Decoupled Diffusion for Face Anonymization (ID2Face)",
+      "authors": "Yang, Lin, Xu, Li et al.",
+      "venue": "arXiv",
+      "year": 2025,
+      "arxivId": "2510.24213",
+      "url": "https://arxiv.org/abs/2510.24213",
+      "domains": [
+        "Privacy-preserving vision"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "Bridging the Scale Gap: Balanced Tiny and General Object Detection in Remote Sensing Imagery (ScaleBridge-Det)",
+      "authors": "Authors (arXiv 2512.01665)",
+      "venue": "arXiv preprint",
+      "year": 2025,
+      "arxivId": "2512.01665",
+      "url": "https://arxiv.org/abs/2512.01665",
+      "domains": [
+        "Small / long-range object detection"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "Deep-BrownConrady: Prediction of Camera Calibration and Distortion Parameters Using Deep Learning and Synthetic Data",
+      "authors": "Chaudhry et al.",
+      "venue": "IEEE Access / arXiv",
+      "year": 2025,
+      "arxivId": "2501.14510",
+      "url": "https://arxiv.org/abs/2501.14510",
+      "domains": [
+        "Camera calibration & geometry"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "Depth Anything 3: Recovering the Visual Space from Any Views",
+      "authors": "ByteDance Seed (Lihe Yang et al.)",
+      "venue": "arXiv (ByteDance Seed)",
+      "year": 2025,
+      "arxivId": "2511.10647",
+      "url": "https://arxiv.org/abs/2511.10647",
+      "domains": [
+        "Monocular depth estimation"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "DiffCalib: Reformulating Monocular Camera Calibration as Diffusion-Based Dense Incident Map Generation",
+      "authors": "He, Xu, Zhang, Chen, Cui & Guo",
+      "venue": "AAAI 2025 (Oral)",
+      "year": 2025,
+      "arxivId": "2405.15619",
+      "url": "https://arxiv.org/abs/2405.15619",
+      "domains": [
+        "Camera calibration & geometry"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "DINOv3",
+      "authors": "Siméoni, Vo, et al. (Meta AI Research)",
+      "venue": "arXiv",
+      "year": 2025,
+      "arxivId": "2508.10104",
+      "url": "https://arxiv.org/abs/2508.10104",
+      "domains": [
+        "Vision foundation models / self-supervised"
+      ],
+      "verdict": "confirmed"
+    },
+    {
+      "title": "Domain Generalization for Person Re-identification: A Survey Towards Domain-Agnostic Person Matching",
+      "authors": "PerceptualAI-Lab et al.",
+      "venue": "Neurocomputing (also arXiv)",
+      "year": 2025,
+      "arxivId": "2506.12413",
+      "url": "https://arxiv.org/abs/2506.12413",
+      "domains": [
+        "Person re-identification"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "Dome-DETR: DETR with Density-Oriented Feature-Query Manipulation for Efficient Tiny Object Detection",
+      "authors": "Zhu et al.",
+      "venue": "ACM Multimedia (ACM MM) 2025",
+      "year": 2025,
+      "arxivId": "2505.05741",
+      "url": "https://arxiv.org/abs/2505.05741",
+      "domains": [
+        "Small / long-range object detection"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "EdgeTAM: On-Device Track Anything Model",
+      "authors": "Zhou, Zhu, Loy, et al. (Meta)",
+      "venue": "CVPR 2025",
+      "year": 2025,
+      "arxivId": "2501.07256",
+      "url": "https://arxiv.org/abs/2501.07256",
+      "domains": [
+        "Promptable segmentation"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "ElderFallGuard: Real-Time IoT and Computer Vision-Based Fall Detection System for Elderly Safety",
+      "authors": "ElderFallGuard authors (arXiv 2505.11845)",
+      "venue": "arXiv",
+      "year": 2025,
+      "arxivId": "2505.11845",
+      "url": "https://arxiv.org/abs/2505.11845",
+      "domains": [
+        "Fall detection & workplace safety"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "FLUID: Training-Free Face De-identification via Latent Identity Substitution",
+      "authors": "(see arXiv listing)",
+      "venue": "arXiv",
+      "year": 2025,
+      "arxivId": "2511.17005",
+      "url": "https://arxiv.org/abs/2511.17005",
+      "domains": [
+        "Privacy-preserving vision"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "Focusing on Tracks for Online Multi-Object Tracking (TrackTrack)",
+      "authors": "Shim, Ko",
+      "venue": "CVPR 2025",
+      "year": 2025,
+      "arxivId": "",
+      "url": "https://openaccess.thecvf.com/content/CVPR2025/papers/Shim_Focusing_on_Tracks_for_Online_Multi-Object_Tracking_CVPR_2025_paper.pdf",
+      "domains": [
+        "Multi-object tracking"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "Just Dance with π! A Poly-modal Inductor for Weakly-supervised Video Anomaly Detection",
+      "authors": "Majhi, D'Amicantonio, Dantcheva, Kong, Garattoni, Garattoni, Bondarev, Bremond",
+      "venue": "CVPR 2025",
+      "year": 2025,
+      "arxivId": "2505.13123",
+      "url": "https://arxiv.org/abs/2505.13123",
+      "domains": [
+        "Video anomaly detection"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "MCBLT: Multi-Camera Multi-Object 3D Tracking in Long Videos (originally 'BEV-SUSHI: Multi-Target Multi-Camera 3D Detection and Tracking in Bird's-Eye View')",
+      "authors": "Wang, Meinhardt, Cetintas, Yang, Pusegaonkar, Missaoui, Biswas, Tang, Leal-Taixe (NVIDIA / TU Munich / Univ. of Washington)",
+      "venue": "ICCV 2025 Workshops (AI City Challenge)",
+      "year": 2025,
+      "arxivId": "2412.00692",
+      "url": "https://openaccess.thecvf.com/content/ICCV2025W/AICity/papers/Wang_MCBLT_Multi-Camera_Multi-Object_3D_Tracking_in_Long_Videos_ICCVW_2025_paper.pdf",
+      "domains": [
+        "Multi-camera / cross-camera tracking & fusion"
+      ],
+      "verdict": "confirmed"
+    },
+    {
+      "title": "Open World Scene Graph Generation using Vision Language Models",
+      "authors": "Dutta, Mehrab, Sawhney, Neog, Khurana et al.",
+      "venue": "CVPR 2025 Workshop (CVinW)",
+      "year": 2025,
+      "arxivId": "2506.08189",
+      "url": "https://arxiv.org/abs/2506.08189",
+      "domains": [
+        "Scene-graph generation"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "Pose-Based Fall Detection System: Efficient Monitoring on Standard CPUs",
+      "authors": "arXiv 2503.19501 authors",
+      "venue": "arXiv",
+      "year": 2025,
+      "arxivId": "2503.19501",
+      "url": "https://arxiv.org/abs/2503.19501",
+      "domains": [
+        "Fall detection & workplace safety"
+      ],
+      "verdict": "refuted"
+    },
+    {
+      "title": "RF-DETR: Neural Architecture Search for Real-Time Detection Transformers",
+      "authors": "Roboflow (Robinson, Gallagher et al.)",
+      "venue": "ICLR 2026",
+      "year": 2025,
+      "arxivId": "2511.09554",
+      "url": "https://arxiv.org/abs/2511.09554",
+      "domains": [
+        "Real-time object detection"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "SAM 3: Segment Anything with Concepts",
+      "authors": "Meta FAIR (SAM 3 team)",
+      "venue": "arXiv",
+      "year": 2025,
+      "arxivId": "2511.16719",
+      "url": "https://arxiv.org/abs/2511.16719",
+      "domains": [
+        "Promptable segmentation"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "SOD-YOLO: Enhancing YOLO-Based Detection of Small Objects in UAV Imagery",
+      "authors": "Anonymous/authors (arXiv 2507.12727)",
+      "venue": "arXiv preprint",
+      "year": 2025,
+      "arxivId": "2507.12727",
+      "url": "https://arxiv.org/abs/2507.12727",
+      "domains": [
+        "Small / long-range object detection"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "Ultralytics YOLO Evolution: An Overview of YOLO26, YOLO11, YOLOv8, and YOLOv5 Object Detectors for Computer Vision and Pattern Recognition",
+      "authors": "Hidayatullah et al.",
+      "venue": "arXiv",
+      "year": 2025,
+      "arxivId": "2510.09653",
+      "url": "https://arxiv.org/abs/2510.09653",
+      "domains": [
+        "Edge deployment & model optimization"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "V-JEPA 2: Self-Supervised Video Models Enable Understanding, Prediction and Planning",
+      "authors": "Assran, Bardes, et al. (Meta FAIR)",
+      "venue": "arXiv",
+      "year": 2025,
+      "arxivId": "2506.09985",
+      "url": "https://arxiv.org/abs/2506.09985",
+      "domains": [
+        "Vision foundation models / self-supervised"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "Video Anomaly Detection with Motion and Appearance Guided Patch Diffusion Model",
+      "authors": "Zhou, Cai, Ye, Feng, Gao, Yu, Song, Yang",
+      "venue": "AAAI 2025",
+      "year": 2025,
+      "arxivId": "2412.09026",
+      "url": "https://arxiv.org/abs/2412.09026",
+      "domains": [
+        "Video anomaly detection"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "YOLO26: Key Architectural Enhancements and Performance Benchmarking for Real-Time Object Detection",
+      "authors": "Sundaram et al. (Ultralytics-affiliated)",
+      "venue": "arXiv",
+      "year": 2025,
+      "arxivId": "2509.25164",
+      "url": "https://arxiv.org/abs/2509.25164",
+      "domains": [
+        "Edge deployment & model optimization"
+      ],
+      "verdict": "refuted"
+    },
+    {
+      "title": "YOLOv12: Attention-Centric Real-Time Object Detectors",
+      "authors": "Tian, Ye, Doermann",
+      "venue": "NeurIPS 2025",
+      "year": 2025,
+      "arxivId": "2502.12524",
+      "url": "https://arxiv.org/abs/2502.12524",
+      "domains": [
+        "Real-time object detection"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "CamPro: Camera-based Anti-Facial Recognition",
+      "authors": "(USSLAB, Zhejiang University)",
+      "venue": "NDSS",
+      "year": 2024,
+      "arxivId": "2401.00151",
+      "url": "https://arxiv.org/abs/2401.00151",
+      "domains": [
+        "Privacy-preserving vision"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "CLIP-EBC: CLIP Can Count Accurately through Enhanced Blockwise Classification",
+      "authors": "Yiming Ma, Victor Sanchez, Tanaya Guha",
+      "venue": "arXiv",
+      "year": 2024,
+      "arxivId": "2403.09281",
+      "url": "https://arxiv.org/abs/2403.09281",
+      "domains": [
+        "Crowd counting & density estimation"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "Computer-Aided Fall Recognition Using a Three-Stream Spatial-Temporal GCN Model with Adaptive Feature Aggregation",
+      "authors": "Sania et al.",
+      "venue": "arXiv (later in Scientific Reports 2025)",
+      "year": 2024,
+      "arxivId": "2408.12211",
+      "url": "https://arxiv.org/abs/2408.12211",
+      "domains": [
+        "Fall detection & workplace safety"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "D-FINE: Redefine Regression Task in DETRs as Fine-grained Distribution Refinement",
+      "authors": "Peng, Wang, Tang et al.",
+      "venue": "ICLR 2025",
+      "year": 2024,
+      "arxivId": "2410.13842",
+      "url": "https://arxiv.org/abs/2410.13842",
+      "domains": [
+        "Real-time object detection"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "Data Augmentation for Object Detection via Controllable Diffusion Models (ControlAug)",
+      "authors": "Fang, Han, Zhang, Zhou, Hu, Ye",
+      "venue": "WACV 2024",
+      "year": 2024,
+      "arxivId": "",
+      "url": "https://openaccess.thecvf.com/content/WACV2024/html/Fang_Data_Augmentation_for_Object_Detection_via_Controllable_Diffusion_Models_WACV_2024_paper.html",
+      "domains": [
+        "Generative / synthetic data augmentation"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "DeGCN: Deformable Graph Convolutional Networks for Skeleton-Based Action Recognition",
+      "authors": "Myung et al.",
+      "venue": "IEEE Transactions on Image Processing (TIP) 2024",
+      "year": 2024,
+      "arxivId": "",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/38526905/",
+      "domains": [
+        "Skeleton-based action recognition"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "Depth Anything V2",
+      "authors": "Yang, Kang, Huang, Zhao, Xu, Feng, Zhao",
+      "venue": "NeurIPS",
+      "year": 2024,
+      "arxivId": "2406.09414",
+      "url": "https://arxiv.org/abs/2406.09414",
+      "domains": [
+        "Monocular depth estimation"
+      ],
+      "verdict": "confirmed"
+    },
+    {
+      "title": "Depth Pro: Sharp Monocular Metric Depth in Less Than a Second",
+      "authors": "Bochkovskii, Delaunoy, Germain, Santos, Zhou, Richter, Koltun (Apple)",
+      "venue": "arXiv (Apple ML Research)",
+      "year": 2024,
+      "arxivId": "2410.02073",
+      "url": "https://arxiv.org/abs/2410.02073",
+      "domains": [
+        "Monocular depth estimation"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "DETRs Beat YOLOs on Real-time Object Detection (RT-DETR)",
+      "authors": "Zhao, Lv, Xu, Wei, Wang, Dang, Liu, Chen et al.",
+      "venue": "CVPR 2024",
+      "year": 2024,
+      "arxivId": "2304.08069",
+      "url": "https://arxiv.org/abs/2304.08069",
+      "domains": [
+        "Small / long-range object detection",
+        "Edge deployment & model optimization"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "DINOv2: Learning Robust Visual Features without Supervision",
+      "authors": "Oquab, Darcet, et al. (Meta AI)",
+      "venue": "TMLR / arXiv",
+      "year": 2024,
+      "arxivId": "2304.07193",
+      "url": "https://arxiv.org/abs/2304.07193",
+      "domains": [
+        "Vision foundation models / self-supervised"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "EdgeOAR: Real-time Online Action Recognition On Edge Devices",
+      "authors": "Wei Luo et al.",
+      "venue": "arXiv 2024 (IEEE Transactions on Mobile Computing 2025)",
+      "year": 2024,
+      "arxivId": "2412.01267",
+      "url": "https://arxiv.org/abs/2412.01267",
+      "domains": [
+        "Temporal video understanding"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "Effective Data Augmentation With Diffusion Models (DA-Fusion)",
+      "authors": "Trabucco, Doherty, Gurinas, Salakhutdinov",
+      "venue": "ICLR 2024",
+      "year": 2024,
+      "arxivId": "2302.07944",
+      "url": "https://arxiv.org/abs/2302.07944",
+      "domains": [
+        "Generative / synthetic data augmentation"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "Efficient Deep Learning Infrastructures for Embedded Computing Systems: A Comprehensive Survey and Future Envision",
+      "authors": "Liu et al.",
+      "venue": "ACM TECS / arXiv",
+      "year": 2024,
+      "arxivId": "2411.01431",
+      "url": "https://arxiv.org/abs/2411.01431",
+      "domains": [
+        "Edge deployment & model optimization"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "EfficientViT-SAM: Accelerated Segment Anything Model Without Performance Loss",
+      "authors": "Zhang, Cai, Han, et al.",
+      "venue": "CVPR Workshop (ELVM) 2024",
+      "year": 2024,
+      "arxivId": "2402.05008",
+      "url": "https://arxiv.org/abs/2402.05008",
+      "domains": [
+        "Promptable segmentation"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "GeoCalib: Learning Single-Image Calibration with Geometric Optimization",
+      "authors": "Veicht, Sarlin, Lindenberger & Pollefeys",
+      "venue": "ECCV 2024",
+      "year": 2024,
+      "arxivId": "2409.06704",
+      "url": "https://arxiv.org/abs/2409.06704",
+      "domains": [
+        "Camera calibration & geometry"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "HAT: History-Augmented Anchor Transformer for Online Temporal Action Localization",
+      "authors": "Sakib Reza, Yuexi Zhang, Mohsen Moghaddam, Octavia Camps",
+      "venue": "ECCV 2024",
+      "year": 2024,
+      "arxivId": "2408.06437",
+      "url": "https://arxiv.org/abs/2408.06437",
+      "domains": [
+        "Temporal video understanding"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "Hybrid-SORT: Weak Cues Matter for Online Multi-Object Tracking",
+      "authors": "Yang, Han et al.",
+      "venue": "AAAI 2024",
+      "year": 2024,
+      "arxivId": "2308.00783",
+      "url": "https://arxiv.org/abs/2308.00783",
+      "domains": [
+        "Multi-object tracking"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "Lifting Multi-View Detection and Tracking to the Bird's Eye View (TrackTacular)",
+      "authors": "Teepe, Gilg, Herzog, Wolf, Rigoll",
+      "venue": "CVPRW (WACV-style multi-view); arXiv",
+      "year": 2024,
+      "arxivId": "2403.12573",
+      "url": "https://arxiv.org/abs/2403.12573",
+      "domains": [
+        "Multi-camera / cross-camera tracking & fusion"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "MCBLT: Multi-Camera Multi-Object 3D Tracking in Long Videos (a.k.a. BEV-SUSHI)",
+      "authors": "Wang, Meinhardt, Cetintas, Yang, Pusegaonkar, Missaoui, Biswas, Tang, Leal-Taixe",
+      "venue": "arXiv (NVIDIA)",
+      "year": 2024,
+      "arxivId": "2412.00692",
+      "url": "https://arxiv.org/abs/2412.00692",
+      "domains": [
+        "Multi-camera / cross-camera tracking & fusion"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "Metric3Dv2: A Versatile Monocular Geometric Foundation Model for Zero-shot Metric Depth and Surface Normal Estimation",
+      "authors": "Hu, Yin, Wang, Chen, Qi, Yu, Shen et al.",
+      "venue": "arXiv (TPAMI)",
+      "year": 2024,
+      "arxivId": "2404.15506",
+      "url": "https://arxiv.org/abs/2404.15506",
+      "domains": [
+        "Monocular depth estimation"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "NeuFlow v2: High-Efficiency Optical Flow Estimation on Edge Devices",
+      "authors": "Zhang, Gupta, Jiang, Singh",
+      "venue": "arXiv",
+      "year": 2024,
+      "arxivId": "2408.10161",
+      "url": "https://arxiv.org/abs/2408.10161",
+      "domains": [
+        "Classical OpenCV pipelines"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "ODGEN: Domain-specific Object Detection Data Generation with Diffusion Models",
+      "authors": "Zhu, Li, Liu, Yuan, Huang, Shan, Ma",
+      "venue": "NeurIPS 2024",
+      "year": 2024,
+      "arxivId": "2405.15199",
+      "url": "https://arxiv.org/abs/2405.15199",
+      "domains": [
+        "Generative / synthetic data augmentation"
+      ],
+      "verdict": "confirmed"
+    },
+    {
+      "title": "OpenPSG: Open-set Panoptic Scene Graph Generation via Large Multimodal Models",
+      "authors": "Zhou, Shen, Stadler et al.",
+      "venue": "ECCV 2024",
+      "year": 2024,
+      "arxivId": "2407.11213",
+      "url": "https://arxiv.org/abs/2407.11213",
+      "domains": [
+        "Scene-graph generation"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "PixelFade: Privacy-preserving Person Re-identification with Noise-guided Progressive Replacement",
+      "authors": "Zhang et al.",
+      "venue": "ACM MM",
+      "year": 2024,
+      "arxivId": "2408.05543",
+      "url": "https://arxiv.org/abs/2408.05543",
+      "domains": [
+        "Privacy-preserving vision"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "Plug and Play Active Learning for Object Detection",
+      "authors": "Yang, Pang, Crowley et al.",
+      "venue": "CVPR 2024",
+      "year": 2024,
+      "arxivId": "2211.11612",
+      "url": "https://arxiv.org/abs/2211.11612",
+      "domains": [
+        "Active learning for detection"
+      ],
+      "verdict": "confirmed"
+    },
+    {
+      "title": "RADIOv2.5: Improved Baselines for Agglomerative Vision Foundation Models",
+      "authors": "Heinrich, Ranzinger, et al. (NVIDIA)",
+      "venue": "arXiv",
+      "year": 2024,
+      "arxivId": "2412.07679",
+      "url": "https://arxiv.org/abs/2412.07679",
+      "domains": [
+        "Vision foundation models / self-supervised"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "REACT: Real-time Efficiency and Accuracy Compromise for Tradeoffs in Scene Graph Generation",
+      "authors": "Neau, Maelic et al.",
+      "venue": "BMVC 2025",
+      "year": 2024,
+      "arxivId": "2405.16116",
+      "url": "https://arxiv.org/abs/2405.16116",
+      "domains": [
+        "Scene-graph generation"
+      ],
+      "verdict": "confirmed"
+    },
+    {
+      "title": "Revealing Key Details to See Differences: A Novel Prototypical Perspective for Skeleton-based Action Recognition (ProtoGCN)",
+      "authors": "Liu et al.",
+      "venue": "arXiv (2024); CVPR 2025",
+      "year": 2024,
+      "arxivId": "2411.18941",
+      "url": "https://arxiv.org/abs/2411.18941",
+      "domains": [
+        "Skeleton-based action recognition"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "RT-DETRv2: Improved Baseline with Bag-of-Freebies for Real-Time Detection Transformer",
+      "authors": "Lv, Zhao, Wei et al. (Baidu)",
+      "venue": "arXiv 2024 (builds on RT-DETR, CVPR 2024)",
+      "year": 2024,
+      "arxivId": "2407.17140",
+      "url": "https://arxiv.org/abs/2407.17140",
+      "domains": [
+        "Real-time object detection"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "SAM 2: Segment Anything in Images and Videos",
+      "authors": "Ravi, Gabeur, Hu, et al. (Meta FAIR)",
+      "venue": "arXiv (ICLR 2025)",
+      "year": 2024,
+      "arxivId": "2408.00714",
+      "url": "https://arxiv.org/abs/2408.00714",
+      "domains": [
+        "Promptable segmentation"
+      ],
+      "verdict": "confirmed"
+    },
+    {
+      "title": "SEA-RAFT: Simple, Efficient, Accurate RAFT for Optical Flow",
+      "authors": "Wang, Lipson, Deng",
+      "venue": "ECCV 2024 (Oral, Best Paper Award Candidate)",
+      "year": 2024,
+      "arxivId": "2405.14793",
+      "url": "https://arxiv.org/abs/2405.14793",
+      "domains": [
+        "Classical OpenCV pipelines"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "SH17: A Dataset for Human Safety and Personal Protective Equipment Detection in Manufacturing Industry",
+      "authors": "Hafiz Mughees Ahmad, Afshin Rahimi",
+      "venue": "Journal of Safety Science and Resilience / arXiv",
+      "year": 2024,
+      "arxivId": "2407.04590",
+      "url": "https://arxiv.org/abs/2407.04590",
+      "domains": [
+        "Fall detection & workplace safety"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "SkateFormer: Skeletal-Temporal Transformer for Human Action Recognition",
+      "authors": "Jeonghyeok Do, Munchurl Kim",
+      "venue": "ECCV 2024",
+      "year": 2024,
+      "arxivId": "2403.09508",
+      "url": "https://arxiv.org/abs/2403.09508",
+      "domains": [
+        "Skeleton-based action recognition"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "The 8th AI City Challenge",
+      "authors": "Wang, Naphade, Anastasiu, Tang et al.",
+      "venue": "CVPR Workshops (CVPRW)",
+      "year": 2024,
+      "arxivId": "2404.09432",
+      "url": "https://arxiv.org/abs/2404.09432",
+      "domains": [
+        "Multi-camera / cross-camera tracking & fusion"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "Transformer for Object Re-Identification: A Survey",
+      "authors": "Ye, Chen, Zhang, Leng, et al.",
+      "venue": "International Journal of Computer Vision (IJCV)",
+      "year": 2024,
+      "arxivId": "2401.06960",
+      "url": "https://arxiv.org/abs/2401.06960",
+      "domains": [
+        "Person re-identification"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "UniDepth: Universal Monocular Metric Depth Estimation",
+      "authors": "Piccinelli, Yang, Sakaridis, Segu, Li, Van Gool, Yu",
+      "venue": "CVPR",
+      "year": 2024,
+      "arxivId": "2403.18913",
+      "url": "https://arxiv.org/abs/2403.18913",
+      "domains": [
+        "Monocular depth estimation"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "VadCLIP: Adapting Vision-Language Models for Weakly Supervised Video Anomaly Detection",
+      "authors": "Wu, Zhou, Pang, Zhou, Yan, Wang, Zhang",
+      "venue": "AAAI 2024",
+      "year": 2024,
+      "arxivId": "2308.11681",
+      "url": "https://arxiv.org/abs/2308.11681",
+      "domains": [
+        "Video anomaly detection"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "XFeat: Accelerated Features for Lightweight Image Matching",
+      "authors": "Potje, Cadar, Araujo, Martins, Nascimento",
+      "venue": "CVPR 2024",
+      "year": 2024,
+      "arxivId": "2404.19174",
+      "url": "https://arxiv.org/abs/2404.19174",
+      "domains": [
+        "Classical OpenCV pipelines"
+      ],
+      "verdict": "confirmed"
+    },
+    {
+      "title": "YOLOv10: Real-Time End-to-End Object Detection",
+      "authors": "Wang, Chen, Liu et al. (Tsinghua THU-MIG)",
+      "venue": "NeurIPS 2024",
+      "year": 2024,
+      "arxivId": "2405.14458",
+      "url": "https://arxiv.org/abs/2405.14458",
+      "domains": [
+        "Real-time object detection"
+      ],
+      "verdict": "confirmed"
+    },
+    {
+      "title": "Beyond Appearance: a Semantic Controllable Self-Supervised Learning Framework for Human-Centric Visual Tasks (SOLIDER)",
+      "authors": "Chen, Xu, Jia, Luo, Wang, Wang, Jin, Sun",
+      "venue": "CVPR",
+      "year": 2023,
+      "arxivId": "2303.17602",
+      "url": "https://arxiv.org/abs/2303.17602",
+      "domains": [
+        "Multi-camera / cross-camera tracking & fusion"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "CLIP-ReID: Exploiting Vision-Language Model for Image Re-Identification without Concrete Text Labels",
+      "authors": "Li, Sun, Li",
+      "venue": "AAAI",
+      "year": 2023,
+      "arxivId": "2211.13977",
+      "url": "https://arxiv.org/abs/2211.13977",
+      "domains": [
+        "Person re-identification"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "DatasetDM: Synthesizing Data with Perception Annotations Using Diffusion Models",
+      "authors": "Wu, Zhao, Chen, Gu, Zhao, He, Zhou, Shou, Shen",
+      "venue": "NeurIPS 2023",
+      "year": 2023,
+      "arxivId": "2308.06160",
+      "url": "https://arxiv.org/abs/2308.06160",
+      "domains": [
+        "Generative / synthetic data augmentation"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "DeepPrivacy2: Towards Realistic Full-Body Anonymization",
+      "authors": "Hukkelas, Lindseth",
+      "venue": "WACV",
+      "year": 2023,
+      "arxivId": "2211.09454",
+      "url": "https://arxiv.org/abs/2211.09454",
+      "domains": [
+        "Privacy-preserving vision"
+      ],
+      "verdict": "confirmed"
+    },
+    {
+      "title": "EdgeSAM: Prompt-In-the-Loop Distillation for On-Device Deployment of SAM",
+      "authors": "Zhou, Li, Loy, et al.",
+      "venue": "arXiv",
+      "year": 2023,
+      "arxivId": "2312.06660",
+      "url": "https://arxiv.org/abs/2312.06660",
+      "domains": [
+        "Promptable segmentation"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "EVA-02: A Visual Representation for Neon Genesis",
+      "authors": "Fang, Sun, et al.",
+      "venue": "arXiv / Image and Vision Computing",
+      "year": 2023,
+      "arxivId": "2303.11331",
+      "url": "https://arxiv.org/abs/2303.11331",
+      "domains": [
+        "Vision foundation models / self-supervised"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "LightGlue: Local Feature Matching at Light Speed",
+      "authors": "Lindenberger, Sarlin, Pollefeys",
+      "venue": "ICCV 2023",
+      "year": 2023,
+      "arxivId": "2306.13643",
+      "url": "https://arxiv.org/abs/2306.13643",
+      "domains": [
+        "Classical OpenCV pipelines"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "MiniROAD: Minimal RNN Framework for Online Action Detection",
+      "authors": "Joungbin An, Hyolim Kang, Su Ho Han, Ming-Hsuan Yang, Seon Joo Kim",
+      "venue": "ICCV 2023",
+      "year": 2023,
+      "arxivId": "",
+      "url": "https://openaccess.thecvf.com/content/ICCV2023/html/An_MiniROAD_Minimal_RNN_Framework_for_Online_Action_Detection_ICCV_2023_paper.html",
+      "domains": [
+        "Temporal video understanding"
+      ],
+      "verdict": "confirmed"
+    },
+    {
+      "title": "Observation-Centric SORT: Rethinking SORT for Robust Multi-Object Tracking",
+      "authors": "Cao, Pang, Weng, Khirodkar, Kitani",
+      "venue": "CVPR 2023",
+      "year": 2023,
+      "arxivId": "2203.14360",
+      "url": "https://arxiv.org/abs/2203.14360",
+      "domains": [
+        "Multi-object tracking"
+      ],
+      "verdict": "confirmed"
+    },
+    {
+      "title": "Point-Query Quadtree for Crowd Counting, Localization, and More",
+      "authors": "Chengxin Liu et al.",
+      "venue": "ICCV",
+      "year": 2023,
+      "arxivId": "2308.13814",
+      "url": "https://arxiv.org/abs/2308.13814",
+      "domains": [
+        "Crowd counting & density estimation"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "RelTR: Relation Transformer for Scene Graph Generation",
+      "authors": "Cong, Yang, Rosenhahn",
+      "venue": "IEEE TPAMI",
+      "year": 2023,
+      "arxivId": "2201.11460",
+      "url": "https://arxiv.org/abs/2201.11460",
+      "domains": [
+        "Scene-graph generation"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "STEERER: Resolving Scale Variations for Counting and Localization via Selective Inheritance Learning",
+      "authors": "Tao Han, Lei Bai, Lingbo Liu, Wanli Ouyang",
+      "venue": "ICCV",
+      "year": 2023,
+      "arxivId": "2308.10468",
+      "url": "https://github.com/taohan10200/STEERER",
+      "domains": [
+        "Crowd counting & density estimation"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "Tame a Wild Camera: In-the-Wild Monocular Camera Calibration",
+      "authors": "Zhu, Kumar, Hu & Liu",
+      "venue": "NeurIPS 2023",
+      "year": 2023,
+      "arxivId": "2306.10988",
+      "url": "https://arxiv.org/abs/2306.10988",
+      "domains": [
+        "Camera calibration & geometry"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "VideoMAE V2: Scaling Video Masked Autoencoders with Dual Masking",
+      "authors": "Wang et al. (Limin Wang, Bingkun Huang, Zhiyu Zhao, Zhan Tong, Yinan He, Yi Wang, Yali Wang, Yu Qiao)",
+      "venue": "CVPR 2023",
+      "year": 2023,
+      "arxivId": "2303.16727",
+      "url": "https://arxiv.org/abs/2303.16727",
+      "domains": [
+        "Temporal video understanding"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "X-Paste: Revisiting Scalable Copy-Paste for Instance Segmentation using CLIP and StableDiffusion",
+      "authors": "Zhao, Hu, Yang, et al.",
+      "venue": "ICML 2023",
+      "year": 2023,
+      "arxivId": "2212.03863",
+      "url": "https://arxiv.org/abs/2212.03863",
+      "domains": [
+        "Generative / synthetic data augmentation"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "BoT-SORT: Robust Associations Multi-Pedestrian Tracking",
+      "authors": "Aharon, Orfaig, Bobrovsky",
+      "venue": "arXiv",
+      "year": 2022,
+      "arxivId": "2206.14651",
+      "url": "https://arxiv.org/abs/2206.14651",
+      "domains": [
+        "Multi-camera / cross-camera tracking & fusion"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "ByteTrack: Multi-Object Tracking by Associating Every Detection Box",
+      "authors": "Zhang et al.",
+      "venue": "ECCV 2022",
+      "year": 2022,
+      "arxivId": "2110.06864",
+      "url": "https://arxiv.org/abs/2110.06864",
+      "domains": [
+        "Multi-object tracking"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "Panoptic Scene Graph Generation",
+      "authors": "Yang, Ang, Guo, Zhou, Zhang, Liu",
+      "venue": "ECCV 2022",
+      "year": 2022,
+      "arxivId": "2207.11247",
+      "url": "https://arxiv.org/abs/2207.11247",
+      "domains": [
+        "Scene-graph generation"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "Real-time Online Video Detection with Temporal Smoothing Transformers",
+      "authors": "Yue Zhao, Philipp Krähenbühl",
+      "venue": "ECCV 2022",
+      "year": 2022,
+      "arxivId": "2209.09236",
+      "url": "https://arxiv.org/abs/2209.09236",
+      "domains": [
+        "Temporal video understanding"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "Revisiting Skeleton-based Action Recognition (PoseConv3D / PoseC3D)",
+      "authors": "Duan et al. (Haodong Duan, Yue Zhao, Kai Chen, Dahua Lin, Bo Dai)",
+      "venue": "CVPR 2022 (Oral)",
+      "year": 2022,
+      "arxivId": "2104.13586",
+      "url": "https://arxiv.org/abs/2104.13586",
+      "domains": [
+        "Skeleton-based action recognition"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "Slicing Aided Hyper Inference and Fine-tuning for Small Object Detection",
+      "authors": "Akyon, Altinuc, Temizel",
+      "venue": "IEEE ICIP 2022",
+      "year": 2022,
+      "arxivId": "2202.06934",
+      "url": "https://arxiv.org/abs/2202.06934",
+      "domains": [
+        "Small / long-range object detection"
+      ],
+      "verdict": "confirmed"
+    },
+    {
+      "title": "Video Anomaly Detection by Solving Decoupled Spatio-Temporal Jigsaw Puzzles",
+      "authors": "Wang, Wang, Qin, Zhang, Bao, Huang",
+      "venue": "ECCV 2022",
+      "year": 2022,
+      "arxivId": "2207.10172",
+      "url": "https://arxiv.org/abs/2207.10172",
+      "domains": [
+        "Video anomaly detection"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "Channel-wise Topology Refinement Graph Convolution for Skeleton-Based Action Recognition",
+      "authors": "Chen et al. (Yuxin Chen, Ziqi Zhang, Chunfeng Yuan, Bing Li, Ying Deng, Weiming Hu)",
+      "venue": "ICCV 2021",
+      "year": 2021,
+      "arxivId": "2107.12213",
+      "url": "https://arxiv.org/abs/2107.12213",
+      "domains": [
+        "Skeleton-based action recognition"
+      ],
+      "verdict": "confirmed"
+    },
+    {
+      "title": "Multiple Instance Active Learning for Object Detection",
+      "authors": "Yuan, Wan, Wang et al.",
+      "venue": "CVPR 2021",
+      "year": 2021,
+      "arxivId": "2104.02324",
+      "url": "https://arxiv.org/abs/2104.02324",
+      "domains": [
+        "Active learning for detection"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "Rethinking Counting and Localization in Crowds: A Purely Point-Based Framework",
+      "authors": "Song et al.",
+      "venue": "ICCV (Oral)",
+      "year": 2021,
+      "arxivId": "2107.12746",
+      "url": "https://arxiv.org/abs/2107.12746",
+      "domains": [
+        "Crowd counting & density estimation"
+      ],
+      "verdict": "confirmed"
+    },
+    {
+      "title": "TransReID: Transformer-based Object Re-Identification",
+      "authors": "He, Luo, Wang, Wang, Li, Jiang",
+      "venue": "ICCV",
+      "year": 2021,
+      "arxivId": "2102.04378",
+      "url": "https://arxiv.org/abs/2102.04378",
+      "domains": [
+        "Person re-identification"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "Deep Batch Active Learning by Diverse, Uncertain Gradient Lower Bounds (BADGE)",
+      "authors": "Ash, Zhang, Krishnamurthy, Langford, Agarwal",
+      "venue": "ICLR 2020",
+      "year": 2020,
+      "arxivId": "1906.03671",
+      "url": "https://arxiv.org/abs/1906.03671",
+      "domains": [
+        "Active learning for detection"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "Distribution Matching for Crowd Counting",
+      "authors": "Boyu Wang, Huidong Liu, Dimitris Samaras, Minh Hoai",
+      "venue": "NeurIPS",
+      "year": 2020,
+      "arxivId": "2009.13077",
+      "url": "https://github.com/cvlab-stonybrook/DM-Count",
+      "domains": [
+        "Crowd counting & density estimation"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "Learning Memory-Guided Normality for Anomaly Detection",
+      "authors": "Park, Noh, Ham",
+      "venue": "CVPR 2020",
+      "year": 2020,
+      "arxivId": "2003.13228",
+      "url": "https://openaccess.thecvf.com/content_CVPR_2020/html/Park_Learning_Memory-Guided_Normality_for_Anomaly_Detection_CVPR_2020_paper.html",
+      "domains": [
+        "Video anomaly detection"
+      ],
+      "verdict": "confirmed"
+    },
+    {
+      "title": "Learning Loss for Active Learning",
+      "authors": "Yoo, Kweon",
+      "venue": "CVPR 2019",
+      "year": 2019,
+      "arxivId": "",
+      "url": "https://openaccess.thecvf.com/content_CVPR_2019/html/Yoo_Learning_Loss_for_Active_Learning_CVPR_2019_paper.html",
+      "domains": [
+        "Active learning for detection"
+      ],
+      "verdict": ""
+    },
+    {
+      "title": "Omni-Scale Feature Learning for Person Re-Identification",
+      "authors": "Zhou, Yang, Cavallaro, Xiang",
+      "venue": "ICCV",
+      "year": 2019,
+      "arxivId": "1905.00953",
+      "url": "https://arxiv.org/abs/1905.00953",
+      "domains": [
+        "Person re-identification"
+      ],
+      "verdict": "confirmed"
+    }
+  ],
+  "critique": {
+    "gaps": [
+      "Real-time detection: report frames RT-DETR/RT-DETRv2/v3 and D-FINE/DEIM (the transformer half of the 'two converging families') as background but gives no head-to-head latency/accuracy table vs YOLOv10/YOLO11/YOLO26 on the platform's actual target (CPU/consumer webcam at 640px); the shipped default is still yolov8n.pt, so the 'NMS-free convergence' narrative is not reflected in the codebase or benchmarked.",
+      "Multi-object tracking: no treatment of the post-ByteSORT/BoT-SORT generation that the platform should adopt - Deep OC-SORT, OC-SORT, Hybrid-SORT, BoostTrack/BoostTrack++, and especially camera-motion-compensated trackers for a handheld phone feed. The Kalman-filter vs learned-motion (e.g., MotionTrack/transformer association) tradeoff is unaddressed.",
+      "Person re-ID: the report's 'appearance cues that reuse detector compute' claim is contradicted by the implementation, which uses a 96-dim BGR color histogram (tracker.py:_extract_embedding) - no OSNet/CLIP-ReID/TransReID/SOLIDER embedding, no occlusion-robust or clothes-changing re-ID, no domain-generalization. This is the single largest research-vs-code gap.",
+      "Cross-camera / fusion: find_cross_camera_matches matches only on class_id + a 0.3 confidence-difference window (manager.py:259-272) - there is NO appearance matching, NO epipolar/homography geometry, NO ground-plane/BEV projection, NO global ID assignment. Modern MTMC methods (graph/hierarchical clustering, ReID-gallery association, the AICITY MTMC line) and the 3D-position-from-2D-views goal in idea.md are entirely unrealized.",
+      "Small/long-range detection: missing the concrete toolbox - SAHI/tiled inference, slicing-aware NMS, P2 high-res heads, super-resolution-before-detect, and the relevant benchmarks (VisDrone, TinyPerson, DOTA, SODA-D). For a webcam platform answering 'how does accuracy degrade with distance' (a stated research question) this is under-developed.",
+      "Promptable segmentation: SAM2 is listed as a domain but there is no segmentation module in src/ and no segment-anything dependency; the accuracy/latency ceiling vs distilled variants (MobileSAM, EfficientSAM, EdgeSAM, FastSAM, SAM2.1) and video object segmentation / memory-bank propagation for streaming are described abstractly without an integration plan against the existing Detection.mask field.",
+      "Monocular depth: no depth module or dependency exists. Missing the metric-vs-relative distinction (Depth Anything V2 relative vs Metric3D v2 / UniDepth / Depth Pro metric), temporal consistency for video (no flicker handling), and how depth would feed the 3D-position and small-object goals.",
+      "Scene-graph generation: implementation is a hand-coded distance/direction heuristic over 9 hard-coded scene signatures (scene_understanding.py) - no learned SGG (relation/predicate prediction), no open-vocabulary SGG, no panoptic scene graph; the report should flag that the 'scene graph' domain is essentially unimplemented relative to the literature.",
+      "VLM scene description: claimed as a covered domain but there is NO LLM/VLM client, API key handling, or caption module anywhere; no discussion of edge-deployable VLMs (SmolVLM2, Qwen2.5-VL-3B, Moondream2, FastVLM/LLaVA-OneVision) vs cloud, latency/cost, or grounding/hallucination control for the accessibility-assistant use case in idea.md.",
+      "Camera calibration & geometry: no calibration code (cv2.calibrateCamera/solvePnP/findHomography) despite being a domain; missing intrinsics/extrinsics estimation, lens-distortion correction for webcams, multi-cam extrinsic calibration, and auto-calibration from vanishing points - all prerequisites for the cross-camera 3D goal.",
+      "Skeleton-based action recognition: the report names this domain but the platform uses pure rule-based keypoint geometry (pose_detector.py ActionClassifier) - no ST-GCN/2s-AGCN/CTR-GCN/PoseConv3D/skeleton-transformer, no NTU-RGB+D/Kinetics-Skeleton benchmarking, and the temporal model (LSTM/transformer) promised in idea.md is absent.",
+      "Video anomaly detection: implementation is IsolationForest over hand-crafted scene descriptors (count/position/grid histogram); missing the modern VAD line - memory-augmented autoencoders, Jigsaw/self-supervised, accuracy on UCSD Ped2/Avenue/ShanghaiTech/UCF-Crime, and open-vocabulary/VLM-based anomaly explanation. Frame-level AUC numbers are not engaged.",
+      "Temporal video understanding: temporal.py is rule-based event logic (loiter/abandoned/crowd thresholds); the actual research domain (video-LLMs, long-context streaming understanding, online action detection, TAD) is largely absent, and there is no 'stateful memory' model as idea.md envisions - just deques of bbox centers.",
+      "Crowd counting & density estimation: there is NO density-map model (no P2PNet/CSRNet/DM-Count/CLIP-EBC/PET); 'crowd' is detected by counting person tracks past a threshold (temporal.py _check_crowd), which fails exactly in the dense regime the domain exists to solve. The detection-vs-density crossover point is not characterized.",
+      "Fall detection: corrected GMDCSA-24 numbers are honored, but the section lacks fall-specific benchmarks beyond one CPU paper (no Le2i, UP-Fall, CAUCAFall, FallAllD), no false-alarm-rate discussion (the key deployment metric for elderly care), and no comparison of pose-based vs wearable-fusion vs RGB-temporal approaches.",
+      "Edge deployment: exporter.py covers Ultralytics export formats, but the report's 'joint optimization' claim is not backed by INT8 PTQ/QAT accuracy-drop data, calibration-dataset handling, structured pruning, knowledge distillation, or measured numbers on a real Jetson/Pi/NCNN target - the benchmark harness uses random-noise inputs (exporter.py:197), which does not measure accuracy at all.",
+      "Active learning: report should distinguish uncertainty sampling (entropy/margin/least-confidence) vs diversity/core-set vs learning-loss vs BADGE; for detection specifically, box-level vs image-level acquisition and class-imbalance-aware acquisition are the hard parts and likely under-covered.",
+      "Generative augmentation: the domain name is contradicted by the code - SyntheticGenerator does only classical OpenCV transforms (flip/rotate/cutout/mosaic/noise), with NO diffusion/SDXL/ControlNet/copy-paste/Cut-Paste-Learn. The central research question ('how much synthetic data can replace real') has no diffusion pipeline to answer it, and layout-to-image / annotation-preserving generation is unaddressed.",
+      "Privacy-preserving vision: privacy.py is Gaussian blur/pixelate/blackout on bounding boxes; missing reversible/encryption-based anonymization, face-swap/synthetic-face anonymization that preserves utility, k-same/differential-privacy, federated learning, and the re-identification-attack robustness of naive blur (known to be reversible).",
+      "Self-supervised / foundation backbones: DINOv2/DINOv3, SAM image encoder, and EVA-02 are likely named, but the platform-relevant question - amortizing ONE frozen backbone across detection/depth/segmentation/re-ID heads to save webcam compute - is the stated unifying theme yet has no architectural proposal or shared-feature-cache design."
+    ],
+    "missingTopics": [
+      "Event / neuromorphic cameras (DVS) and event-RGB fusion - relevant for high-speed motion and low-light, a natural extension of the low-light domain.",
+      "Audio-visual perception - microphones are standard on webcams/phones; audio event detection (glass break, scream, gunshot), sound source localization, and AV fusion for anomaly/fall detection are entirely absent.",
+      "Hand tracking, gesture recognition, and 3D hand pose (MediaPipe Hands, WiLoR) - core for HCI/accessibility uses the platform targets.",
+      "Gaze estimation, eye tracking, and attention - useful for retail analytics, driver monitoring, accessibility.",
+      "Face analysis beyond blurring: face detection/recognition/verification (ArcFace/AdaFace), facial landmarks, expression/emotion, age/gender, anti-spoofing/liveness, and deepfake detection.",
+      "Tracking/segmentation/detection by natural language: referring expression segmentation/comprehension, GroundingSAM, and language-queried video tracking - a clear evolution of the open-vocab domain.",
+      "3D reconstruction / NeRF / 3D Gaussian Splatting / SLAM / structure-from-motion / Vio - the path from multi-cam 2D to a true 3D spatial model that idea.md explicitly wants.",
+      "Bird's-eye-view (BEV) perception and ground-plane occupancy mapping - the standard representation for multi-camera fusion and zone analytics.",
+      "Trajectory forecasting / motion prediction (Social-GAN, Trajectron++, social-force) - needed to predict collisions, intrusions, and crowd surges proactively.",
+      "Optical flow and motion segmentation (RAFT, GMFlow, SEA-RAFT) - foundational temporal primitive useful for anomaly, action, and background modeling.",
+      "Re-identification of non-person objects and fine-grained recognition (vehicle re-ID/ANPR/license plates, animal/wildlife re-ID) - directly serves the parking-lot and wildlife use cases listed.",
+      "OCR / scene text recognition and document/sign reading - high value for the accessibility-assistant use case.",
+      "Multimodal RGB-D / thermal / IR / NIR sensing - thermal is the dominant modality for reliable person detection in darkness and for fever/industrial monitoring.",
+      "Adversarial robustness, physical adversarial patches, model security, and backdoor/data-poisoning defenses - a surveillance platform is a security target.",
+      "Out-of-distribution / open-set detection and uncertainty calibration - knowing when the model is wrong is critical for safety/anomaly use and is distinct from the IsolationForest scene anomaly.",
+      "Continual / online / test-time adaptation and domain adaptation (sim-to-real, lighting/season drift) - cameras run for months; static models degrade.",
+      "Streaming/online perception latency models (e.g., streaming-perception / sAP metric) and full end-to-end pipeline latency budgeting (decode-infer-track-render), not just single-op benchmarks.",
+      "Video compression / codec-aware CV, ROI encoding, and bandwidth-constrained multi-camera streaming - the systems layer for the 'cheap consumer phones' premise.",
+      "MLOps for vision: data/version management, model registry, drift monitoring, A/B evaluation, and dataset curation/dedup at scale.",
+      "Ethics, bias, fairness, and regulatory compliance (EU AI Act high-risk biometric rules, surveillance governance) - a glaring omission for a person-tracking/biometric-adjacent platform that only treats privacy as pixel blur.",
+      "Synthetic-world / simulation engines for data and digital twins (Unreal/CARLA/Isaac/Kubric, NVIDIA Omniverse) - a more powerful 'synthetic data' route than image-space augmentation.",
+      "Multi-object tracking and counting under heavy occlusion via group/crowd-aware tracking - the bridge between the tracking and crowd-counting domains, owned by neither."
+    ],
+    "weakestFindings": [
+      "The claim that the literature has 'converged on NMS-free / near-constant-latency inference, appearance cues that reuse detector compute, and TensorRT/ONNX as a first-class target' is asserted as a unifying frame but the platform's own code refutes the appearance-reuse part (color-histogram re-ID) and still defaults to yolov8n.pt - the convergence narrative is over-stated relative to evidence.",
+      "YOLO26 is cited as making NMS-free the default and removing DFL 'for cleaner export'; this product/model is bleeding-edge and the authorship was already corrected twice (Sundaram -> Khan -> Sapkota in the notes), signaling the underlying citation is shaky and the technical claims (DFL removal, NMS-free default) deserve primary-source verification rather than restatement.",
+      "The fall-detection figures required two rounds of correction (the URFD/MCFD numbers were refuted; only GMDCSA-24 at 86.86% acc survives) - a single small-dataset result is thin evidence for any general claim about CPU-based pose fall detection, and 86.86% accuracy with no false-positive-rate context is near-meaningless for deployment.",
+      "Any per-paper accuracy/latency/FPS numbers in the synthesized sections are suspect because the platform's own BenchmarkRunner feeds random-noise images (exporter.py:197) - so internally-generated numbers measure throughput only, never accuracy, and external numbers are not reproduced on the target hardware.",
+      "The 'distilled/quantized variant makes the foundation model survivable on a consumer webcam' arc (segmentation, depth) is presented as established, but with no module, dependency, or measured on-device FPS in the repo it is an untested assertion - especially for SAM2/Depth Anything at webcam resolution and frame rate.",
+      "Cross-camera fusion claims (the B-cluster's 'what is where in the scene') rest on find_cross_camera_matches, which cannot actually associate identities across views (class+confidence only) - the section likely overstates multi-camera capability the platform does not have.",
+      "Crowd-counting coverage is weak-by-construction: with no density model, any stated crowd numbers come from person-track counting, which is known to collapse in dense scenes - claims about crowd estimation accuracy are not supportable by the implementation.",
+      "The 'generative / synthetic data augmentation' domain's findings are the weakest in kind: the code labeled 'SyntheticGenerator' contains no generative model, so any conclusion about synthetic-data efficacy is detached from the platform's actual augmentation (classical transforms)."
+    ],
+    "suggestedNextSteps": [
+      "Replace the color-histogram re-ID in tracker.py with a real lightweight embedding (OSNet-x0.25 or CLIP-ReID distilled) and run an ablation on Market-1501/MSMT17 plus a held-out 'leave-and-reenter' webcam protocol; report rank-1/mAP and per-frame latency on CPU.",
+      "Implement geometry-based cross-camera fusion: per-camera homography to a shared ground plane (cv2.findHomography from 4 clicked correspondences), then associate via projected foot-point distance + appearance gallery; assign global IDs and measure IDF1 against a 2-camera (webcam+phone) recording.",
+      "Run a real edge benchmark matrix on actual hardware (Jetson Orin Nano + Raspberry Pi 5 + laptop CPU) across PyTorch/ONNX/OpenVINO/TensorRT/NCNN with INT8 PTQ, reporting BOTH mAP (on a real validation set, not random noise) and end-to-end pipeline FPS - fix exporter.py to benchmark with real frames.",
+      "Add a promptable-segmentation path: integrate EdgeSAM/MobileSAM/FastVLM-class model behind the existing Detection.mask field, prompt it with detector boxes or text via GroundingDINO, and characterize FPS vs SAM2 at 640px on the target devices.",
+      "Integrate a metric monocular depth model (Depth Anything V2 small or Metric3Dv2) to produce per-track distance, then quantitatively answer idea.md's 'accuracy vs distance' question and feed depth into small-object and 3D-position experiments.",
+      "Replace the rule-based ActionClassifier with a skeleton GCN/transformer (CTR-GCN or PoseConv3D) trained on NTU-RGB+D or a custom fall set, and compare F1/false-alarm-rate against the current geometric rules on UP-Fall/GMDCSA-24.",
+      "Add a density-estimation head (CLIP-EBC or P2PNet) and empirically find the crowd-density crossover where detection-counting fails vs density regression on ShanghaiTech/JHU-Crowd.",
+      "Build an actual generative-augmentation pipeline (SDXL + ControlNet or Cut-Paste-Learn copy-paste) with annotation preservation, then run the 'synthetic-to-real ratio' study on a rare class and report mAP vs real-data fraction - the experiment the domain is named for.",
+      "Add a VLM scene-description module (SmolVLM2 / Qwen2.5-VL-3B locally, or a cloud Claude/GPT path) with a grounding/verification step against detector outputs to suppress hallucination, and measure caption accuracy + latency for the accessibility use case.",
+      "Harden privacy beyond Gaussian blur: add reversible/encrypted-region anonymization and a synthetic-face-swap option, and run a re-identification attack to demonstrate that naive blur leaks identity (motivating the upgrade), aligning with EU AI Act biometric constraints.",
+      "Add an audio-visual channel (mic-based event detection + AV fusion) and an event-camera or thermal track as exploratory modalities, since both directly strengthen the low-light and anomaly/fall domains already claimed.",
+      "Introduce OOD/open-set detection and uncertainty calibration as a cross-cutting safety layer, and wire its scores into both the active-learning acquisition function and the anomaly detector to replace the brittle IsolationForest-on-handcrafted-features approach.",
+      "Add trajectory forecasting (Trajectron++ or a light social-force model) on top of existing tracks to enable proactive zone-intrusion/collision/crowd-surge alerts rather than after-the-fact event detection.",
+      "Establish a standing reproducibility harness: pin model versions, cache one frozen DINOv2/SAM-encoder backbone shared across heads, and record every experiment (hypothesis/method/results) in docs/research_log.md as idea.md requires - currently no results log exists."
+    ],
+    "overallAssessment": "The review covers a genuinely broad and well-chosen domain set (24 areas) and the four cluster narratives are coherent, but the effort has a systemic flaw: it conflates 'domain researched' with 'domain implemented,' and several syntheses describe a state of the art the platform does not actually reach. Ground-truthing against the code shows that roughly a third of the claimed domains have NO implementation anchor at all - monocular depth, promptable segmentation (SAM2), camera calibration, crowd density estimation, VLM scene description, and GroundingDINO are research-only with no module or dependency in requirements.txt. Worse, three domains are actively contradicted by the code: re-ID is a 96-dim color histogram (not a deep embedding), 'skeleton-based action recognition' is hand-tuned keypoint geometry (no GCN/transformer), and 'generative/synthetic augmentation' is classical OpenCV transforms with zero generative models despite the class literally being named SyntheticGenerator. Cross-camera 'fusion' matches only on class_id + confidence and cannot associate identities or geometry, and crowd 'counting' is person-track thresholding that fails in exactly the dense regime the domain exists for. The verification process caught real errors (YOLO26 authorship corrected twice; refuted URFD/MCFD fall numbers), which is good, but the recurrence signals the citation layer is fragile and bleeding-edge claims (YOLO26 DFL removal/NMS-free default) need primary sources. Method coverage WITHIN domains is also uneven - the modern tracker generation (OC-SORT/Deep OC-SORT/BoostTrack), tiled small-object inference (SAHI), distilled SAM variants, and metric-vs-relative depth are largely background rather than actionable. Finally, the platform omits entire categories a webcam-CV product must consider - audio-visual, event/thermal cameras, hand/gaze, face analysis and liveness, 3D reconstruction/SLAM/BEV, trajectory forecasting, tracking-by-language, OOD/calibration, adversarial robustness, and notably ethics/bias/EU-AI-Act compliance (privacy is treated only as pixel blur, which is known to be reversible). Net: strong breadth and structure, but the report should explicitly separate 'implemented and benchmarkable' from 'aspirational literature survey,' downgrade the convergence/over-claimed narratives, and prioritize closing the highest-leverage code gaps (deep re-ID, geometric cross-camera fusion, real on-device benchmarking with real images, and a genuine generative pipeline)."
+  }
+}

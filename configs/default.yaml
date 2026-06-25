@@ -73,12 +73,16 @@ action:
 # Multi-camera
 multicam:
   cell_size: [640, 480]        # Grid cell size (width, height)
-  cameras: []                  # List of {name, source} camera definitions
-  # Example:
+  max_match_distance: 2.0      # Max BEV distance (ground units) to match across cameras
+  cameras: []                  # List of {name, source, [homography]} camera definitions
+  # Example (homography maps image pixels -> a shared ground plane; >=4 point pairs):
   # cameras:
-  #   - name: "Webcam"
+  #   - name: "Camera 0"
   #     source: 0
-  #   - name: "Phone"
+  #     homography:
+  #       image_points:  [[100, 700], [1180, 700], [1180, 300], [100, 300]]
+  #       ground_points: [[0, 0], [5, 0], [5, 8], [0, 8]]
+  #   - name: "Stream 1"
   #     source: "http://192.168.1.105:8080/video"
 
 # Temporal event detection

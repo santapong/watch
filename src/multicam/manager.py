@@ -56,6 +56,7 @@ class MultiCameraManager:
         self._cameras: dict[str, CameraFeed] = {}
         self._grid_cols = grid_cols
         self._cell_size = cell_size
+        self._homographies: dict[str, np.ndarray] = {}
 
     def add_camera(
         self,
@@ -228,50 +229,131 @@ class MultiCameraManager:
 
         return grid
 
+    def set_homography(self, name: str, image_points, ground_points) -> bool:
+        """Register a camera's image->ground homography from >=4 correspondences.
+
+        Returns True if a valid homography was stored.
+        """
+        from src.multicam.geometry import build_homography
+
+        H = build_homography(image_points, ground_points)
+        if H is None:
+            return False
+        self._homographies[name] = H
+        return True
+
+    @property
+    def has_homography(self) -> bool:
+        """True when at least two cameras have a registered homography."""
+        return len(self._homographies) >= 2
+
     def find_cross_camera_matches(
         self,
         detections: dict[str, list[Detection]],
         iou_threshold: float = 0.3,
+        max_distance: float = 2.0,
     ) -> list[dict]:
-        """Find potential matches of the same object across cameras.
+        """Find the same physical object seen by multiple cameras.
 
-        Uses class matching and temporal proximity.
-
-        Args:
-            detections: Detections from all cameras.
-            iou_threshold: Not used for cross-camera (different views),
-                          but class matching threshold.
+        When >=2 cameras have a registered homography, detections are projected to
+        a shared ground plane (BEV) and matched by Hungarian assignment on BEV
+        distance (same class, within ``max_distance``). Otherwise this falls back
+        to the legacy class+confidence heuristic, which cannot establish identity.
 
         Returns:
-            List of match dicts with camera pairs and matched objects.
+            List of match dicts. Geometric matches include camera/index pairs and
+            ``bev_distance``.
         """
+        geo_cams = [c for c in detections if c in self._homographies]
+        if len(geo_cams) >= 2:
+            return self._geometric_matches(detections, geo_cams, max_distance)
+        return self._legacy_matches(detections)
+
+    def _geometric_matches(self, detections, cams, max_distance):
+        from src.multicam.geometry import match_bev, project_detections
+
+        bev = {c: project_detections(self._homographies[c], detections[c]) for c in cams}
+        matches = []
+        for a in range(len(cams)):
+            for b in range(a + 1, len(cams)):
+                ca, cb = cams[a], cams[b]
+                da, db = detections[ca], detections[cb]
+                for i, j, dist in match_bev(
+                    bev[ca], bev[cb],
+                    [d.class_id for d in da], [d.class_id for d in db],
+                    max_distance,
+                ):
+                    matches.append({
+                        "camera_1": ca, "camera_2": cb,
+                        "index_1": i, "index_2": j,
+                        "class": da[i].class_name,
+                        "bev_distance": dist,
+                    })
+        return matches
+
+    @staticmethod
+    def _legacy_matches(detections):
         matches = []
         camera_names = list(detections.keys())
-
         for i in range(len(camera_names)):
             for j in range(i + 1, len(camera_names)):
-                cam1 = camera_names[i]
-                cam2 = camera_names[j]
-                dets1 = detections[cam1]
-                dets2 = detections[cam2]
-
-                # Match by class and similar confidence
-                for d1 in dets1:
-                    for d2 in dets2:
-                        if d1.class_id == d2.class_id:
-                            conf_diff = abs(d1.confidence - d2.confidence)
-                            if conf_diff < 0.3:
-                                matches.append(
-                                    {
-                                        "camera_1": cam1,
-                                        "camera_2": cam2,
-                                        "class": d1.class_name,
-                                        "confidence_1": d1.confidence,
-                                        "confidence_2": d2.confidence,
-                                    }
-                                )
-
+                cam1, cam2 = camera_names[i], camera_names[j]
+                for d1 in detections[cam1]:
+                    for d2 in detections[cam2]:
+                        if d1.class_id == d2.class_id and abs(d1.confidence - d2.confidence) < 0.3:
+                            matches.append({
+                                "camera_1": cam1, "camera_2": cam2,
+                                "class": d1.class_name,
+                                "confidence_1": d1.confidence,
+                                "confidence_2": d2.confidence,
+                            })
         return matches
+
+    def assign_global_ids(
+        self,
+        detections: dict[str, list[Detection]],
+        max_distance: float = 2.0,
+    ) -> dict[str, list[int]]:
+        """Assign a shared global ID to each detection via cross-camera matches.
+
+        Detections matched across cameras share an ID (union-find over the
+        geometric matches). Returns per-camera ID lists aligned with ``detections``.
+        """
+        matches = self.find_cross_camera_matches(detections, max_distance=max_distance)
+        parent: dict = {}
+
+        def find(x):
+            parent.setdefault(x, x)
+            root = x
+            while parent[root] != root:
+                root = parent[root]
+            while parent[x] != root:
+                parent[x], x = root, parent[x]
+            return root
+
+        def union(a, b):
+            ra, rb = find(a), find(b)
+            if ra != rb:
+                parent[rb] = ra
+
+        for cam, dets in detections.items():
+            for i in range(len(dets)):
+                find((cam, i))
+        for m in matches:
+            if "index_1" in m:
+                union((m["camera_1"], m["index_1"]), (m["camera_2"], m["index_2"]))
+
+        root_to_id: dict = {}
+        result: dict[str, list[int]] = {}
+        for cam, dets in detections.items():
+            ids = []
+            for i in range(len(dets)):
+                r = find((cam, i))
+                if r not in root_to_id:
+                    root_to_id[r] = len(root_to_id)
+                ids.append(root_to_id[r])
+            result[cam] = ids
+        return result
 
     @property
     def camera_names(self) -> list[str]:

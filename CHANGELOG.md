@@ -51,6 +51,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   merges with class-aware NMS — recovering small/long-range objects. Enabled via `model.tiled`
   (off by default; the registry wraps the built detector when set). Tracking delegates to the
   full frame.
+- **Geometry-grounded multi-camera identity** (`src/multicam/geometry.py` + `MultiCameraManager`):
+  per-camera homographies project each detection's foot point into a shared bird's-eye view;
+  `find_cross_camera_matches` now uses Hungarian assignment (scipy) on BEV distance (same class,
+  within `max_match_distance`) and `assign_global_ids` gives matched people a shared ID across
+  cameras (union-find). Falls back to the legacy class+confidence heuristic when uncalibrated.
+  `run_multicam.py --config` loads per-camera homography and overlays shared IDs.
 
 ## [0.5.0] - 2026-03-16
 

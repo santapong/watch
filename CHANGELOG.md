@@ -65,6 +65,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   config block; optional deps in `requirements-phase2.txt` (the slim CI stays torch-free —
   the pure sampling/normalization/pre-post-process core is unit-tested with the ONNX session
   mocked).
+- **Phase 2 model scaffolds** (lazy, config-gated, slim-CI-safe): promptable segmentation
+  (`src/segmentation/` SAM 2) with a **mask-aware `PrivacyFilter`** that filters only masked
+  pixels; a reconstruction (MNAD-style) anomaly backend conforming to the `AnomalyDetector`
+  `update`/`fit`/`check` interface (`src/analytics/mnad_detector.py`); point-based crowd
+  counting (`src/models/p2pnet_wrapper.py`); CTR-GCN skeleton action recognition
+  (`src/pose/ctrgcn.py`); XFeat correspondence (`src/utils/features.py`); and a DINOv3
+  embedding backbone (`src/models/dinov3_backbone.py`). Heavy runtimes are imported lazily;
+  the pure cores (mask compositing, reconstruction threshold, point filtering, skeleton
+  normalization, mutual-NN matching + homography, embedding normalize/cosine) are unit-tested
+  with the models mocked. Real inference needs the optional `requirements-phase2.txt` deps +
+  model weights, which can't be exercised in the slim CI.
 
 ## [0.5.0] - 2026-03-16
 

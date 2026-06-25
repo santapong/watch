@@ -48,6 +48,23 @@ class HeatmapGenerator:
         self._class_filter = set(class_filter) if class_filter else None
         self._accumulator = np.zeros((self._h, self._w), dtype=np.float64)
         self._frame_count = 0
+        self._kernel = self._build_kernel(self._radius)
+
+    @staticmethod
+    def _build_kernel(radius: int) -> np.ndarray:
+        """Precompute the circular-masked Gaussian blob added per detection.
+
+        Offsets span ``[-radius, radius)`` on each axis (matching the original
+        per-pixel loop), with ``weight = exp(-dist^2 / (2*(radius/3)^2))`` inside
+        the circle ``dist^2 < radius^2`` and 0 outside.
+        """
+        r = radius
+        yy, xx = np.mgrid[-r:r, -r:r]
+        dist_sq = (xx ** 2 + yy ** 2).astype(np.float64)
+        sigma = r / 3.0
+        kernel = np.exp(-dist_sq / (2 * sigma ** 2))
+        kernel[dist_sq >= r ** 2] = 0.0
+        return kernel
 
     def update(self, detections: list[Detection]) -> None:
         """Accumulate detections into the heatmap.
@@ -58,6 +75,7 @@ class HeatmapGenerator:
         # Apply decay to existing accumulation
         self._accumulator *= self._decay
 
+        r = self._radius
         for det in detections:
             if self._class_filter and det.class_name not in self._class_filter:
                 continue
@@ -66,18 +84,16 @@ class HeatmapGenerator:
             cx, cy = int(cx), int(cy)
 
             if 0 <= cx < self._w and 0 <= cy < self._h:
-                # Add a Gaussian blob at the detection center
-                y_start = max(0, cy - self._radius)
-                y_end = min(self._h, cy + self._radius)
-                x_start = max(0, cx - self._radius)
-                x_end = min(self._w, cx + self._radius)
+                # Stamp the precomputed Gaussian blob, clipped to frame bounds.
+                y_start = max(0, cy - r)
+                y_end = min(self._h, cy + r)
+                x_start = max(0, cx - r)
+                x_end = min(self._w, cx + r)
 
-                for y in range(y_start, y_end):
-                    for x in range(x_start, x_end):
-                        dist_sq = (x - cx) ** 2 + (y - cy) ** 2
-                        if dist_sq < self._radius ** 2:
-                            weight = np.exp(-dist_sq / (2 * (self._radius / 3) ** 2))
-                            self._accumulator[y, x] += weight
+                ky0, ky1 = y_start - (cy - r), y_end - (cy - r)
+                kx0, kx1 = x_start - (cx - r), x_end - (cx - r)
+
+                self._accumulator[y_start:y_end, x_start:x_end] += self._kernel[ky0:ky1, kx0:kx1]
 
         self._frame_count += 1
 

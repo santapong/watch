@@ -82,3 +82,27 @@ class TestHeatmapGenerator:
         hm.save_snapshot(path)
         import os
         assert os.path.exists(path)
+
+
+def _reference_loop(h, w, r, centers):
+    """The original per-pixel Gaussian accumulation, for equivalence checking."""
+    acc = np.zeros((h, w), dtype=np.float64)
+    for cx, cy in centers:
+        if 0 <= cx < w and 0 <= cy < h:
+            for y in range(max(0, cy - r), min(h, cy + r)):
+                for x in range(max(0, cx - r), min(w, cx + r)):
+                    d = (x - cx) ** 2 + (y - cy) ** 2
+                    if d < r ** 2:
+                        acc[y, x] += np.exp(-d / (2 * (r / 3) ** 2))
+    return acc
+
+
+class TestHeatmapVectorization:
+    def test_matches_reference_loop(self):
+        h, w, r = 80, 100, 20
+        # Interior + edge-clipped (corner/top/bottom) blobs.
+        centers = [(50, 40), (5, 5), (95, 8), (50, 78)]
+        hm = HeatmapGenerator(frame_shape=(h, w), decay=1.0, radius=r)
+        hm.update([_det(x=cx - 5, y=cy - 5, w=10, h=10) for cx, cy in centers])
+        ref = _reference_loop(h, w, r, centers)
+        assert np.allclose(hm.get_raw(), ref, atol=1e-12)

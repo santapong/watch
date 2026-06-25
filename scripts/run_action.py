@@ -16,14 +16,17 @@ Controls:
 """
 
 import argparse
+import os
 import sys
 from datetime import datetime
 from pathlib import Path
 
 import cv2
+import yaml
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from src.alerts import AlertManager, AlertRule, LogNotifier
 from src.models.pose_detector import PoseDetector, ActionClassifier
 from src.stream import VideoStream
 from src.utils.drawing import draw_action_label, draw_fps, draw_skeleton
@@ -36,7 +39,16 @@ def main():
     parser.add_argument("--model", default="yolov8n-pose.pt")
     parser.add_argument("--confidence", type=float, default=0.25)
     parser.add_argument("--track", action="store_true")
+    parser.add_argument("--config", default="configs/default.yaml",
+                        help="Config file (action/alert settings)")
     args = parser.parse_args()
+
+    config = {}
+    if os.path.exists(args.config):
+        with open(args.config) as f:
+            config = yaml.safe_load(f) or {}
+    action_cfg = config.get("action", {})
+    fall_cfg = action_cfg.get("fall", {})
 
     source = args.source
     try:
@@ -49,7 +61,24 @@ def main():
         model_name=args.model,
         confidence=args.confidence,
     )
-    action_classifier = ActionClassifier(sequence_length=15)
+    action_classifier = ActionClassifier(
+        sequence_length=action_cfg.get("sequence_length", 15),
+        fall_angle_deg=fall_cfg.get("angle_deg", 45.0),
+        fall_velocity=fall_cfg.get("velocity", 8.0),
+        fall_debounce=fall_cfg.get("debounce", 3),
+    )
+
+    # Fall alerts: fire a critical, cooldown-limited alert when anyone falls.
+    alert_manager = AlertManager()
+    alert_manager.add_rule(AlertRule(
+        name="fall_detection",
+        condition=lambda ctx: ctx.get("fall_detected", False),
+        alert_type="fall",
+        message="Fall detected",
+        severity="critical",
+        cooldown=fall_cfg.get("alert_cooldown", 10.0),
+    ))
+    alert_manager.add_notifier(LogNotifier(config.get("alerts", {}).get("log_path", "alerts.json")))
 
     stream = VideoStream(source=source)
     fps_counter = FPSCounter()
@@ -80,6 +109,13 @@ def main():
 
             # Classify actions
             poses = action_classifier.classify_batch(poses)
+
+            # Fall alerting
+            fallers = [p.track_id for p in poses if p.action == "falling"]
+            for alert in alert_manager.evaluate(
+                {"fall_detected": bool(fallers), "track_ids": fallers}
+            ):
+                print(f"[ALERT] {alert.severity.upper()}: {alert.message} (tracks={fallers})")
 
             fps_counter.tick()
 

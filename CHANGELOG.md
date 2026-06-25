@@ -37,6 +37,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   back to its original (previously the embeddings were computed but never matched).
   `EnhancedTracker` is now wired into `run_webcam.py --track` (re-ID + trajectory trails),
   not just the dashboard. Optional deps in `requirements-reid.txt` (CI stays torch-free).
+- **Vectorized heatmap accumulation** (`src/analytics/heatmap.py`): the per-pixel Python
+  loop is replaced by a precomputed circular-masked Gaussian kernel stamped via a clipped
+  slice — identical output (verified to 1e-12), far faster per frame.
+- **Multi-cue, debounced fall detection** (`ActionClassifier`): replaces the single
+  `torso_angle < 30°` rule with a vote over torso-vs-horizontal angle (now direction-symmetric),
+  lying-shaped bbox, and downward shoulder velocity, requiring N consecutive fall-like frames
+  before reporting (graded confidence; tunable via `action.fall`). `run_action.py` now fires a
+  critical, cooldown-limited fall alert through `AlertManager`. `pose_detector` imports
+  `ultralytics` lazily.
 
 ## [0.5.0] - 2026-03-16
 

@@ -7,9 +7,7 @@ Supports: standing, sitting, walking, running, falling, raising hand.
 from collections import deque
 from dataclasses import dataclass
 
-import cv2
 import numpy as np
-from ultralytics import YOLO
 
 from .base import BaseDetector, Detection
 
@@ -66,6 +64,8 @@ class PoseDetector(BaseDetector):
             confidence: Minimum confidence threshold.
             device: Device string.
         """
+        from ultralytics import YOLO
+
         self._model = YOLO(model_name)
         self._model_name = model_name
         self._confidence = confidence
@@ -197,14 +197,30 @@ class ActionClassifier:
             action, conf = classifier.classify(pose)
     """
 
-    def __init__(self, sequence_length: int = 15):
+    def __init__(
+        self,
+        sequence_length: int = 15,
+        fall_angle_deg: float = 45.0,
+        fall_velocity: float = 8.0,
+        fall_debounce: int = 3,
+    ):
         """Initialize action classifier.
 
         Args:
             sequence_length: Number of frames to consider for temporal actions.
+            fall_angle_deg: Torso angle from horizontal (deg) below which the torso
+                counts as "down" for the fall vote (0 = horizontal, 90 = upright).
+            fall_velocity: Downward shoulder velocity (px/frame) that corroborates
+                a fall in progress.
+            fall_debounce: Consecutive fall-like frames required before a fall is
+                reported (suppresses single-frame blips).
         """
         self._sequence_length = sequence_length
+        self._fall_angle_deg = fall_angle_deg
+        self._fall_velocity = fall_velocity
+        self._fall_debounce = max(1, fall_debounce)
         self._pose_history: dict[int, deque] = {}
+        self._fall_streak: dict[int, int] = {}
         self._frame_counter = 0
 
     def classify(self, pose: PoseResult) -> tuple[str, float]:
@@ -249,15 +265,30 @@ class ActionClassifier:
         # Aspect ratio of torso
         torso_ratio = torso_height / (shoulder_width + 1e-6)
 
-        # Check for falling (torso nearly horizontal)
-        torso_angle = abs(np.arctan2(
-            shoulder_center[1] - hip_center[1],
-            shoulder_center[0] - hip_center[0],
-        ))
-        torso_angle_deg = np.degrees(torso_angle)
+        # Multi-cue, debounced fall detection. A frame is "fall-like" when the torso
+        # is near-horizontal AND corroborated by either a lying-shaped (wide) bbox or
+        # a recent downward drop of the shoulders. "falling" is only reported after
+        # `fall_debounce` consecutive fall-like frames, so single-frame blips are
+        # suppressed. The angle-from-horizontal measure is symmetric (the old
+        # `arctan2 < 30` rule only caught one lying direction).
+        dx = float(shoulder_center[0] - hip_center[0])
+        dy = float(shoulder_center[1] - hip_center[1])
+        angle_from_horizontal = float(np.degrees(np.arctan2(abs(dy), abs(dx))))
 
-        if torso_angle_deg < 30:
-            return "falling", 0.8
+        bbox_w = pose.bbox[2] - pose.bbox[0]
+        bbox_h = pose.bbox[3] - pose.bbox[1]
+        horizontal = angle_from_horizontal < self._fall_angle_deg
+        aspect_collapse = bbox_w > bbox_h
+        dropping = self._downward_velocity(track_id) > self._fall_velocity
+        fall_like = horizontal and (aspect_collapse or dropping)
+
+        streak = self._fall_streak.get(track_id, 0) + 1 if fall_like else 0
+        self._fall_streak[track_id] = streak
+
+        if streak >= self._fall_debounce:
+            corroboration = int(aspect_collapse) + int(dropping)
+            confidence = min(0.6 + 0.1 * (streak - self._fall_debounce) + 0.15 * corroboration, 0.97)
+            return "falling", round(float(confidence), 2)
 
         # Check for raising hand
         if visible[9] or visible[10]:  # Wrists visible
@@ -321,6 +352,25 @@ class ActionClassifier:
             pose.action_confidence = confidence
         return poses
 
+    def _downward_velocity(self, track_id: int, k: int = 5) -> float:
+        """Mean downward shoulder-centre velocity (px/frame) over the last k frames.
+
+        Positive means moving down the image (a drop). Returns 0 when history is
+        too short or shoulders aren't visible.
+        """
+        history = self._pose_history.get(track_id)
+        if not history:
+            return 0.0
+        centers = []
+        for h in list(history)[-k:]:
+            if h[5, 2] > 0.5 and h[6, 2] > 0.5:
+                centers.append((h[5, :2] + h[6, :2]) / 2.0)
+        if len(centers) < 2:
+            return 0.0
+        deltas = [centers[i][1] - centers[i - 1][1] for i in range(1, len(centers))]
+        return float(np.mean(deltas))
+
     def clear_history(self) -> None:
         """Clear pose history for all tracks."""
         self._pose_history.clear()
+        self._fall_streak.clear()

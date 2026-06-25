@@ -61,6 +61,11 @@ anomaly:
 action:
   model: "yolov8n-pose.pt"
   sequence_length: 15          # Frames for temporal action analysis
+  fall:                        # Multi-cue, debounced fall detection
+    angle_deg: 45              # Torso angle from horizontal below which it counts as "down"
+    velocity: 8                # Downward shoulder velocity (px/frame) corroborating a fall
+    debounce: 3                # Consecutive fall-like frames before reporting a fall
+    alert_cooldown: 10         # Seconds between repeated fall alerts
 
 # Multi-camera
 multicam:

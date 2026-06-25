@@ -16,6 +16,7 @@ class Detection:
     class_name: str
     mask: np.ndarray | None = None
     track_id: int | None = None
+    depth: float | None = None  # per-detection depth (relative), populated by the depth subsystem
 
     @property
     def width(self) -> float:

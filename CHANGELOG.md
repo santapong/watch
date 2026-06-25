@@ -57,6 +57,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   within `max_match_distance`) and `assign_global_ids` gives matched people a shared ID across
   cameras (union-find). Falls back to the legacy class+confidence heuristic when uncalibrated.
   `run_multicam.py --config` loads per-camera homography and overlays shared IDs.
+- **Monocular depth subsystem** (`src/depth/`, Phase 2): `BaseDepthEstimator` + ONNX
+  estimators (Depth Anything V2 / MiDaS, lazy `onnxruntime`) selectable via
+  `build_depth_estimator`, plus robust per-detection depth sampling (`sample_depth`:
+  shrink + MAD + median) feeding a new `Detection.depth` field. `scripts/run_depth.py`
+  overlays relative distance and fires proximity alerts via `AlertManager`. New `depth:`
+  config block; optional deps in `requirements-phase2.txt` (the slim CI stays torch-free —
+  the pure sampling/normalization/pre-post-process core is unit-tested with the ONNX session
+  mocked).
 
 ## [0.5.0] - 2026-03-16
 

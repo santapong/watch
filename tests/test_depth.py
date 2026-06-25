@@ -1,0 +1,124 @@
+"""Tests for the monocular depth subsystem (pure core; ONNX session is mocked)."""
+
+import sys
+import types
+
+import numpy as np
+import pytest
+
+from src.depth.base import annotate_depth, percentile_normalize, sample_depth
+from src.depth.onnx_estimator import (
+    DepthAnythingV2,
+    MidasONNX,
+    build_depth_estimator,
+    postprocess,
+    preprocess,
+)
+from src.models.base import Detection
+
+
+def _det(x1, y1, x2, y2):
+    return Detection(bbox=(float(x1), float(y1), float(x2), float(y2)),
+                     confidence=0.9, class_id=0, class_name="person")
+
+
+class TestSampling:
+    def test_median_over_uniform_region(self):
+        dm = np.full((100, 100), 5.0, dtype=np.float32)
+        assert sample_depth(dm, (10, 10, 50, 50), shrink=0.0) == pytest.approx(5.0)
+
+    def test_robust_to_outlier_minority(self):
+        dm = np.full((100, 100), 5.0, dtype=np.float32)
+        dm[0:10, :] = 999.0  # 10% outliers
+        assert sample_depth(dm, (0, 0, 100, 100), shrink=0.0) == pytest.approx(5.0)
+
+    def test_shrink_focuses_on_object_centre(self):
+        dm = np.ones((100, 100), dtype=np.float32)  # background = 1.0
+        dm[25:75, 25:75] = 5.0                       # object in the centre
+        full = sample_depth(dm, (0, 0, 100, 100), shrink=0.0, use_mad=False)
+        focused = sample_depth(dm, (0, 0, 100, 100), shrink=0.6, use_mad=False)
+        assert full == pytest.approx(1.0)   # background dominates the whole box
+        assert focused == pytest.approx(5.0)  # shrink isolates the object
+
+    def test_empty_region_returns_none(self):
+        dm = np.zeros((10, 10), dtype=np.float32)
+        assert sample_depth(dm, (5, 5, 5, 5), shrink=0.5) is None
+
+    def test_clips_to_frame_bounds(self):
+        dm = np.arange(100, dtype=np.float32).reshape(10, 10)
+        assert sample_depth(dm, (-20, -20, 5, 5), shrink=0.0) is not None
+
+
+class TestNormalize:
+    def test_range(self):
+        n = percentile_normalize(np.arange(100, dtype=np.float32).reshape(10, 10))
+        assert n.shape == (10, 10)
+        assert n.min() >= 0.0 and n.max() <= 1.0
+
+    def test_degenerate_is_zero(self):
+        assert np.all(percentile_normalize(np.full((10, 10), 7.0, dtype=np.float32)) == 0.0)
+
+
+class TestAnnotate:
+    def test_sets_depth_in_place(self):
+        dm = np.full((100, 100), 0.7, dtype=np.float32)
+        dets = [_det(10, 10, 50, 50), _det(60, 60, 90, 90)]
+        annotate_depth(dets, dm, shrink=0.0)
+        assert all(d.depth == pytest.approx(0.7) for d in dets)
+
+    def test_detection_depth_defaults_none(self):
+        assert _det(0, 0, 10, 10).depth is None
+
+
+class TestOnnxPrePost:
+    def test_preprocess_shape_and_dtype(self):
+        t = preprocess(np.zeros((480, 640, 3), dtype=np.uint8), (518, 518))
+        assert t.shape == (1, 3, 518, 518)
+        assert t.dtype == np.float32
+
+    def test_postprocess_resizes_to_frame(self):
+        out = postprocess(np.zeros((1, 1, 100, 120), dtype=np.float32), (480, 640))
+        assert out.shape == (480, 640)
+
+
+def _install_fake_onnxruntime(monkeypatch, out_shape=(1, 1, 64, 64)):
+    class _Sess:
+        def __init__(self, path, providers=None):
+            self.path = path
+
+        def get_inputs(self):
+            return [types.SimpleNamespace(name="input")]
+
+        def run(self, _outputs, _feeds):
+            return [np.zeros(out_shape, dtype=np.float32)]
+
+    fake = types.ModuleType("onnxruntime")
+    fake.InferenceSession = _Sess
+    monkeypatch.setitem(sys.modules, "onnxruntime", fake)
+
+
+class TestFactory:
+    def test_unknown_backend_raises(self):
+        with pytest.raises(ValueError):
+            build_depth_estimator({"backend": "bogus", "model_path": "x.onnx"})
+
+    def test_missing_model_path_raises(self):
+        with pytest.raises(ValueError):
+            build_depth_estimator({"backend": "depth_anything"})
+
+    def test_builds_depth_anything(self, monkeypatch):
+        _install_fake_onnxruntime(monkeypatch)
+        est = build_depth_estimator({"backend": "depth_anything", "model_path": "m.onnx"})
+        assert isinstance(est, DepthAnythingV2)
+        assert est.model_name == "depth_anything_v2"
+
+    def test_builds_midas(self, monkeypatch):
+        _install_fake_onnxruntime(monkeypatch)
+        est = build_depth_estimator({"backend": "midas", "model_path": "m.onnx"})
+        assert isinstance(est, MidasONNX)
+
+    def test_estimate_resizes_to_frame(self, monkeypatch):
+        _install_fake_onnxruntime(monkeypatch, out_shape=(1, 1, 64, 64))
+        est = build_depth_estimator({"backend": "depth_anything", "model_path": "m.onnx"})
+        depth = est.estimate(np.zeros((120, 160, 3), dtype=np.uint8))
+        assert depth.shape == (120, 160)

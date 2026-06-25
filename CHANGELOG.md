@@ -30,6 +30,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   push/PR with a slim, ML-free dependency install.
 - Import-safe detector wrappers (lazy `ultralytics` import) plus 19 new tests
   (registry factory, INT8 arg plumbing, result→`Detection` conversion).
+- **Functional re-identification** (`src/tracking/reid.py` + `EnhancedTracker`): a
+  pluggable `ReIDEmbedder` (zero-dep colour `HistogramEmbedder` default + optional deep
+  `OSNetEmbedder` via torchreid, selected by `tracking.reid_backend: auto|histogram|osnet`).
+  The tracker now maintains a lost-track pool and actually remaps a re-entering track's ID
+  back to its original (previously the embeddings were computed but never matched).
+  `EnhancedTracker` is now wired into `run_webcam.py --track` (re-ID + trajectory trails),
+  not just the dashboard. Optional deps in `requirements-reid.txt` (CI stays torch-free).
 
 ## [0.5.0] - 2026-03-16
 

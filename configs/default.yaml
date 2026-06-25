@@ -32,6 +32,8 @@ tracking:
   enabled: false               # Set to true to enable object tracking
   max_history: 50              # Max trajectory trail points per track
   reid_threshold: 0.7          # Re-ID cosine similarity threshold
+  reid_backend: "auto"         # Embedder: "auto" (OSNet if torch+torchreid, else histogram) | "histogram" | "osnet"
+  lost_timeout: 5.0            # Seconds a vanished track stays re-identifiable
 
 # Zone counting
 zones:

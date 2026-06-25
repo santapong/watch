@@ -6,6 +6,7 @@ import numpy as np
 import pytest
 
 from src.models.base import Detection
+from src.tracking.reid import HistogramEmbedder, build_embedder
 from src.tracking.tracker import TrackInfo, TrackHistory, EnhancedTracker
 
 
@@ -166,3 +167,76 @@ class TestEnhancedTracker:
         different_emb = np.array([0.0, 1.0, 0.0] * 32, dtype=np.float32)
         result = tracker.match_reid(1, {99: different_emb})
         assert result is None
+
+
+def _frame_with_patch(color, x=10, y=20, w=50, h=80, shape=(480, 640, 3)):
+    """A black frame with a solid colour block filling the detection bbox."""
+    frame = np.zeros(shape, dtype=np.uint8)
+    frame[y:y + h, x:x + w] = color
+    return frame
+
+
+class TestEmbedders:
+    def test_build_auto_is_histogram_without_torch(self):
+        # torch/torchreid are absent in the slim test env -> auto falls back.
+        assert isinstance(build_embedder("auto"), HistogramEmbedder)
+
+    def test_build_histogram(self):
+        assert isinstance(build_embedder("histogram"), HistogramEmbedder)
+
+    def test_build_unknown_raises(self):
+        with pytest.raises(ValueError):
+            build_embedder("bogus")
+
+    def test_histogram_dims(self):
+        vec = HistogramEmbedder().embed(_frame_with_patch((0, 0, 200)), _make_detection(track_id=1))
+        assert vec is not None
+        assert vec.shape == (96,)
+
+    def test_histogram_none_for_tiny_crop(self):
+        tiny = _make_detection(x=0, y=0, w=4, h=4, track_id=1)
+        assert HistogramEmbedder().embed(_frame_with_patch((0, 0, 200)), tiny) is None
+
+
+class TestReID:
+    def test_reentry_remaps_to_original_id(self):
+        tracker = EnhancedTracker(reid_threshold=0.5, lost_timeout=5.0,
+                                  embedder=HistogramEmbedder())
+        red = _frame_with_patch((0, 0, 200))
+        tracker.update([_make_detection(track_id=1)], red)         # seen
+        tracker.update([], np.zeros((480, 640, 3), dtype=np.uint8))  # lost
+        assert 1 in tracker._lost
+        # A NEW raw id re-enters with the same appearance -> remapped back to 1.
+        out = tracker.update([_make_detection(x=14, track_id=7)], red)
+        assert [d.track_id for d in out] == [1]
+        assert tracker._id_mapping.get(7) == 1
+        assert len(tracker.get_trajectory(1)) == 2  # trajectory continues
+
+    def test_different_appearance_not_remapped(self):
+        tracker = EnhancedTracker(reid_threshold=0.9, lost_timeout=5.0,
+                                  embedder=HistogramEmbedder())
+        tracker.update([_make_detection(track_id=1)], _frame_with_patch((0, 0, 200)))
+        tracker.update([], np.zeros((480, 640, 3), dtype=np.uint8))
+        out = tracker.update([_make_detection(track_id=7)], _frame_with_patch((200, 0, 0)))
+        assert [d.track_id for d in out] == [7]
+        assert 7 not in tracker._id_mapping
+
+    def test_lost_entry_evicted_after_timeout(self, monkeypatch):
+        clock = {"t": 1000.0}
+        monkeypatch.setattr("src.tracking.tracker.time.time", lambda: clock["t"])
+        tracker = EnhancedTracker(reid_threshold=0.5, lost_timeout=1.0,
+                                  embedder=HistogramEmbedder())
+        red = _frame_with_patch((0, 0, 200))
+        tracker.update([_make_detection(track_id=1)], red)
+        clock["t"] += 0.1
+        tracker.update([], np.zeros((480, 640, 3), dtype=np.uint8))
+        assert 1 in tracker._lost
+        clock["t"] += 2.0  # past lost_timeout
+        out = tracker.update([_make_detection(track_id=7)], red)
+        assert tracker._lost == {}
+        assert [d.track_id for d in out] == [7]  # too late to re-identify
+
+    def test_update_without_frame_passthrough(self):
+        tracker = EnhancedTracker(embedder=HistogramEmbedder())
+        out = tracker.update([_make_detection(track_id=5)])
+        assert [d.track_id for d in out] == [5]

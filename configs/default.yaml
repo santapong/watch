@@ -8,6 +8,9 @@ model:
   iou_threshold: 0.45          # NMS IoU threshold
   device: ""                   # Auto-detect: "", "cpu", "cuda:0", "mps"
   classes: null                # Filter classes (null = all, [0] = person only, [0, 2] = person + car)
+  tiled: false                 # SAHI-style sliced inference for small/distant objects (slower)
+  tile_size: 640               # Tile size (px) when tiled
+  tile_overlap: 0.2            # Fractional overlap between tiles (0-1)
 
 # Video source
 source:

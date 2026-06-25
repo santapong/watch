@@ -46,6 +46,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   before reporting (graded confidence; tunable via `action.fall`). `run_action.py` now fires a
   critical, cooldown-limited fall alert through `AlertManager`. `pose_detector` imports
   `ultralytics` lazily.
+- **SAHI-style tiled inference** (`src/models/tiled_detector.py`): `TiledDetector` wraps any
+  `BaseDetector`, runs it over overlapping tiles, offsets boxes back to full-frame coords, and
+  merges with class-aware NMS — recovering small/long-range objects. Enabled via `model.tiled`
+  (off by default; the registry wraps the built detector when set). Tracking delegates to the
+  full frame.
 
 ## [0.5.0] - 2026-03-16
 

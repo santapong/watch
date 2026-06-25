@@ -15,6 +15,7 @@ from __future__ import annotations
 
 from .base import BaseDetector
 from .rtdetr_wrapper import RTDETRDetector
+from .tiled_detector import TiledDetector
 from .yolo_wrapper import YOLODetector
 
 # family name -> wrapper class
@@ -85,7 +86,16 @@ def build_detector(cfg: dict) -> BaseDetector:
     for key in ("confidence", "iou_threshold", "classes", "device"):
         if cfg.get(key) is not None:
             kwargs[key] = cfg[key]
-    return wrapper(**kwargs)
+    detector: BaseDetector = wrapper(**kwargs)
+
+    # Optional SAHI-style tiled inference (off by default to preserve full-frame FPS).
+    if cfg.get("tiled"):
+        detector = TiledDetector(
+            detector,
+            tile_size=cfg.get("tile_size", 640),
+            overlap=cfg.get("tile_overlap", 0.2),
+        )
+    return detector
 
 
 def build_detector_from_config(

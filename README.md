@@ -25,6 +25,16 @@ using OpenCV and deep learning.
 | 5 | Alert & notification system | Library (`src/alerts.py`) |
 | 5 | Streamlit monitoring dashboard | `streamlit run src/dashboard.py` |
 | 6 | Workstation activity ledger (Phase A) | `run_workstation.py` |
+| D | Monocular depth + proximity (relative & **metric meters**) | `run_depth.py` |
+| D | Ground-plane metric ranging (true meters on CPU) | Library (`src/depth/ground_plane.py`) |
+| D | Time-to-collision (looming + range cue) | Library (`src/analytics/ttc.py`) |
+| D | Real-time stereo depth | Library (`src/stereo/`) |
+| D | Promptable segmentation (SAM2) + mask-aware privacy | Library (`src/segmentation/`) |
+| D | Crowd (P2PNet) · feature matching (XFeat) · embeddings (DINOv3) | Library (`src/models/`, `src/utils/features.py`) |
+
+> Rows marked **D** (depth/distance + heavy-model scaffolds) are config-gated and **off by
+> default**. Their pure logic is unit-tested torch-free; the model forwards still need
+> on-hardware validation — see **[docs/validation_checklist.md](docs/validation_checklist.md)**.
 
 ## Quick Start
 
@@ -87,6 +97,10 @@ python scripts/run_action.py
 
 # Multi-camera view
 python scripts/run_multicam.py --sources 0 "http://PHONE_IP:8080/video"
+
+# Depth-aware detection + proximity alerts (relative, or metric meters)
+python scripts/run_depth.py --depth-model models/depth_anything_v2_vits.onnx
+python scripts/run_depth.py --depth-backend depth_anything_metric --depth-model models/dav2_metric_s.onnx
 
 # Active learning (collect uncertain samples for labeling)
 python scripts/run_active_learning.py --session my_data
@@ -175,6 +189,23 @@ configs/default.yaml              # Configuration file
 docs/system_architecture.md       # Architecture + mobile camera guide
 ```
 
+Newer subsystems not shown above: `src/depth/` (monocular relative + **metric** depth,
+ground-plane ranger, scale calibration, temporal streaming), `src/segmentation/` (SAM2),
+`src/stereo/` (stereo depth), `src/pose/ctrgcn.py` (action), `src/analytics/ttc.py`
+(time-to-collision), `src/tracking/range_filter.py` (per-track range Kalman). See
+[CLAUDE.md](CLAUDE.md) for the full module map.
+
+## Documentation
+
+| Doc | What |
+|-----|------|
+| [CLAUDE.md](CLAUDE.md) | Operating guide + invariants for AI agents (and humans) |
+| [docs/ADLC.md](docs/ADLC.md) | How this repo is built — the Agentic Development Life Cycle |
+| [docs/HARNESS.md](docs/HARNESS.md) | Harness engineering: hooks, agents, skills, workflows, CI |
+| [docs/validation_checklist.md](docs/validation_checklist.md) | On-hardware validation plan (weights, scripts, metrics) for unvalidated items |
+| [docs/system_architecture.md](docs/system_architecture.md) | Architecture diagrams + mobile-camera setup |
+| [docs/research/](docs/research/) | 2026 CV survey + real-time detection/distance survey + roadmaps |
+
 ## Research Directions
 
 See [idea.md](idea.md) for innovation ideas and research questions across 4 tiers,
@@ -187,6 +218,13 @@ domains — with a prioritized, module-by-module roadmap — see
 [docs/research/data/findings.json](docs/research/data/findings.json)). It was produced by the
 reusable multi-agent workflow at
 [`.claude/workflows/opencv-webcam-cv-research.js`](.claude/workflows/opencv-webcam-cv-research.js).
+
+A focused follow-up survey on **real-time object detection + distance estimation** — with a
+9-item roadmap that is now fully implemented in this repo — is at
+[docs/research/distance_detection_realtime_2026.md](docs/research/distance_detection_realtime_2026.md)
+(produced by [`.claude/workflows/distance-detection-research.js`](.claude/workflows/distance-detection-research.js)).
+Before relying on any depth/distance numbers, work through
+[docs/validation_checklist.md](docs/validation_checklist.md).
 
 ## Changelog
 

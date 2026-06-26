@@ -7,6 +7,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
+- **On-hardware validation checklist** (`docs/validation_checklist.md`): per unvalidated item
+  (metric depth, ground-plane, TTC, calibration, SAM2, MNAD, CTR-GCN, P2PNet, XFeat, DINOv3,
+  stereo, oVDA) — which weights/source/license, deps, the exact command/harness, what to
+  measure (accuracy + FPS), and a pass criterion. README updated with the new depth/distance
+  features and a Documentation section.
 - **P2 distance scaffolds (roadmap #8–#9, lazy + config-gated):** a **real-time stereo
   subsystem** (`src/stereo/` — `BaseStereoMatcher`, ONNX `ESMStereo` with lazy onnxruntime,
   `StereoRig`, `build_stereo_matcher`) with pure, tested disparity→depth math

@@ -6,7 +6,13 @@ import types
 import numpy as np
 import pytest
 
-from src.depth.base import annotate_depth, is_too_close, percentile_normalize, sample_depth
+from src.depth.base import (
+    annotate_depth,
+    is_too_close,
+    percentile_normalize,
+    prepare_depth_map,
+    sample_depth,
+)
 from src.depth.onnx_estimator import (
     DepthAnythingV2,
     DepthAnythingV2Metric,
@@ -87,6 +93,26 @@ class TestProximityConvention:
     def test_default_units_relative(self):
         assert is_too_close(0.9, 0.8) is True
 
+    def test_unknown_units_raises(self):
+        with pytest.raises(ValueError):
+            is_too_close(0.5, 0.8, "meters")  # typo'd unit must not silently pass
+
+
+class TestPrepareDepthMap:
+    def test_metric_passthrough_unchanged(self):
+        raw = np.array([[1.0, 2.0], [3.0, 4.0]], dtype=np.float32)
+        out = prepare_depth_map(raw, "metric")
+        assert np.array_equal(out, raw)  # meters left as-is
+
+    def test_relative_is_normalized(self):
+        raw = np.arange(100, dtype=np.float32).reshape(10, 10)
+        out = prepare_depth_map(raw, "relative")
+        assert out.min() >= 0.0 and out.max() <= 1.0
+
+    def test_unknown_units_raises(self):
+        with pytest.raises(ValueError):
+            prepare_depth_map(np.zeros((4, 4), dtype=np.float32), "meters")
+
 
 class TestAnnotateUnits:
     def test_stamps_units(self):
@@ -161,6 +187,13 @@ class TestFactory:
         assert isinstance(est, DepthAnythingV2Metric)
         assert est.units == "metric"
         assert est.model_name == "depth_anything_v2_metric"
+
+    def test_input_size_passthrough(self, monkeypatch):
+        _install_fake_onnxruntime(monkeypatch)
+        est = build_depth_estimator(
+            {"backend": "depth_anything", "model_path": "m.onnx", "input_size": [320, 320]}
+        )
+        assert est._input_size == (320, 320)  # the edge FPS/accuracy knob is honored
 
     def test_estimate_resizes_to_frame(self, monkeypatch):
         _install_fake_onnxruntime(monkeypatch, out_shape=(1, 1, 64, 64))

@@ -131,6 +131,6 @@ def build_depth_estimator(cfg: dict) -> BaseDepthEstimator:
     if backend == "midas":
         return MidasONNX(model_path, **kwargs)
     raise ValueError(
-        "Unknown depth backend '{0}'. Use 'depth_anything', 'depth_anything_metric', "
-        "or 'midas'.".format(backend)
+        f"Unknown depth backend '{backend}'. "
+        "Use 'depth_anything', 'depth_anything_metric', or 'midas'."
     )

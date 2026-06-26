@@ -29,7 +29,7 @@ from src.depth import (
     annotate_depth,
     build_depth_estimator,
     is_too_close,
-    percentile_normalize,
+    prepare_depth_map,
 )
 from src.models.registry import build_detector_from_config
 from src.stream import VideoStream
@@ -42,7 +42,12 @@ def main():
     parser.add_argument("--source", default="0")
     parser.add_argument("--model", default="yolov8n.pt")
     parser.add_argument("--depth-model", default=None, help="Path to the ONNX depth model")
-    parser.add_argument("--depth-backend", default=None, help="depth_anything | midas")
+    parser.add_argument("--depth-backend", default=None,
+                        help="depth_anything | depth_anything_metric | midas")
+    parser.add_argument("--depth-input-size", nargs=2, type=int, default=None,
+                        metavar=("W", "H"),
+                        help="override depth model input size; smaller = faster on edge "
+                             "(e.g. 384 384 or 256 256)")
     parser.add_argument("--config", default="configs/default.yaml")
     args = parser.parse_args()
 
@@ -56,6 +61,8 @@ def main():
         depth_cfg["model_path"] = args.depth_model
     if args.depth_backend:
         depth_cfg["backend"] = args.depth_backend
+    if args.depth_input_size:
+        depth_cfg["input_size"] = args.depth_input_size
     # Relative backends use a normalized [0,1] threshold (larger = nearer); the metric
     # backend uses meters (smaller = nearer). The estimator declares which via .units.
     proximity_rel = depth_cfg.get("proximity_threshold", 0.8)
@@ -97,7 +104,7 @@ def main():
             detections = detector.detect(frame)
             raw_depth = depth_estimator.estimate(frame)
             # Metric depth is already in meters; only relative/inverse maps get normalized.
-            depth_map = raw_depth if units == "metric" else percentile_normalize(raw_depth)
+            depth_map = prepare_depth_map(raw_depth, units)
             annotate_depth(detections, depth_map, units=units)
             fps.tick()
 

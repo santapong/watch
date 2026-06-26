@@ -96,13 +96,30 @@ def is_too_close(depth: float | None, threshold: float, units: str = "relative")
     - ``relative`` (inverse depth, larger = nearer): too close when ``depth >= threshold``.
     - ``metric`` (meters, smaller = nearer): too close when ``depth <= threshold``.
 
-    Returns ``False`` for a missing depth.
+    Returns ``False`` for a missing depth. Raises ``ValueError`` on an unknown ``units``
+    so a sloppily-set unit can't silently flip the comparison.
     """
     if depth is None:
         return False
     if units == "metric":
         return depth <= threshold
-    return depth >= threshold
+    if units == "relative":
+        return depth >= threshold
+    raise ValueError(f"unknown depth units {units!r}; expected 'relative' or 'metric'")
+
+
+def prepare_depth_map(raw_map: np.ndarray, units: str = "relative") -> np.ndarray:
+    """Turn a raw estimator output into a per-detection-ready depth map.
+
+    Metric maps are already in meters and returned unchanged; relative/inverse maps are
+    robustly normalized to [0, 1] via :func:`percentile_normalize`. Raises ``ValueError``
+    on an unknown ``units``.
+    """
+    if units == "metric":
+        return np.asarray(raw_map, dtype=np.float32)
+    if units == "relative":
+        return percentile_normalize(raw_map)
+    raise ValueError(f"unknown depth units {units!r}; expected 'relative' or 'metric'")
 
 
 def annotate_depth(

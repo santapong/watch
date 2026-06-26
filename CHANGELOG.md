@@ -12,8 +12,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   a `units` flag (`'relative'`|`'metric'`) on depth estimators, `Detection.depth_units`, and a
   convention-aware `is_too_close(depth, threshold, units)` — relative (larger = nearer) alerts on
   `>=`, metric (meters, smaller = nearer) alerts on `<=`. `run_depth.py` skips normalization on the
-  metric path and alerts in meters via `depth.proximity_threshold_m`. **Additive + opt-in; the
-  default relative path is unchanged.** Pure logic unit-tested; real metric weights need a torch/ONNX box.
+  metric path and alerts in meters via `depth.proximity_threshold_m`. **Additive + opt-in;** the
+  default relative path's alerting/printing behavior is unchanged (it now also stamps
+  `depth_units='relative'`). Pure logic unit-tested; real metric weights need a torch/ONNX box.
+- **Approximate meters on the relative path + per-track range** (roadmap items 2–4):
+  `DepthScaleCalibrator` (`src/depth/calibration.py`) fits `1/Z = a·d_rel + b` from a few
+  known-distance references to convert relative depth to meters without swapping models;
+  `prepare_depth_map(raw, units)` makes the metric "skip-normalization" rule a tested pure
+  helper; a `--depth-input-size` knob on `run_depth.py` trades FPS/accuracy on edge; and
+  `RangeKalman1D` / `RangeTracker` (`src/tracking/range_filter.py`) smooth per-track distance
+  and estimate closing speed (range-rate), predicting through detection gaps. All pure numpy,
+  additive, and unit-tested.
 - **Research: real-time detection + distance estimation** (`docs/research/distance_detection_realtime_2026.md`):
   a web-grounded, adversarially-verified survey (10 domains, 10/10 fact-checked, 36 agents)
   of detectors, monocular/stereo/geometric depth, detection–depth fusion, collision/TTC,

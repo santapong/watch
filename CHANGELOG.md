@@ -7,6 +7,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
+- **Research: real-time detection + distance estimation** (`docs/research/distance_detection_realtime_2026.md`):
+  a web-grounded, adversarially-verified survey (10 domains, 10/10 fact-checked, 36 agents)
+  of detectors, monocular/stereo/geometric depth, detection–depth fusion, collision/TTC,
+  calibration, and edge deployment — plus a 9-item, repo-aware roadmap. Produced by the new
+  `distance-detection-research` workflow (`.claude/workflows/`) per `docs/ADLC.md` (Research stage).
 - **Workstation activity monitoring — Phase A** (`src/workstation/`): data model,
   SQLite-backed `ActivityStore`, and `ActivityLedger` with hysteresis debounce
   and auto-idle on observation silence. Taxonomy v1: polishing, filing,

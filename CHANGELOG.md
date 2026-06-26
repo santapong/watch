@@ -7,6 +7,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
+- **P2 distance scaffolds (roadmap #8–#9, lazy + config-gated):** a **real-time stereo
+  subsystem** (`src/stereo/` — `BaseStereoMatcher`, ONNX `ESMStereo` with lazy onnxruntime,
+  `StereoRig`, `build_stereo_matcher`) with pure, tested disparity→depth math
+  (`Z = fx·baseline/disparity`, invalid disparity → +inf); and a **temporal streaming-depth
+  smoother** (`src/depth/streaming.py` — `TemporalDepthEstimator`) that EMA-blends consecutive
+  depth maps for steadier video depth (a lightweight stand-in for a true streaming model like
+  oVDA, whose weights are non-commercial), wired as an opt-in wrapper in `build_depth_estimator`
+  with `reset()` added to the depth base interface. Both need a stereo rig / GPU + weights, so
+  they are **not inference-validated here**; their pure cores are unit-tested with the model mocked.
 - **P1 distance/detection items (roadmap #5–#7):** YOLO26 made first-class (config example,
   edge-benchmark recipe via `scripts/benchmark_matrix.py`, and a regression test pinning the
   alias/loader — Ultralytics/YOLO weights are **AGPL-3.0**); a **single-view ground-plane

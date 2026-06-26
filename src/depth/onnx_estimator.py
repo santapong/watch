@@ -125,12 +125,24 @@ def build_depth_estimator(cfg: dict) -> BaseDepthEstimator:
     if cfg.get("input_size"):
         kwargs["input_size"] = tuple(cfg["input_size"])
     if backend in ("depth_anything", "depth-anything", "dav2"):
-        return DepthAnythingV2(model_path, **kwargs)
-    if backend in ("depth_anything_metric", "depth-anything-metric", "dav2_metric", "metric"):
-        return DepthAnythingV2Metric(model_path, **kwargs)
-    if backend == "midas":
-        return MidasONNX(model_path, **kwargs)
-    raise ValueError(
-        f"Unknown depth backend '{backend}'. "
-        "Use 'depth_anything', 'depth_anything_metric', or 'midas'."
-    )
+        est: BaseDepthEstimator = DepthAnythingV2(model_path, **kwargs)
+    elif backend in ("depth_anything_metric", "depth-anything-metric", "dav2_metric", "metric"):
+        est = DepthAnythingV2Metric(model_path, **kwargs)
+    elif backend == "midas":
+        est = MidasONNX(model_path, **kwargs)
+    else:
+        raise ValueError(
+            f"Unknown depth backend '{backend}'. "
+            "Use 'depth_anything', 'depth_anything_metric', or 'midas'."
+        )
+
+    # Optional temporal smoothing for video streams (off by default).
+    streaming = cfg.get("streaming") or {}
+    if streaming.get("enabled"):
+        from src.depth.streaming import TemporalDepthEstimator  # lazy: avoid import cycle
+
+        est = TemporalDepthEstimator(
+            est, alpha=streaming.get("alpha", 0.5),
+            align_scale=streaming.get("align_scale", False),
+        )
+    return est

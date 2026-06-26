@@ -38,6 +38,10 @@ class BaseDepthEstimator(ABC):
         or ``'metric'`` (meters, smaller = nearer). Metric estimators override this."""
         return "relative"
 
+    def reset(self) -> None:
+        """Reset any per-stream state (no-op for stateless estimators; overridden by
+        temporal/streaming estimators)."""
+
 
 def percentile_normalize(depth: np.ndarray, low: float = 1.0, high: float = 99.0) -> np.ndarray:
     """Robustly normalize a depth map to [0, 1] via percentile clipping.

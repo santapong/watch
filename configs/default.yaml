@@ -91,6 +91,12 @@ depth:
     height_m: 1.5              # camera height above ground (m)
     pitch_deg: 10.0            # downward tilt from horizontal (deg)
     # homography mode instead: image_points + ground_points (>=4 pixel<->meter pairs)
+  # Temporal smoothing for steadier depth across frames (lightweight stand-in for a
+  # streaming model like oVDA, whose weights are non-commercial) — off by default.
+  streaming:
+    enabled: false
+    alpha: 0.5                 # EMA weight on the current frame (1.0 = no smoothing)
+    align_scale: false         # rescale each frame to the running median (relative depth only)
 
 # Multi-camera
 multicam:

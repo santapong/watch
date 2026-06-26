@@ -21,6 +21,7 @@ from src.depth.onnx_estimator import (
     MidasONNX,
     build_depth_estimator,
 )
+from src.depth.streaming import TemporalDepthEstimator, align_scale_to, blend_depth
 
 __all__ = [
     "BaseDepthEstimator",
@@ -38,4 +39,7 @@ __all__ = [
     "DepthAnythingV2Metric",
     "MidasONNX",
     "build_depth_estimator",
+    "TemporalDepthEstimator",
+    "blend_depth",
+    "align_scale_to",
 ]

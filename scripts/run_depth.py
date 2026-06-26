@@ -25,7 +25,12 @@ import cv2
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from src.alerts import AlertManager, AlertRule, LogNotifier
-from src.depth import annotate_depth, build_depth_estimator, percentile_normalize
+from src.depth import (
+    annotate_depth,
+    build_depth_estimator,
+    is_too_close,
+    percentile_normalize,
+)
 from src.models.registry import build_detector_from_config
 from src.stream import VideoStream
 from src.utils.drawing import draw_detections, draw_fps
@@ -51,7 +56,10 @@ def main():
         depth_cfg["model_path"] = args.depth_model
     if args.depth_backend:
         depth_cfg["backend"] = args.depth_backend
-    proximity = depth_cfg.get("proximity_threshold", 0.8)
+    # Relative backends use a normalized [0,1] threshold (larger = nearer); the metric
+    # backend uses meters (smaller = nearer). The estimator declares which via .units.
+    proximity_rel = depth_cfg.get("proximity_threshold", 0.8)
+    proximity_m = depth_cfg.get("proximity_threshold_m", 2.0)
 
     source = args.source
     try:
@@ -61,7 +69,9 @@ def main():
 
     detector = build_detector_from_config(config, model_name=args.model)
     depth_estimator = build_depth_estimator(depth_cfg)  # raises if model_path missing
-    print(f"Depth model: {depth_estimator.model_name}")
+    units = getattr(depth_estimator, "units", "relative")
+    threshold = proximity_m if units == "metric" else proximity_rel
+    print(f"Depth model: {depth_estimator.model_name} (units={units}, threshold={threshold})")
 
     alert_manager = AlertManager()
     alert_manager.add_rule(AlertRule(
@@ -85,21 +95,24 @@ def main():
                 continue
 
             detections = detector.detect(frame)
-            depth_map = percentile_normalize(depth_estimator.estimate(frame))
-            annotate_depth(detections, depth_map)
+            raw_depth = depth_estimator.estimate(frame)
+            # Metric depth is already in meters; only relative/inverse maps get normalized.
+            depth_map = raw_depth if units == "metric" else percentile_normalize(raw_depth)
+            annotate_depth(detections, depth_map, units=units)
             fps.tick()
 
             draw_detections(frame, detections)
+            suffix = "m" if units == "metric" else ""
             too_close = []
             for det in detections:
                 if det.depth is None:
                     continue
                 x1, y1, x2, y2 = (int(v) for v in det.bbox)
                 cv2.putText(
-                    frame, f"d={det.depth:.2f}", (x1, max(12, y1 - 8)),
+                    frame, f"d={det.depth:.2f}{suffix}", (x1, max(12, y1 - 8)),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 200, 255), 1, cv2.LINE_AA,
                 )
-                if det.depth >= proximity:
+                if is_too_close(det.depth, threshold, units):
                     too_close.append(det)
                     cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 0, 255), 3)
 

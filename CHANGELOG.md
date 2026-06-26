@@ -7,6 +7,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
+- **Metric depth + meters-denominated proximity** (roadmap item 1 from the distance/detection
+  research): a `depth_anything_metric` backend in `build_depth_estimator` that returns **meters**,
+  a `units` flag (`'relative'`|`'metric'`) on depth estimators, `Detection.depth_units`, and a
+  convention-aware `is_too_close(depth, threshold, units)` — relative (larger = nearer) alerts on
+  `>=`, metric (meters, smaller = nearer) alerts on `<=`. `run_depth.py` skips normalization on the
+  metric path and alerts in meters via `depth.proximity_threshold_m`. **Additive + opt-in; the
+  default relative path is unchanged.** Pure logic unit-tested; real metric weights need a torch/ONNX box.
 - **Research: real-time detection + distance estimation** (`docs/research/distance_detection_realtime_2026.md`):
   a web-grounded, adversarially-verified survey (10 domains, 10/10 fact-checked, 36 agents)
   of detectors, monocular/stereo/geometric depth, detection–depth fusion, collision/TTC,

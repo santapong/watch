@@ -45,6 +45,7 @@ class OnnxDepthEstimator(BaseDepthEstimator):
         std: tuple[float, float, float] = _IMAGENET_STD,
         name: str = "onnx-depth",
         providers: list[str] | None = None,
+        units: str = "relative",
     ):
         import onnxruntime as ort  # lazy heavy import
 
@@ -56,6 +57,7 @@ class OnnxDepthEstimator(BaseDepthEstimator):
         self._mean = mean
         self._std = std
         self._name = name
+        self._units = units
 
     def estimate(self, frame: np.ndarray) -> np.ndarray:
         inp = preprocess(frame, self._input_size, self._mean, self._std)
@@ -66,6 +68,10 @@ class OnnxDepthEstimator(BaseDepthEstimator):
     def model_name(self) -> str:
         return self._name
 
+    @property
+    def units(self) -> str:
+        return self._units
+
 
 class DepthAnythingV2(OnnxDepthEstimator):
     """Depth Anything V2 (ONNX). Larger value = nearer (inverse depth)."""
@@ -73,6 +79,21 @@ class DepthAnythingV2(OnnxDepthEstimator):
     def __init__(self, model_path: str, input_size: tuple[int, int] = (518, 518), providers=None):
         super().__init__(
             model_path, input_size=input_size, name="depth_anything_v2", providers=providers
+        )
+
+
+class DepthAnythingV2Metric(OnnxDepthEstimator):
+    """Depth Anything V2 metric fine-tune (ONNX). Output is METERS (smaller = nearer).
+
+    Use the Hypersim (indoor, ~20 m) or Virtual-KITTI (outdoor, ~80 m) metric weights.
+    Unlike the relative model, callers must NOT percentile-normalize this output — it is
+    already in meters; ``units == 'metric'`` signals that.
+    """
+
+    def __init__(self, model_path: str, input_size: tuple[int, int] = (518, 518), providers=None):
+        super().__init__(
+            model_path, input_size=input_size, name="depth_anything_v2_metric",
+            providers=providers, units="metric",
         )
 
 
@@ -89,8 +110,8 @@ def build_depth_estimator(cfg: dict) -> BaseDepthEstimator:
     """Build a depth estimator from a config dict.
 
     Args:
-        cfg: ``{"backend": "depth_anything"|"midas", "model_path": str,
-            "input_size": [w, h]}``.
+        cfg: ``{"backend": "depth_anything"|"depth_anything_metric"|"midas",
+            "model_path": str, "input_size": [w, h]}``.
 
     Raises:
         ValueError: on an unknown backend or a missing ``model_path``.
@@ -105,8 +126,11 @@ def build_depth_estimator(cfg: dict) -> BaseDepthEstimator:
         kwargs["input_size"] = tuple(cfg["input_size"])
     if backend in ("depth_anything", "depth-anything", "dav2"):
         return DepthAnythingV2(model_path, **kwargs)
+    if backend in ("depth_anything_metric", "depth-anything-metric", "dav2_metric", "metric"):
+        return DepthAnythingV2Metric(model_path, **kwargs)
     if backend == "midas":
         return MidasONNX(model_path, **kwargs)
     raise ValueError(
-        f"Unknown depth backend '{backend}'. Use 'depth_anything' or 'midas'."
+        "Unknown depth backend '{0}'. Use 'depth_anything', 'depth_anything_metric', "
+        "or 'midas'.".format(backend)
     )

@@ -6,9 +6,10 @@ import types
 import numpy as np
 import pytest
 
-from src.depth.base import annotate_depth, percentile_normalize, sample_depth
+from src.depth.base import annotate_depth, is_too_close, percentile_normalize, sample_depth
 from src.depth.onnx_estimator import (
     DepthAnythingV2,
+    DepthAnythingV2Metric,
     MidasONNX,
     build_depth_estimator,
     postprocess,
@@ -70,6 +71,38 @@ class TestAnnotate:
         assert _det(0, 0, 10, 10).depth is None
 
 
+class TestProximityConvention:
+    def test_relative_larger_is_nearer(self):
+        assert is_too_close(0.9, 0.8, "relative") is True
+        assert is_too_close(0.7, 0.8, "relative") is False
+
+    def test_metric_smaller_is_nearer(self):
+        assert is_too_close(1.5, 2.0, "metric") is True   # 1.5 m -> too close
+        assert is_too_close(2.5, 2.0, "metric") is False  # 2.5 m -> safe
+
+    def test_none_is_never_close(self):
+        assert is_too_close(None, 0.8, "relative") is False
+        assert is_too_close(None, 2.0, "metric") is False
+
+    def test_default_units_relative(self):
+        assert is_too_close(0.9, 0.8) is True
+
+
+class TestAnnotateUnits:
+    def test_stamps_units(self):
+        dm = np.full((50, 50), 3.0, dtype=np.float32)
+        dets = [_det(10, 10, 40, 40)]
+        annotate_depth(dets, dm, shrink=0.0, units="metric")
+        assert dets[0].depth == pytest.approx(3.0)
+        assert dets[0].depth_units == "metric"
+
+    def test_no_units_leaves_default_none(self):
+        dm = np.full((50, 50), 3.0, dtype=np.float32)
+        d = _det(10, 10, 40, 40)
+        annotate_depth([d], dm, shrink=0.0)
+        assert d.depth_units is None
+
+
 class TestOnnxPrePost:
     def test_preprocess_shape_and_dtype(self):
         t = preprocess(np.zeros((480, 640, 3), dtype=np.uint8), (518, 518))
@@ -116,6 +149,18 @@ class TestFactory:
         _install_fake_onnxruntime(monkeypatch)
         est = build_depth_estimator({"backend": "midas", "model_path": "m.onnx"})
         assert isinstance(est, MidasONNX)
+
+    def test_relative_backend_units_default(self, monkeypatch):
+        _install_fake_onnxruntime(monkeypatch)
+        est = build_depth_estimator({"backend": "depth_anything", "model_path": "m.onnx"})
+        assert est.units == "relative"
+
+    def test_builds_metric_backend(self, monkeypatch):
+        _install_fake_onnxruntime(monkeypatch)
+        est = build_depth_estimator({"backend": "depth_anything_metric", "model_path": "m.onnx"})
+        assert isinstance(est, DepthAnythingV2Metric)
+        assert est.units == "metric"
+        assert est.model_name == "depth_anything_v2_metric"
 
     def test_estimate_resizes_to_frame(self, monkeypatch):
         _install_fake_onnxruntime(monkeypatch, out_shape=(1, 1, 64, 64))

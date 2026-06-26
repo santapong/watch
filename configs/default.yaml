@@ -73,10 +73,11 @@ action:
 # Monocular depth (Phase 2; needs onnxruntime + an ONNX model, see requirements-phase2.txt)
 depth:
   enabled: false
-  backend: "depth_anything"    # "depth_anything" | "midas"
+  backend: "depth_anything"    # "depth_anything" (relative) | "depth_anything_metric" (meters) | "midas"
   model_path: ""               # path to the ONNX depth model (Depth Anything V2 / MiDaS)
   input_size: [518, 518]       # model input (width, height); midas uses [256, 256]
-  proximity_threshold: 0.8     # normalized depth (0-1, larger = nearer) above which to alert
+  proximity_threshold: 0.8     # relative backends: normalized depth (0-1, larger = nearer) above which to alert
+  proximity_threshold_m: 2.0   # metric backend only: distance in meters (smaller = nearer) below which to alert
   alert_cooldown: 10           # seconds between proximity alerts
 
 # Multi-camera

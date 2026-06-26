@@ -32,6 +32,12 @@ class BaseDepthEstimator(ABC):
     def model_name(self) -> str:
         """Identifier of the loaded depth model."""
 
+    @property
+    def units(self) -> str:
+        """Scale of ``estimate`` output: ``'relative'`` (inverse depth, larger = nearer)
+        or ``'metric'`` (meters, smaller = nearer). Metric estimators override this."""
+        return "relative"
+
 
 def percentile_normalize(depth: np.ndarray, low: float = 1.0, high: float = 99.0) -> np.ndarray:
     """Robustly normalize a depth map to [0, 1] via percentile clipping.
@@ -84,12 +90,34 @@ def sample_depth(
     return float(np.median(roi))
 
 
+def is_too_close(depth: float | None, threshold: float, units: str = "relative") -> bool:
+    """Proximity test that respects the depth convention.
+
+    - ``relative`` (inverse depth, larger = nearer): too close when ``depth >= threshold``.
+    - ``metric`` (meters, smaller = nearer): too close when ``depth <= threshold``.
+
+    Returns ``False`` for a missing depth.
+    """
+    if depth is None:
+        return False
+    if units == "metric":
+        return depth <= threshold
+    return depth >= threshold
+
+
 def annotate_depth(
     detections: list[Detection],
     depth_map: np.ndarray,
     shrink: float = 0.2,
+    units: str | None = None,
 ) -> list[Detection]:
-    """Populate each detection's ``depth`` (in place) by sampling the depth map."""
+    """Populate each detection's ``depth`` (in place) by sampling the depth map.
+
+    If ``units`` is given (``'relative'``|``'metric'``), it is stamped on
+    ``detection.depth_units`` so downstream consumers know the scale.
+    """
     for det in detections:
         det.depth = sample_depth(depth_map, det.bbox, shrink=shrink)
+        if units is not None:
+            det.depth_units = units
     return detections

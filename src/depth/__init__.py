@@ -9,6 +9,12 @@ from src.depth.base import (
     sample_depth,
 )
 from src.depth.calibration import DepthScaleCalibrator
+from src.depth.ground_plane import (
+    GroundPlaneHomographyRanger,
+    PinholeGroundRanger,
+    annotate_ground_range,
+    build_ground_ranger,
+)
 from src.depth.onnx_estimator import (
     DepthAnythingV2,
     DepthAnythingV2Metric,
@@ -24,6 +30,10 @@ __all__ = [
     "prepare_depth_map",
     "sample_depth",
     "DepthScaleCalibrator",
+    "PinholeGroundRanger",
+    "GroundPlaneHomographyRanger",
+    "annotate_ground_range",
+    "build_ground_ranger",
     "DepthAnythingV2",
     "DepthAnythingV2Metric",
     "MidasONNX",

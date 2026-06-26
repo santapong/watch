@@ -7,6 +7,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
+- **P1 distance/detection items (roadmap #5–#7):** YOLO26 made first-class (config example,
+  edge-benchmark recipe via `scripts/benchmark_matrix.py`, and a regression test pinning the
+  alias/loader — Ultralytics/YOLO weights are **AGPL-3.0**); a **single-view ground-plane
+  ranger** (`src/depth/ground_plane.py` — `PinholeGroundRanger` + `GroundPlaneHomographyRanger`)
+  giving true **meters on pure CPU** for fixed flat-ground cameras (no neural depth), reported
+  through `is_too_close`; and a **time-to-collision** estimator (`src/analytics/ttc.py`)
+  combining a unit-free bbox-looming cue with a metric range cue (range cue gated to metric
+  units only — relative inverse-depth can't yield TTC). All additive, config-gated, pure
+  numpy/cv2, unit-tested.
 - **Metric depth + meters-denominated proximity** (roadmap item 1 from the distance/detection
   research): a `depth_anything_metric` backend in `build_depth_estimator` that returns **meters**,
   a `units` flag (`'relative'`|`'metric'`) on depth estimators, `Detection.depth_units`, and a

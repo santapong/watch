@@ -1,4 +1,4 @@
-ultralytics>=8.3
+ultralytics>=8.3        # YOLO26 (yolo26n.pt) needs a recent ultralytics; YOLO/Ultralytics weights are AGPL-3.0 (commercial use -> Ultralytics Enterprise license)
 opencv-python-headless>=4.10
 torch>=2.2
 torchvision

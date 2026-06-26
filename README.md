@@ -94,6 +94,8 @@ python scripts/run_active_learning.py --session my_data
 # Model export & benchmarking
 python scripts/export_model.py --format onnx torchscript --benchmark
 python scripts/benchmark.py --models yolov8n.pt yolov8n.onnx
+# Edge detector sweep incl. YOLO26 (NMS-free; AGPL-3.0 weights)
+python scripts/benchmark_matrix.py --models yolo26n.pt yolo11n.pt yolov8n.pt
 
 # Heatmap overlay (shows where objects concentrate)
 python scripts/run_heatmap.py --decay 0.99 --classes person

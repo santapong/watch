@@ -20,6 +20,8 @@ class ExportResult:
     file_size_mb: float
     success: bool
     error_message: str = ""
+    precision: str = "fp32"  # "fp32" | "fp16" | "int8"
+    calibration_data: str = ""
 
 
 @dataclass
@@ -36,6 +38,10 @@ class BenchmarkResult:
     fps: float
     num_iterations: int
     warmup_iterations: int
+    p50_latency_ms: float = 0.0
+    p95_latency_ms: float = 0.0
+    model_size_mb: float = 0.0
+    map50_95: float | None = None
 
 
 class ModelExporter:
@@ -71,6 +77,8 @@ class ModelExporter:
         format: str = "onnx",
         imgsz: int = 640,
         half: bool = False,
+        int8: bool = False,
+        data: str | None = None,
         dynamic: bool = False,
         simplify: bool = True,
         output_dir: str | None = None,
@@ -82,6 +90,10 @@ class ModelExporter:
                     "engine" for TensorRT, "coreml", "tflite", "ncnn").
             imgsz: Input image size.
             half: Use FP16 quantization.
+            int8: Use INT8 quantization (honored by onnx/openvino/engine/tflite).
+                Mutually exclusive with ``half``.
+            data: Calibration dataset YAML for INT8 (e.g. "coco128.yaml"). If
+                omitted with int8 enabled, Ultralytics picks a default COCO set.
             dynamic: Enable dynamic input shapes (ONNX).
             simplify: Simplify ONNX graph.
             output_dir: Custom output directory.
@@ -89,14 +101,32 @@ class ModelExporter:
         Returns:
             ExportResult with export details.
         """
+        precision = "int8" if int8 else ("fp16" if half else "fp32")
+
+        if half and int8:
+            return ExportResult(
+                format=format,
+                output_path="",
+                file_size_mb=0,
+                success=False,
+                error_message="half and int8 are mutually exclusive; choose one precision.",
+                precision=precision,
+                calibration_data=data or "",
+            )
+
         try:
-            export_path = self._model.export(
+            export_kwargs = dict(
                 format=format,
                 imgsz=imgsz,
                 half=half,
+                int8=int8,
                 dynamic=dynamic,
                 simplify=simplify,
             )
+            if data is not None:
+                export_kwargs["data"] = data
+
+            export_path = self._model.export(**export_kwargs)
 
             export_path = str(export_path)
             file_size = Path(export_path).stat().st_size / (1024 * 1024)
@@ -106,6 +136,8 @@ class ModelExporter:
                 output_path=export_path,
                 file_size_mb=file_size,
                 success=True,
+                precision=precision,
+                calibration_data=data or "",
             )
 
         except Exception as e:
@@ -115,6 +147,8 @@ class ModelExporter:
                 file_size_mb=0,
                 success=False,
                 error_message=str(e),
+                precision=precision,
+                calibration_data=data or "",
             )
 
     def export_multiple(
@@ -122,6 +156,8 @@ class ModelExporter:
         formats: list[str] | None = None,
         imgsz: int = 640,
         half: bool = False,
+        int8: bool = False,
+        data: str | None = None,
     ) -> list[ExportResult]:
         """Export model to multiple formats.
 
@@ -129,6 +165,8 @@ class ModelExporter:
             formats: List of formats. Defaults to common formats.
             imgsz: Input image size.
             half: Use FP16 quantization.
+            int8: Use INT8 quantization (mutually exclusive with ``half``).
+            data: Calibration dataset YAML for INT8.
 
         Returns:
             List of ExportResult objects.
@@ -139,7 +177,7 @@ class ModelExporter:
         results = []
         for fmt in formats:
             print(f"Exporting to {fmt}...")
-            result = self.export(format=fmt, imgsz=imgsz, half=half)
+            result = self.export(format=fmt, imgsz=imgsz, half=half, int8=int8, data=data)
             results.append(result)
             if result.success:
                 print(f"  -> {result.output_path} ({result.file_size_mb:.1f} MB)")
@@ -213,7 +251,14 @@ class BenchmarkRunner:
         avg_latency = np.mean(latencies)
         min_latency = np.min(latencies)
         max_latency = np.max(latencies)
+        p50_latency, p95_latency = np.percentile(latencies, [50, 95])
         fps = 1000.0 / avg_latency if avg_latency > 0 else 0
+
+        model_size_mb = 0.0
+        try:
+            model_size_mb = Path(model_path).stat().st_size / (1024 * 1024)
+        except OSError:
+            pass  # e.g. a model name resolved from cache, not a local file
 
         return BenchmarkResult(
             model_path=model_path,
@@ -226,6 +271,9 @@ class BenchmarkRunner:
             fps=float(fps),
             num_iterations=num_iterations,
             warmup_iterations=warmup,
+            p50_latency_ms=float(p50_latency),
+            p95_latency_ms=float(p95_latency),
+            model_size_mb=float(model_size_mb),
         )
 
     def compare(

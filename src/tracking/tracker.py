@@ -6,14 +6,14 @@ Wraps Ultralytics tracking (BoT-SORT / ByteTrack) and adds:
 - Track statistics (duration, distance traveled)
 """
 
+import dataclasses
 import time
-from collections import defaultdict
 from dataclasses import dataclass, field
 
-import cv2
 import numpy as np
 
 from src.models.base import Detection
+from src.tracking.reid import ReIDEmbedder, build_embedder
 
 
 @dataclass
@@ -148,71 +148,140 @@ class EnhancedTracker:
         max_history: int = 50,
         reid_threshold: float = 0.7,
         lost_timeout: float = 5.0,
+        reid_backend: str = "auto",
+        embedder: ReIDEmbedder | None = None,
     ):
         """Initialize enhanced tracker.
 
         Args:
             max_history: Max trajectory points per track.
             reid_threshold: Cosine similarity threshold for re-ID matching.
-            lost_timeout: Seconds before a lost track is removed.
+            lost_timeout: Seconds a vanished track stays re-identifiable.
+            reid_backend: Embedder backend ("auto" | "histogram" | "osnet"); only
+                used when ``embedder`` is not supplied.
+            embedder: Explicit embedder instance (overrides ``reid_backend``).
         """
         self._history = TrackHistory(max_history=max_history)
         self._reid_threshold = reid_threshold
         self._lost_timeout = lost_timeout
-        self._embeddings: dict[int, np.ndarray] = {}
-        self._id_mapping: dict[int, int] = {}  # Maps new IDs to original IDs
-        self._next_global_id = 0
+        self._embedder = embedder if embedder is not None else build_embedder(reid_backend)
+        self._embeddings: dict[int, np.ndarray] = {}   # raw track_id -> latest embedding
+        self._id_mapping: dict[int, int] = {}          # raw id -> earlier (canonical) id
+        self._lost: dict[int, dict] = {}               # canonical id -> {embedding, lost_at, class_id}
+        self._seen_ids: set[int] = set()               # every raw id ever observed
+        self._class_of: dict[int, int] = {}            # canonical id -> class_id
+        self._last_raw_of: dict[int, int] = {}         # canonical id -> latest raw id seen
+        self._active: set[int] = set()                 # canonical ids present last frame
+
+    def _resolve(self, track_id: int) -> int:
+        """Follow id-mapping chains (a -> b -> c) to the canonical id, cycle-safe."""
+        seen: set[int] = set()
+        while track_id in self._id_mapping and track_id not in seen:
+            seen.add(track_id)
+            nxt = self._id_mapping[track_id]
+            if nxt == track_id:
+                break
+            track_id = nxt
+        return track_id
 
     def update(self, detections: list[Detection], frame: np.ndarray | None = None) -> list[Detection]:
-        """Update tracker with new detections.
+        """Update tracker with new detections and re-identify re-entering tracks.
+
+        Detections arrive with raw track IDs from the YOLO tracker. When a track
+        leaves and a *new* raw ID re-enters with a matching appearance, its ID is
+        remapped back to the original so the identity (and trajectory) persists.
 
         Args:
-            detections: Detections with track_id from YOLO tracker.
-            frame: Optional frame for appearance embedding extraction.
+            detections: Detections with track_id from the YOLO tracker.
+            frame: Optional frame for appearance-embedding extraction. Without it,
+                re-ID is skipped (existing remaps still apply) and detections pass
+                through.
 
         Returns:
-            Detections with potentially remapped track IDs for re-identification.
+            Detections with re-identified track IDs (same length as the input).
         """
-        updated_detections = []
+        now = time.time()
+
+        # 1) Evict lost identities older than the timeout.
+        for cid in list(self._lost):
+            if now - self._lost[cid]["lost_at"] > self._lost_timeout:
+                del self._lost[cid]
+
+        # 2) Embed current detections; record presence by canonical id.
+        present: set[int] = set()
+        current_raw: set[int] = set()
         for det in detections:
-            if det.track_id is not None:
-                # Extract appearance embedding for re-ID
-                if frame is not None:
-                    embedding = self._extract_embedding(frame, det)
-                    if embedding is not None:
-                        self._embeddings[det.track_id] = embedding
+            if det.track_id is None:
+                continue
+            raw = det.track_id
+            current_raw.add(raw)
+            if frame is not None:
+                emb = self._embedder.embed(frame, det)
+                if emb is not None:
+                    self._embeddings[raw] = emb
+            canon = self._resolve(raw)
+            present.add(canon)
+            self._class_of[canon] = det.class_id
+            self._last_raw_of[canon] = raw
 
-                updated_detections.append(det)
+        # 3) Re-identify each NEW raw id against the lost pool (same class only).
+        for raw in current_raw:
+            if raw in self._seen_ids or raw in self._id_mapping:
+                continue
+            if raw not in self._embeddings:
+                continue
+            cls = self._class_of.get(raw)
+            candidates = {
+                cid: info["embedding"]
+                for cid, info in self._lost.items()
+                if info["class_id"] == cls
+            }
+            if not candidates:
+                continue
+            match = self.match_reid(raw, candidates)
+            if match is not None:
+                self._id_mapping[raw] = match
+                del self._lost[match]
+                present.discard(raw)
+                present.add(match)
+                self._last_raw_of[match] = raw
+
+        self._seen_ids.update(current_raw)
+
+        # 4) Remap detections to canonical ids (non-destructive copy).
+        remapped: list[Detection] = []
+        for det in detections:
+            if det.track_id is not None and det.track_id in self._id_mapping:
+                remapped.append(dataclasses.replace(det, track_id=self._resolve(det.track_id)))
             else:
-                updated_detections.append(det)
+                remapped.append(det)
 
-        self._history.update(updated_detections)
-        return updated_detections
+        # 5) Move JUST-vanished identities (present last frame, absent now) into the
+        #    lost pool — exactly once per disappearance, so a timed-out identity is
+        #    not silently re-added every subsequent frame.
+        for canon in self._active - present:
+            if canon in self._lost:
+                continue
+            emb = self._embeddings.get(self._last_raw_of.get(canon, canon))
+            if emb is not None:
+                self._lost[canon] = {
+                    "embedding": emb,
+                    "lost_at": now,
+                    "class_id": self._class_of.get(canon, -1),
+                }
+        self._active = present
+
+        # 6) Feed history with remapped detections so trajectories continue.
+        self._history.update(remapped)
+        return remapped
 
     def _extract_embedding(self, frame: np.ndarray, detection: Detection) -> np.ndarray | None:
-        """Extract a simple appearance embedding from the detection crop.
+        """Extract an appearance embedding via the configured embedder.
 
-        Uses color histogram as a lightweight appearance descriptor.
+        Thin delegate kept for backward compatibility; the actual descriptor is
+        produced by ``self._embedder`` (histogram by default, OSNet when enabled).
         """
-        x1, y1, x2, y2 = [int(v) for v in detection.bbox]
-        h, w = frame.shape[:2]
-        x1, y1 = max(0, x1), max(0, y1)
-        x2, y2 = min(w, x2), min(h, y2)
-
-        if x2 - x1 < 10 or y2 - y1 < 10:
-            return None
-
-        crop = frame[y1:y2, x1:x2]
-        crop_resized = cv2.resize(crop, (64, 64))
-
-        # Use color histogram as embedding
-        hist_features = []
-        for ch in range(3):
-            hist = cv2.calcHist([crop_resized], [ch], None, [32], [0, 256])
-            hist = cv2.normalize(hist, hist).flatten()
-            hist_features.append(hist)
-
-        return np.concatenate(hist_features)
+        return self._embedder.embed(frame, detection)
 
     def match_reid(self, track_id: int, candidates: dict[int, np.ndarray]) -> int | None:
         """Try to match a track against lost track embeddings.

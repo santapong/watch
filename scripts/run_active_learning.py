@@ -24,7 +24,7 @@ import cv2
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from src.models.yolo_wrapper import YOLODetector
+from src.models.registry import build_detector_from_config
 from src.stream import VideoStream
 from src.training.active_learner import ActiveLearner
 from src.utils.drawing import draw_detections, draw_fps, draw_info
@@ -47,7 +47,7 @@ def main():
     except ValueError:
         pass
 
-    detector = YOLODetector(model_name=args.model)
+    detector = build_detector_from_config({}, model_name=args.model)
     stream = VideoStream(source=source)
     fps_counter = FPSCounter()
 

@@ -1,7 +1,6 @@
 """YOLO detector wrapper using Ultralytics."""
 
 import numpy as np
-from ultralytics import YOLO
 
 from .base import BaseDetector, Detection
 
@@ -26,12 +25,23 @@ class YOLODetector(BaseDetector):
             classes: Filter to specific class IDs (None = all classes).
             device: Device string ('' = auto, 'cpu', 'cuda:0', 'mps').
         """
-        self._model = YOLO(model_name)
+        self._model = self._load_model(model_name)
         self._model_name = model_name
         self._confidence = confidence
         self._iou_threshold = iou_threshold
         self._classes = classes
         self._device = device
+
+    def _load_model(self, model_name: str):
+        """Load the underlying Ultralytics model.
+
+        Imported lazily so this module stays importable without ultralytics
+        installed (keeps unit tests and CI light), and so subclasses can load a
+        different model class by overriding just this hook (e.g. RT-DETR).
+        """
+        from ultralytics import YOLO
+
+        return YOLO(model_name)
 
     def _results_to_detections(self, results) -> list[Detection]:
         """Convert Ultralytics results to Detection objects."""

@@ -5,6 +5,7 @@ Usage:
     python scripts/export_model.py                              # Export to ONNX
     python scripts/export_model.py --format onnx torchscript    # Multiple formats
     python scripts/export_model.py --model yolov8s.pt --half    # FP16 quantization
+    python scripts/export_model.py --int8 --data coco128.yaml   # INT8 quantization
     python scripts/export_model.py --benchmark                  # Export + benchmark
 """
 
@@ -26,16 +27,27 @@ def main():
     )
     parser.add_argument("--imgsz", type=int, default=640, help="Input image size")
     parser.add_argument("--half", action="store_true", help="FP16 quantization")
+    parser.add_argument("--int8", action="store_true", help="INT8 quantization (PTQ)")
+    parser.add_argument(
+        "--data", default=None,
+        help="Calibration dataset YAML for INT8 (e.g. coco128.yaml)",
+    )
     parser.add_argument("--dynamic", action="store_true", help="Dynamic input shapes")
     parser.add_argument("--benchmark", action="store_true", help="Benchmark after export")
     parser.add_argument("--iterations", type=int, default=100, help="Benchmark iterations")
     parser.add_argument("--device", default="cpu", help="Benchmark device")
     args = parser.parse_args()
 
+    if args.half and args.int8:
+        parser.error("--half and --int8 are mutually exclusive; choose one precision.")
+
     print(f"Model: {args.model}")
     print(f"Formats: {args.format}")
     print(f"Image size: {args.imgsz}")
     print(f"FP16: {args.half}")
+    print(f"INT8: {args.int8}")
+    if args.int8 and args.data:
+        print(f"Calibration data: {args.data}")
     print()
 
     # Export
@@ -44,6 +56,8 @@ def main():
         formats=args.format,
         imgsz=args.imgsz,
         half=args.half,
+        int8=args.int8,
+        data=args.data,
     )
 
     print()

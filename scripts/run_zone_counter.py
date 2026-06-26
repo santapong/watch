@@ -25,7 +25,7 @@ import yaml
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from src.analytics.zone_counter import ZoneCounter, LineCrossCounter
-from src.models.yolo_wrapper import YOLODetector
+from src.models.registry import build_detector_from_config
 from src.stream import VideoStream
 from src.utils.drawing import draw_detections, draw_fps, draw_info
 from src.utils.fps import FPSCounter
@@ -48,12 +48,7 @@ def main():
     model_cfg = config.get("model", {})
 
     # Initialize detector (tracking required for line crossing)
-    detector = YOLODetector(
-        model_name=args.model,
-        confidence=model_cfg.get("confidence", 0.25),
-        iou_threshold=model_cfg.get("iou_threshold", 0.45),
-        device=model_cfg.get("device", ""),
-    )
+    detector = build_detector_from_config(config, model_name=args.model)
 
     # Initialize video
     source = args.source

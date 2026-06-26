@@ -2,11 +2,15 @@
 
 # Model settings
 model:
-  name: "yolov8n.pt"          # Model file: yolov8n/s/m/l/x.pt, yolo11n.pt, etc.
+  backend: ""                  # "" = infer from name; or "yolo" (v8/v10/v11/26) | "rtdetr"
+  name: "yolov8n.pt"          # Model file: yolov8n/s/m/l/x.pt, yolo11n.pt, yolo26n.pt (NMS-free), rtdetr-l.pt, etc.
   confidence: 0.25             # Minimum confidence threshold
   iou_threshold: 0.45          # NMS IoU threshold
   device: ""                   # Auto-detect: "", "cpu", "cuda:0", "mps"
   classes: null                # Filter classes (null = all, [0] = person only, [0, 2] = person + car)
+  tiled: false                 # SAHI-style sliced inference for small/distant objects (slower)
+  tile_size: 640               # Tile size (px) when tiled
+  tile_overlap: 0.2            # Fractional overlap between tiles (0-1)
 
 # Video source
 source:
@@ -31,6 +35,8 @@ tracking:
   enabled: false               # Set to true to enable object tracking
   max_history: 50              # Max trajectory trail points per track
   reid_threshold: 0.7          # Re-ID cosine similarity threshold
+  reid_backend: "auto"         # Embedder: "auto" (OSNet if torch+torchreid, else histogram) | "histogram" | "osnet"
+  lost_timeout: 5.0            # Seconds a vanished track stays re-identifiable
 
 # Zone counting
 zones:
@@ -58,16 +64,53 @@ anomaly:
 action:
   model: "yolov8n-pose.pt"
   sequence_length: 15          # Frames for temporal action analysis
+  fall:                        # Multi-cue, debounced fall detection
+    angle_deg: 45              # Torso angle from horizontal below which it counts as "down"
+    velocity: 8                # Downward shoulder velocity (px/frame) corroborating a fall
+    debounce: 3                # Consecutive fall-like frames before reporting a fall
+    alert_cooldown: 10         # Seconds between repeated fall alerts
+
+# Monocular depth (Phase 2; needs onnxruntime + an ONNX model, see requirements-phase2.txt)
+depth:
+  enabled: false
+  backend: "depth_anything"    # "depth_anything" (relative) | "depth_anything_metric" (meters) | "midas"
+  model_path: ""               # path to the ONNX depth model (Depth Anything V2 / MiDaS)
+  input_size: [518, 518]       # model input (w, h); smaller = faster on edge (e.g. [384,384], [256,256])
+  proximity_threshold: 0.8     # relative backends: normalized depth (0-1, larger = nearer) above which to alert
+  proximity_threshold_m: 2.0   # metric backend only: distance in meters (smaller = nearer) below which to alert
+  alert_cooldown: 10           # seconds between proximity alerts
+  # Single-view ground-plane ranger (true meters on CPU, no neural depth) — off by default.
+  ground_plane:
+    enabled: false
+    mode: "pinhole"            # "pinhole" (intrinsics+height+pitch) | "homography" (image->ground pts)
+    report: "euclidean"        # "euclidean" (straight-line range) | "forward" (horizontal ground dist)
+    fx: 1000.0                 # focal length px (pinhole mode)
+    fy: 1000.0
+    cx: 640.0
+    cy: 360.0
+    height_m: 1.5              # camera height above ground (m)
+    pitch_deg: 10.0            # downward tilt from horizontal (deg)
+    # homography mode instead: image_points + ground_points (>=4 pixel<->meter pairs)
+  # Temporal smoothing for steadier depth across frames (lightweight stand-in for a
+  # streaming model like oVDA, whose weights are non-commercial) — off by default.
+  streaming:
+    enabled: false
+    alpha: 0.5                 # EMA weight on the current frame (1.0 = no smoothing)
+    align_scale: false         # rescale each frame to the running median (relative depth only)
 
 # Multi-camera
 multicam:
   cell_size: [640, 480]        # Grid cell size (width, height)
-  cameras: []                  # List of {name, source} camera definitions
-  # Example:
+  max_match_distance: 2.0      # Max BEV distance (ground units) to match across cameras
+  cameras: []                  # List of {name, source, [homography]} camera definitions
+  # Example (homography maps image pixels -> a shared ground plane; >=4 point pairs):
   # cameras:
-  #   - name: "Webcam"
+  #   - name: "Camera 0"
   #     source: 0
-  #   - name: "Phone"
+  #     homography:
+  #       image_points:  [[100, 700], [1180, 700], [1180, 300], [100, 300]]
+  #       ground_points: [[0, 0], [5, 0], [5, 8], [0, 8]]
+  #   - name: "Stream 1"
   #     source: "http://192.168.1.105:8080/video"
 
 # Temporal event detection
@@ -76,6 +119,15 @@ temporal:
   loiter_seconds: 30           # Seconds before flagging loitering
   abandoned_seconds: 60        # Seconds before flagging abandoned object
   crowd_threshold: 10          # Person count for crowd alert
+
+# Time-to-collision (looming + metric range cue) — library helper, off by default
+ttc:
+  enabled: false
+  scale_mode: "area"           # bbox size proxy: area | width | height
+  ema_alpha: 0.5               # smoothing of the size proxy
+  deadband: 0.02               # min per-frame growth ratio to count as approaching
+  warn_seconds: 2.0            # alert when TTC drops below this many seconds
+  dt: 1.0                      # seconds per frame (use 1/fps for real time)
 
 # Active learning
 active_learning:

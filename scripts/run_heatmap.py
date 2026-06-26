@@ -22,7 +22,7 @@ import cv2
 import yaml
 
 from src.stream import VideoStream
-from src.models.yolo_wrapper import YOLODetector
+from src.models.registry import build_detector_from_config
 from src.analytics.heatmap import HeatmapGenerator
 from src.utils.drawing import draw_detections, draw_fps
 from src.utils.fps import FPSCounter
@@ -52,11 +52,7 @@ def main():
     if isinstance(source, str) and source.isdigit():
         source = int(source)
 
-    detector = YOLODetector(
-        model_name=model_name,
-        confidence=config["model"]["confidence"],
-        device=config["model"]["device"],
-    )
+    detector = build_detector_from_config(config, model_name=model_name)
 
     stream = VideoStream(source)
     fps = FPSCounter()

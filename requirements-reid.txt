@@ -1,0 +1,8 @@
+# Optional dependencies for the deep OSNet re-ID backend (tracking.reid_backend: osnet/auto).
+# NOT installed by CI — the default histogram backend is zero-dependency. Install with:
+#     pip install -r requirements-reid.txt
+# Note: torchreid downloads model weights via gdown on first use; in offline/proxied
+# environments, pre-stage a Market-1501/MSMT17 .pth.tar and point the embedder at it.
+torch>=2.2
+torchvision
+torchreid>=1.4

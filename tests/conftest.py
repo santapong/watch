@@ -24,3 +24,27 @@ if "transformers" not in sys.modules:
 for mod_name in ["streamlit", "streamlit_webrtc"]:
     if mod_name not in sys.modules:
         sys.modules[mod_name] = types.ModuleType(mod_name)
+
+# Stub ultralytics (YOLO / RT-DETR loaders) if not installed, so modules that
+# lazily `from ultralytics import YOLO/RTDETR` import cleanly. Tests that assert
+# loader/export behavior override this with their own fake via monkeypatch.
+if "ultralytics" not in sys.modules:
+    ultra = types.ModuleType("ultralytics")
+
+    class _StubModel:
+        def __init__(self, *args, **kwargs):
+            self.names = {}
+            self.task = "detect"
+
+        def predict(self, *args, **kwargs):
+            return []
+
+        def track(self, *args, **kwargs):
+            return []
+
+        def export(self, *args, **kwargs):
+            return ""
+
+    ultra.YOLO = _StubModel
+    ultra.RTDETR = _StubModel
+    sys.modules["ultralytics"] = ultra

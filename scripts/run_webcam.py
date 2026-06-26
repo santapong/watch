@@ -29,9 +29,10 @@ import yaml
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from src.models.yolo_wrapper import YOLODetector
+from src.models.registry import build_detector_from_config
 from src.stream import VideoStream
-from src.utils.drawing import draw_detections, draw_fps, draw_info
+from src.tracking.tracker import EnhancedTracker
+from src.utils.drawing import draw_detections, draw_fps, draw_info, draw_tracks
 from src.utils.fps import FPSCounter
 
 
@@ -84,12 +85,18 @@ def main():
     confidence = args.confidence or model_cfg.get("confidence", 0.25)
 
     print(f"Loading model: {model_name}")
-    detector = YOLODetector(
-        model_name=model_name,
-        confidence=confidence,
-        iou_threshold=model_cfg.get("iou_threshold", 0.45),
-        classes=model_cfg.get("classes"),
-        device=model_cfg.get("device", ""),
+    detector = build_detector_from_config(
+        config, model_name=model_name, confidence=confidence
+    )
+
+    # Enhanced tracker (appearance re-ID + trajectory trails). Built unconditionally
+    # so the runtime 't' toggle works; only used while tracking is enabled.
+    trk_cfg = config.get("tracking", {})
+    tracker = EnhancedTracker(
+        max_history=trk_cfg.get("max_history", 50),
+        reid_threshold=trk_cfg.get("reid_threshold", 0.7),
+        lost_timeout=trk_cfg.get("lost_timeout", 5.0),
+        reid_backend=trk_cfg.get("reid_backend", "auto"),
     )
 
     # Initialize video source
@@ -130,6 +137,7 @@ def main():
             # Run detection
             if tracking:
                 detections = detector.detect_and_track(frame)
+                detections = tracker.update(detections, frame)
             else:
                 detections = detector.detect(frame)
 
@@ -143,6 +151,9 @@ def main():
                 thickness=display_cfg.get("bbox_thickness", 2),
                 font_scale=display_cfg.get("font_scale", 0.6),
             )
+
+            if tracking:
+                draw_tracks(frame, tracker.get_all_trajectories())
 
             if display_cfg.get("show_fps", True):
                 draw_fps(frame, fps_counter.fps)

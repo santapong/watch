@@ -1,0 +1,8 @@
+# Optional dependencies for Phase 2 heavy-model modules (NOT installed by CI).
+# The slim, torch-free test gate and all default paths work without these.
+# Install with:  pip install -r requirements-phase2.txt
+#
+# Depth subsystem (src/depth/) runs Depth Anything V2 / MiDaS via ONNX Runtime — no
+# torch needed. The ONNX model weights are downloaded separately (see
+# docs/webcam_depth_research.md) and pointed to via depth.model_path / --depth-model.
+onnxruntime>=1.17
